@@ -1,0 +1,14 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: ${kubePrefix}-dtcc-cluster
+  region: us-east-1
+  version: "1.21"
+managedNodeGroups:
+  - name: ${kubePrefix}-dtcc-ng-worker
+    instanceType: ${instanceType}
+    instanceName: ${kubePrefix}-dtcc-worker
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: ${nodeGroupMaxSize}
+    labels: { role: workers }

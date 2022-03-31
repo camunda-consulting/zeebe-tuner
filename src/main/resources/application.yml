@@ -1,0 +1,13 @@
+server:
+  port : 8082  
+google:
+  sheetId: 1TXxTK6S0eJTR4OwE5zMhqltEOutVvrDqcFtE4BWWfPA
+  inputs: A1:C
+  oauth:
+    clientid: XXX.apps.googleusercontent.com
+    clientsecret: GOCSPX-XXX
+    callbackPort: 8888
+    username: XXX@camunda.com
+kube:
+  prefix: christophe
+  region: us-east-1

@@ -1,0 +1,33 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'io.camunda'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	implementation 'com.google.api-client:google-api-client:1.33.4'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.33.1'
+    implementation 'com.google.apis:google-api-services-sheets:v4-rev614-1.18.0-rc'
+
+
+	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.apache.commons:commons-text:1.9'
+    
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.4'
+    
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
