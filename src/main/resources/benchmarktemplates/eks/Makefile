@@ -1,4 +1,5 @@
 clustername ?= ${namespace}-cluster
+region ?= ${region}
 
 .PHONY: all
 all: eks-cluster urls
@@ -6,7 +7,7 @@ all: eks-cluster urls
 .PHONY: eks-cluster
 eks-cluster:
 	eksctl create cluster -f eksctl-config.yaml
-	bash setup-cluster.sh $(clustername) ${region}
+	bash setup-cluster.sh $(clustername) $(region)
 
 .PHONY: clean
 clean: clean-eks-cluster
@@ -23,8 +24,8 @@ clean-eks-cluster:
 
 .PHONY: urls
 urls:
-	@echo "CloudFormation: https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks?filteringStatus=active&filteringText=eksctl-$(clustername)-cluster&viewNested=true&hideStacks=false&stackId="
-	@echo "EKS: https://${region}.console.aws.amazon.com/eks/home?region=${region}#/clusters"
+	@echo "CloudFormation: https://$(region).console.aws.amazon.com/cloudformation/home?region=$(region)#/stacks?filteringStatus=active&filteringText=eksctl-$(clustername)-cluster&viewNested=true&hideStacks=false&stackId="
+	@echo "EKS: https://$(region).console.aws.amazon.com/eks/home?region=$(region)#/clusters"
 
 .PHONY: url-grafana
 url-grafana:
@@ -44,8 +45,8 @@ open-grafana:
 
 .PHONY: open-cloudformation
 open-cloudformation:
-	xdg-open https://${region}.console.aws.amazon.com/cloudformation/home?region=${region}#/stacks?filteringStatus=active&filteringText=eksctl-$(clustername)-cluster&viewNested=true&hideStacks=false&stackId= &
+	xdg-open https://$(region).console.aws.amazon.com/cloudformation/home?region=$(region)#/stacks?filteringStatus=active&filteringText=eksctl-$(clustername)-cluster&viewNested=true&hideStacks=false&stackId= &
 
 .PHONY: open-eks
 open-eks:
-	xdg-open https://${region}.console.aws.amazon.com/eks/home?region=${region}#/clusters
+	xdg-open https://$(region).console.aws.amazon.com/eks/home?region=$(region)#/clusters
