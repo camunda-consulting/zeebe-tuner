@@ -11,12 +11,12 @@ import io.camunda.benchmark.utils.ProcessUtils;
 public class EksService {
 
 	public void createEksCluster() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("eksctl create cluster -f target/eks/eksctl-config.yaml");
+		ProcessUtils.execBlocking("eksctl create cluster -f testruns/eks/eksctl-config.yaml");
 		ProcessUtils.execBlocking("helm repo add prometheus-community https://prometheus-community.github.io/helm-charts");
 		ProcessUtils.execBlocking("helm repo add stable https://charts.helm.sh/stable");
 		ProcessUtils.execBlocking("helm repo update");
-		ProcessUtils.execBlocking("kubectl apply -f target/eks/grafana-secret.yml");
-		ProcessUtils.execBlocking("helm install metrics prometheus-community/kube-prometheus-stack --atomic -f target/eks/prometheus-operator-values.yml --set prometheusOperator.tlsProxy.enabled=false");
+		ProcessUtils.execBlocking("kubectl apply -f testruns/eks/grafana-secret.yml");
+		ProcessUtils.execBlocking("helm install metrics prometheus-community/kube-prometheus-stack --atomic -f testruns/eks/prometheus-operator-values.yml --set prometheusOperator.tlsProxy.enabled=false");
 			
 			/*until  | grep -m 1 "kube-prometheus-stack has been installed."
 			do
@@ -24,7 +24,7 @@ public class EksService {
 				sleep 1
 			done*/
 
-		ProcessUtils.execBlocking("kubectl apply -f target/eks/grafana-load-balancer.yml");
+		ProcessUtils.execBlocking("kubectl apply -f testruns/eks/grafana-load-balancer.yml");
 		//expose grafana
 		ProcessUtils.execBlocking("kubectl port-forward svc/metrics-grafana-loadbalancer 8080:80 -n default");
 		//expose prometheus
@@ -38,12 +38,12 @@ public class EksService {
 	}
 	
 	public void cleanEksCluster() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl delete -n default -f target/eks/grafana-load-balancer.yml");
+		ProcessUtils.execBlocking("kubectl delete -n default -f testruns/eks/grafana-load-balancer.yml");
 		ProcessUtils.execBlocking("helm --namespace default uninstall metrics");
-		ProcessUtils.execBlocking("kubectl delete -n default -f target/eks/grafana-secret.yml");
+		ProcessUtils.execBlocking("kubectl delete -n default -f testruns/eks/grafana-secret.yml");
 		ProcessUtils.execBlocking("kubectl delete -n default pvc -l app.kubernetes.io/name=prometheus");
 		ProcessUtils.execBlocking("kubectl delete -n default pvc -l app.kubernetes.io/name=grafana");
 		//ProcessUtils.execBlocking("kubectl delete pvc --all");
-		ProcessUtils.execBlocking("eksctl delete cluster -f target/eks/eksctl-config.yaml --wait");
+		ProcessUtils.execBlocking("eksctl delete cluster -f testruns/eks/eksctl-config.yaml --wait");
 	}
 }
