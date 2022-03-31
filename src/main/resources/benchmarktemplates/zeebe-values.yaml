@@ -1,6 +1,6 @@
 global:
   image:
-    tag: 1.4.0-alpha2
+    tag: ${engineVersion}
     pullPolicy: IfNotPresent
 
 zeebe:
@@ -12,30 +12,30 @@ zeebe:
   # Resources configuration to set request and limit configuration for the container https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limitsS
   resources:
     limits:
-      cpu: 14
+      cpu: ${vcpus}
       memory: 27Gi
     requests:
-      cpu: 14
+      cpu: ${vcpus}
       memory: 27Gi
 
   # ClusterSize defines the amount of brokers (=replicas), which are deployed via helm
-  clusterSize: "9"
+  clusterSize: "${clusterSize}"
   # PartitionCount defines how many zeebe partitions are set up in the cluster
-  partitionCount: "63"
+  partitionCount: "${partitions}"
   # ReplicationFactor defines how each partition is replicated, the value defines the number of nodes
-  replicationFactor: "1"
+  replicationFactor: "${replicationFactor}"
 
   # CpuThreadCount defines how many threads can be used for the processing on each broker pod
-  cpuThreadCount: 14
+  cpuThreadCount: ${cpuThreadPoolSizeNode}
   # IoThreadCount defines how many threads can be used for the exporting on each broker pod
-  ioThreadCount: 14
+  ioThreadCount: ${ioThreadPoolSizeNode}
 
   # PvcAccessModes can be used to configure the persistent volume claim access mode https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   pvcAccessMode: ["ReadWriteOnce"]
   # PvcSize defines the persistent volume claim size, which is used by each broker pod https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
-  pvcSize: 128Gi
+  pvcSize: ${diskSize}Gi
   # PvcStorageClassName can be used to set the storage class name which should be used by the persistent volume claim. It is recommended to use a storage class, which is backed with a SSD.
-  pvcStorageClassName: gp2
+  pvcStorageClassName: ${diskType}
 
   # PodSecurityContext defines the security options the broker and gateway container should be run with
   podSecurityContext:
