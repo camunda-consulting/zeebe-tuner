@@ -20,7 +20,7 @@ public class ZeebeStarterService {
 		ProcessUtils.execBlocking("helm repo add camunda-cloud https://helm.camunda.io");
 		ProcessUtils.execBlocking("helm repo update camunda-cloud");
 		ProcessUtils.execBlocking("helm search repo camunda-cloud/ccsm-helm");
-		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.namespace+" "+kubeConfig.namespace+"-***REMOVED*** camunda-cloud/ccsm-helm -f target/zeebe-values.yaml --skip-crds");
+		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.namespace+" "+kubeConfig.namespace+"-***REMOVED*** camunda-cloud/ccsm-helm -f testruns/zeebe-values.yaml --skip-crds");
 	}
 	
 	public boolean watchZeebe() throws IOException, InterruptedException {
@@ -39,11 +39,11 @@ public class ZeebeStarterService {
 	}
 	
 	public void deployProcess() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("zbctl --insecure deploy target/*.bpmn");
+		ProcessUtils.execBlocking("zbctl --insecure deploy testruns/*.bpmn");
 	}
 	
 	public void camundaCloudBenchmark() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl apply -n "+kubeConfig.namespace+" -f target/camunda-cloud-benchmark.yaml");
+		ProcessUtils.execBlocking("kubectl apply -n "+kubeConfig.namespace+" -f testruns/camunda-cloud-benchmark.yaml");
 	}
 		
 }
