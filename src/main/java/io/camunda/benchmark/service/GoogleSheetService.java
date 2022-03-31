@@ -1,12 +1,9 @@
-package io.camunda.benchmark.config;
+package io.camunda.benchmark.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +19,8 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import io.camunda.benchmark.config.GoogleSheetConfig;
+
 @Service
 public class GoogleSheetService {
 
@@ -30,15 +29,9 @@ public class GoogleSheetService {
 
 	@Autowired
 	private JsonFactory jsonFactory;
-	
-	@Autowired
-	private KubeConfig kubeConfig;
 
 	@Autowired
 	private GoogleSheetConfig googleSheetConfig;
-	
-	
-	private List<Map<String, String>> inputMaps = new ArrayList<>();
 	
 	public Credential authorize() throws IOException {
 
@@ -66,39 +59,10 @@ public class GoogleSheetService {
           .build();
     }
 	
-	public void read() throws IOException, GeneralSecurityException {
-		ValueRange response = getSheets().spreadsheets().values()
+	
+	public ValueRange getValues() throws IOException, GeneralSecurityException {
+		return getSheets().spreadsheets().values()
                 .get(googleSheetConfig.googleSheetId, googleSheetConfig.sheetInputs).execute();
-
-		List<List<Object>> values = response.getValues();
-        if (values == null || values.isEmpty()) {
-            System.out.println("No data found.");
-        } else {
-        	Map<Integer, String> headersMap = new HashMap<>();
-        	int idxRow=0;
-            for (List<Object> row : values) {
-            	int idxCol=0;
-            	if (idxRow>0) {
-            		inputMaps.add(new HashMap<>());
-            		inputMaps.get(idxRow-1).put("kubePrefix", kubeConfig.kubePrefix);
-            	}
-            	for (Object cell : row) {
-            		if (idxRow==0) {
-            			headersMap.put(idxCol, (String) cell);
-            		} else {
-            			inputMaps.get(idxRow-1).put(headersMap.get(idxCol), (String) cell);
-            		}
-            		idxCol++;
-	                // Print columns A and E, which correspond to indices 0 and 4.
-	                //System.out.printf("%s, ", cell);
-            	}
-                //System.out.println("");
-                idxRow++;
-            }
-        }
 	}
 	
-	public Map<String, String> getInputs(int idx) {
-		return inputMaps.get(idx);
-	}
 }

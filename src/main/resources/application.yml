@@ -1,13 +1,13 @@
 server:
   port : 8082  
 google:
-  sheetId: 1TXxTK6S0eJTR4OwE5zMhqltEOutVvrDqcFtE4BWWfPA
-  inputs: A1:C
+  sheetId: 1y6EP1PcftdchClBFHIRbhHG510vWzS9sweJcaOWSItI
+  inputs: A2:BH
   oauth:
     clientid: XXX.apps.googleusercontent.com
     clientsecret: GOCSPX-XXX
     callbackPort: 8888
     username: XXX@camunda.com
 kube:
-  prefix: christophe
+  namespace: falko-dtcc
   region: us-east-1

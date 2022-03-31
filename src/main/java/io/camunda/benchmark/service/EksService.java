@@ -1,4 +1,4 @@
-package io.camunda.benchmark.aws;
+package io.camunda.benchmark.service;
 
 import java.io.IOException;
 import java.util.Map;
