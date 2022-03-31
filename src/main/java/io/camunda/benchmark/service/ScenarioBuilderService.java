@@ -34,19 +34,29 @@ public class ScenarioBuilderService {
             System.out.println("No data found.");
         } else {
         	Map<Integer, String> headersMap = new HashMap<>();
+        	Map<Integer, String> prefixHeadersMap = new HashMap<>();
+        	String prefixHeader="";
         	int idxRow=0;
             for (List<Object> row : values) {
             	int idxCol=0;
-            	if (idxRow>0) {
+            	if (idxRow>1) {
             		inputMaps.add(new HashMap<>());
-            		inputMaps.get(idxRow-1).put("namespace", kubeConfig.namespace);
-            		inputMaps.get(idxRow-1).put("region", kubeConfig.kubeRegion);
+            		inputMaps.get(idxRow-2).put("namespace", kubeConfig.namespace);
+            		inputMaps.get(idxRow-2).put("region", kubeConfig.kubeRegion);
             	}
             	for (Object cell : row) {
+            		String value = (String) cell;
             		if (idxRow==0) {
-            			headersMap.put(idxCol, GgSheetHeaderUtils.toCamelCase((String) cell));
+            			if (value.length()==0) {
+            				prefixHeadersMap.put(idxCol, prefixHeader);
+            			} else {
+            				prefixHeader = GgSheetHeaderUtils.toCamelCase(value)+".";
+                			prefixHeadersMap.put(idxCol, prefixHeader);
+            			}
+            		} else if (idxRow==1) {
+            			headersMap.put(idxCol, GgSheetHeaderUtils.toCamelCase(value));
             		} else {
-            			inputMaps.get(idxRow-1).put(headersMap.get(idxCol), (String) cell);
+            			inputMaps.get(idxRow-2).put(prefixHeadersMap.get(idxCol)+headersMap.get(idxCol), (String) cell);
             		}
             		idxCol++;
             	}

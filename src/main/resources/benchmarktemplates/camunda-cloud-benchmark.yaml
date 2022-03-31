@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: camunda-cloud-benchmark
-  replicas: ${starterReplicas}
+  replicas: ${loadGeneratorStarter.starterReplicas}
   template:
     metadata:
       labels:
@@ -23,8 +23,8 @@ spec:
             value: >-
               -Dzeebe.client.broker.gateway-address=falko-dtcc-zeebe-gateway:26500
               -Dzeebe.client.security.plaintext=true
-              -Dbenchmark.startPiPerSecond=${startThroughput}
-              -Dbenchmark.maxBackpressurePercentage=${maxBackPressure}
+              -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
+              -Dbenchmark.maxBackpressurePercentage=${loadGeneratorStarter.maxBackPressure}
               -Dbenchmark.taskCompletionDelay=10
               -Dbenchmark.bpmnProcessId=BACWAM
               -Dbenchmark.jobType=benchmark-task

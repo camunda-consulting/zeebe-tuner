@@ -2,7 +2,7 @@ server:
   port : 8082  
 google:
   sheetId: 1y6EP1PcftdchClBFHIRbhHG510vWzS9sweJcaOWSItI
-  inputs: A2:BH
+  inputs: A1:BH
   oauth:
     clientid: XXX.apps.googleusercontent.com
     clientsecret: GOCSPX-XXX

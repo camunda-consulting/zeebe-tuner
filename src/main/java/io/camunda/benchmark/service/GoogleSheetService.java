@@ -61,8 +61,7 @@ public class GoogleSheetService {
 	
 	
 	public ValueRange getValues() throws IOException, GeneralSecurityException {
-		return getSheets().spreadsheets().values()
-                .get(googleSheetConfig.googleSheetId, googleSheetConfig.sheetInputs).execute();
+		return getSheets().spreadsheets().values().get(googleSheetConfig.googleSheetId, googleSheetConfig.sheetInputs).execute();
 	}
 	
 }
