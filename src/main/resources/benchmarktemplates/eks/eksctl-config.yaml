@@ -6,9 +6,9 @@ metadata:
   version: "1.21"
 managedNodeGroups:
   - name: ${namespace}-ng-worker
-    instanceType: ${instanceType}
+    instanceType: ${engine.machineType}
     instanceName: ${namespace}-worker
     desiredCap***REMOVED***ty: 1
     minSize: 1
-    maxSize: ${nodeGroupMaxSize}
+    maxSize: 24
     labels: { role: workers }

@@ -1,6 +1,6 @@
 global:
   image:
-    tag: ${engineVersion}
+    tag: ${engine.engineVersion}
     pullPolicy: IfNotPresent
 
 zeebe:
@@ -12,30 +12,30 @@ zeebe:
   # Resources configuration to set request and limit configuration for the container https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limitsS
   resources:
     limits:
-      cpu: ${vcpus}
-      memory: 27Gi
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
     requests:
-      cpu: ${vcpus}
-      memory: 27Gi
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
 
   # ClusterSize defines the amount of brokers (=replicas), which are deployed via helm
-  clusterSize: "${clusterSize}"
+  clusterSize: "${engine.clusterSize}"
   # PartitionCount defines how many zeebe partitions are set up in the cluster
-  partitionCount: "${partitions}"
+  partitionCount: "${engine.partitions}"
   # ReplicationFactor defines how each partition is replicated, the value defines the number of nodes
-  replicationFactor: "${replicationFactor}"
+  replicationFactor: "${engine.replicationFactor}"
 
   # CpuThreadCount defines how many threads can be used for the processing on each broker pod
-  cpuThreadCount: ${cpuThreadPoolSizeNode}
+  cpuThreadCount: ${engine.cpuThreadPoolSizeNode}
   # IoThreadCount defines how many threads can be used for the exporting on each broker pod
-  ioThreadCount: ${ioThreadPoolSizeNode}
+  ioThreadCount: ${engine.ioThreadPoolSizeNode}
 
   # PvcAccessModes can be used to configure the persistent volume claim access mode https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   pvcAccessMode: ["ReadWriteOnce"]
   # PvcSize defines the persistent volume claim size, which is used by each broker pod https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
-  pvcSize: ${diskSize}Gi
+  pvcSize: ${engine.diskSize}Gi
   # PvcStorageClassName can be used to set the storage class name which should be used by the persistent volume claim. It is recommended to use a storage class, which is backed with a SSD.
-  pvcStorageClassName: ${diskType}
+  pvcStorageClassName: ${engine.diskType}
 
   # PodSecurityContext defines the security options the broker and gateway container should be run with
   podSecurityContext:
@@ -77,7 +77,7 @@ zeebe:
 
 zeebe-gateway:
   # Replicas defines how many standalone gateways are deployed
-  replicas: 1
+  replicas: ${gateway.replicas}
   # Image configuration to configure the zeebe-gateway image specifics
   image:
     # Image.repository defines which image repository to use
@@ -86,8 +86,8 @@ zeebe-gateway:
   # Resources configuration to set request and limit configuration for the container https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits
   resources:
     limits:
-      cpu: 15
-      memory: 29Gi
+      cpu: ${gateway.vcpus}
+      memory: ${gateway.ram}Gi
     requests:
       cpu: 1
       memory: 512Mi
@@ -140,25 +140,25 @@ tasklist:
 # ELASTIC
 elasticsearch:
   enabled: true
-  imageTag: 7.16.2
+  imageTag: ${elasticSearch.databaseVersion}
 
-  replicas: 3
+  replicas: ${elasticSearch.clusterSize}
   minimumMasterNodes: 2
 
   resources:
     requests:
-      cpu: 3
-      memory: 8Gi
+      cpu: ${elasticSearch.vcpus}
+      memory: ${elasticSearch.ram}Gi
     limits:
-      cpu: 3
-      memory: 8Gi
+      cpu: ${elasticSearch.vcpus}
+      memory: ${elasticSearch.ram}Gi
 
   volumeClaimTemplate:
     accessModes: [ "ReadWriteOnce" ]
-    storageClassName: "gp2"
+    storageClassName: "${engine.diskType}"
     resources:
       requests:
-        storage: 50Gi
+        storage: ${elasticSearch.storageCap***REMOVED***ty}Gi
 
   esJavaOpts: "-Xmx4g -Xms4g"
 
