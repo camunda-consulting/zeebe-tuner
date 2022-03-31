@@ -2,12 +2,12 @@ server:
   port : 8082  
 google:
   sheetId: ***REMOVED***
-  inputs: A1:C
+  inputs: A2:BH
   oauth:
     clientid: XXX.apps.googleusercontent.com
     clientsecret: ***REMOVED***
     callbackPort: 8888
     username: XXX@camunda.com
 kube:
-  prefix: christophe
+  namespace: falko-***REMOVED***
   region: us-east-1

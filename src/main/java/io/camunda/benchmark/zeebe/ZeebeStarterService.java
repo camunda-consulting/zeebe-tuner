@@ -16,15 +16,15 @@ public class ZeebeStarterService {
 	private KubeConfig kubeConfig;
 	
 	public void buildZeebe() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl create namespace "+kubeConfig.kubePrefix);
+		ProcessUtils.execBlocking("kubectl create namespace "+kubeConfig.namespace);
 		ProcessUtils.execBlocking("helm repo add camunda-cloud https://helm.camunda.io");
 		ProcessUtils.execBlocking("helm repo update camunda-cloud");
 		ProcessUtils.execBlocking("helm search repo camunda-cloud/ccsm-helm");
-		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.kubePrefix+" "+kubeConfig.kubePrefix+"-***REMOVED*** camunda-cloud/ccsm-helm -f target/zeebe-values.yaml --skip-crds");
+		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.namespace+" "+kubeConfig.namespace+"-***REMOVED*** camunda-cloud/ccsm-helm -f target/zeebe-values.yaml --skip-crds");
 	}
 	
 	public boolean watchZeebe() throws IOException, InterruptedException {
-		Map<String, Object> result = ProcessUtils.execBlocking("kubectl get pods -w -n "+kubeConfig.kubePrefix+" -l app.kubernetes.io/name=zeebe");
+		Map<String, Object> result = ProcessUtils.execBlocking("kubectl get pods -w -n "+kubeConfig.namespace+" -l app.kubernetes.io/name=zeebe");
 		String output = (String) result.get("output");
 		//TODO:check output
 		if (output.indexOf("blop")>0) {
@@ -35,7 +35,7 @@ public class ZeebeStarterService {
 	}
 	
 	public void exposeZeebe() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl port-forward svc/"+kubeConfig.kubePrefix+"-***REMOVED***-zeebe-gateway 26500:26500 -n "+kubeConfig.kubePrefix);
+		ProcessUtils.execBlocking("kubectl port-forward svc/"+kubeConfig.namespace+"-***REMOVED***-zeebe-gateway 26500:26500 -n "+kubeConfig.namespace);
 	}
 	
 	public void deployProcess() throws IOException, InterruptedException {
@@ -43,7 +43,7 @@ public class ZeebeStarterService {
 	}
 	
 	public void camundaCloudBenchmark() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl apply -n "+kubeConfig.kubePrefix+" -f target/camunda-cloud-benchmark.yaml");
+		ProcessUtils.execBlocking("kubectl apply -n "+kubeConfig.namespace+" -f target/camunda-cloud-benchmark.yaml");
 	}
 		
 }

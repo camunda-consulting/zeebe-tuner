@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class KubeConfig {
 
-	@Value("${kube.prefix}")
-	public String kubePrefix;
+	@Value("${kube.namespace}")
+	public String namespace;
 
 	@Value("${kube.region}")
 	public String kubeRegion;

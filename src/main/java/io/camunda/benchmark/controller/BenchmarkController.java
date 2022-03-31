@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.camunda.benchmark.aws.EksService;
-import io.camunda.benchmark.config.GoogleSheetService;
-import io.camunda.benchmark.yml.YamlWriterService;
+import io.camunda.benchmark.service.EksService;
+import io.camunda.benchmark.service.ScenarioBuilderService;
+import io.camunda.benchmark.service.TemplatingService;
 import io.camunda.benchmark.zeebe.ZeebeStarterService;
 
 @RestController
@@ -23,10 +23,10 @@ import io.camunda.benchmark.zeebe.ZeebeStarterService;
 public class BenchmarkController {
 
 	@Autowired
-	private GoogleSheetService googleSheetService;
+	private ScenarioBuilderService scenarioBuilderService;
 
 	@Autowired
-	private YamlWriterService yamlWriterService;
+	private TemplatingService templatingService;
 	
 	@Autowired
 	private EksService eksService;
@@ -41,12 +41,14 @@ public class BenchmarkController {
 	
 	@PostConstruct
     private void run() throws IOException, GeneralSecurityException, InterruptedException {
-		googleSheetService.read();
-		Map<String, String> inputs = googleSheetService.getInputs(0);
+		scenarioBuilderService.BuildScenariiInputs();
+		for(int i=0;i<scenarioBuilderService.getNbScenarii();i++) {
+			Map<String, String> inputs = scenarioBuilderService.getInputs(i);
+			
+			templatingService.buildConfFiles(inputs);
+		}
 		
-		yamlWriterService.buildYamlFiles(inputs);
-		
-		if (inputs.get("target").equals("eks")) {
+		/*if (inputs.get("target").equals("eks")) {
 			eksService.createEksCluster();
 			String urlGrafana = eksService.getUrlGrafana();
 			zeebeStarterService.buildZeebe();
@@ -56,7 +58,7 @@ public class BenchmarkController {
 			zeebeStarterService.camundaCloudBenchmark();
 			//TODO: checks Grafana/prometheurs peaks and then report them in GoogleSheet
 			//TODO: when results drop down, tear down and move to next scenario
-		}
+		}*/
     }
 	
 }
