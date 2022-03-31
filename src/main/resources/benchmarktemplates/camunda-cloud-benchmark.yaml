@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camunda-cloud-benchmark
+  labels:
+    app: camunda-cloud-benchmark
+spec:
+  selector:
+    matchLabels:
+      app: camunda-cloud-benchmark
+  replicas: ${ccBenchReplicas}
+  template:
+    metadata:
+      labels:
+        app: camunda-cloud-benchmark
+    spec:
+      containers:
+      - name: camunda-cloud-benchmark
+        image: berndruecker/camunda-cloud-benchmark:main
+        imagePullPolicy: Always
+        env:
+          - name: JAVA_OPTIONS
+            value: >-
+              -Dzeebe.client.broker.gateway-address=falko-***REMOVED***-zeebe-gateway:26500
+              -Dzeebe.client.security.plaintext=true
+              -Dbenchmark.startPiPerSecond=${ccBenchPiPerSecond}
+              -Dbenchmark.maxBackpressurePercentage=${ccBenchBackPressure}
+              -Dbenchmark.taskCompletionDelay=10
+              -Dbenchmark.bpmnProcessId=***REMOVED***
+              -Dbenchmark.jobType=benchmark-task
+              -Dbenchmark.payloadPath=bpmn/typical_payload.json
+              -Dbenchmark.autoDeployProcess=false
+        resources:
+          limits:
+            cpu: 15
+            memory: 29Gi
+          requests:
+            cpu: 1
+            memory: 1Gi

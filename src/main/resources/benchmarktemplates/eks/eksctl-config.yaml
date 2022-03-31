@@ -1,0 +1,14 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: ${kubePrefix}-***REMOVED***-cluster
+  region: us-east-1
+  version: "1.21"
+managedNodeGroups:
+  - name: ${kubePrefix}-***REMOVED***-ng-worker
+    instanceType: ${instanceType}
+    instanceName: ${kubePrefix}-***REMOVED***-worker
+    desiredCap***REMOVED***ty: 1
+    minSize: 1
+    maxSize: ${nodeGroupMaxSize}
+    labels: { role: workers }
