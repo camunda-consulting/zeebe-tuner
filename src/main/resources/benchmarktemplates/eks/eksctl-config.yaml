@@ -2,13 +2,13 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
   name: ${namespace}-cluster
-  region: us-east-1
+  region: ${region}
   version: "1.21"
 managedNodeGroups:
   - name: ${namespace}-ng-worker
     instanceType: ${engine.machineType}
     instanceName: ${namespace}-worker
-    desiredCap***REMOVED***ty: 1
+    desiredCap***REMOVED***ty: 16
     minSize: 1
-    maxSize: 24
+    maxSize: 16
     labels: { role: workers }

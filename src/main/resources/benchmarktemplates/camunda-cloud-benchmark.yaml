@@ -25,15 +25,25 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.maxBackpressurePercentage=${loadGeneratorStarter.maxBackPressure}
-              -Dbenchmark.taskCompletionDelay=10
-              -Dbenchmark.bpmnProcessId=***REMOVED***
+              -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
+              -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
+              -Dbenchmark.bpmnResource=process.bpmn
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.payloadPath=bpmn/typical_payload.json
-              -Dbenchmark.autoDeployProcess=false
+              -Dbenchmark.autoDeployProcess=true
         resources:
           limits:
-            cpu: 15
-            memory: 29Gi
+            cpu: ${engine.vcpus}
+            memory: ${engine.ram}Gi
           requests:
             cpu: 1
             memory: 1Gi
+        volumeMounts:
+        - name: config
+          mountPath: /process.bpmn
+          subPath: ${loadGeneratorStarter.processModel}.bpmn
+      volumes:
+      - name: config
+        configMap:
+          name: process-cfgmap
+          defaultMode: 0744

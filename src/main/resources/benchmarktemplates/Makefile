@@ -1,9 +1,10 @@
 namespace ?= ${namespace}
 release ?= ${namespace}
 chart ?= camunda-cloud/ccsm-helm
+#chart ?= ~/git/camunda-cloud-helm/charts/ccsm-helm # TODO run `make deps` in ~/git/camunda-cloud-helm/
 
 .PHONY: all
-all: zeebe camunda-cloud-benchmark
+all: zeebe await-zeebe camunda-cloud-benchmark url-grafana
 
 .PHONY: zeebe
 zeebe:
@@ -33,6 +34,7 @@ worker:
 
 .PHONY: camunda-cloud-benchmark
 camunda-cloud-benchmark:
+	kubectl create configmap process-cfgmap --from-file=${loadGeneratorStarter.processModel}.bpmn -n $(namespace)
 	kubectl apply -n $(namespace) -f camunda-cloud-benchmark.yaml
 
 .PHONY: clean
@@ -55,6 +57,7 @@ clean-worker:
 .PHONY: clean-camunda-cloud-benchmark
 clean-camunda-cloud-benchmark:
 	-kubectl delete -n $(namespace) -f camunda-cloud-benchmark.yaml
+	-kubectl delete configmap process-cfgmap -n $(namespace)
 
 .PHONY: logs
 logs:
@@ -68,6 +71,10 @@ logs-starter:
 logs-worker:
 	kubectl logs -f -n $(namespace) -l app=worker --max-log-requests=$(shell grep replicas worker.yaml | cut -d ' ' -f 4)
 
+.PHONY: logs-camunda-cloud-benchmark
+logs-camunda-cloud-benchmark:
+	kubectl logs -f -n $(namespace) -l app=camunda-cloud-benchmark
+
 .PHONY: watch-zeebe
 watch-zeebe:
 	kubectl get pods -w -n $(namespace) -l app.kubernetes.io/name=zeebe
@@ -80,9 +87,17 @@ watch-starter:
 watch-worker:
 	kubectl get pods -w -n $(namespace) -l app=worker
 
+.PHONY: watch-camunda-cloud-benchmark
+watch-camunda-cloud-benchmark:
+	kubectl get pods -w -n $(namespace) -l app=camunda-cloud-benchmark
+
 .PHONY: port-zeebe
 port-zeebe:
 	kubectl port-forward svc/$(release)-zeebe-gateway 26500:26500 -n $(namespace)
+
+.PHONY: await-zeebe
+await-zeebe:
+	kubectl wait --for=condition=Ready pod -n $(namespace) -l app.kubernetes.io/name=zeebe --timeout=900s
 
 .PHONY: bpmn
 bpmn:
