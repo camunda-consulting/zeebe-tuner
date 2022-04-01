@@ -43,7 +43,7 @@ public class TemplatingService {
 				result.putAll(getSourcesAndTarget(file, scenarioName));
 			} else {
 				String path = file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(YAML_FOLDER));
-				result.put(path, path.replace(YAML_FOLDER, "testruns/"+scenarioName));
+				result.put(path, path.replace(YAML_FOLDER, "runner/testruns/"+scenarioName));
 			}
 		}
 		return result;

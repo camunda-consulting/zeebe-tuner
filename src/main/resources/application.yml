@@ -1,5 +1,7 @@
 server:
-  port : 8082  
+  port : 8082
+ccb:
+  bpmnfile: ***REMOVED***.bpmn
 google:
   sheetId: ***REMOVED***
   inputs: A1:BH
