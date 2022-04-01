@@ -4,4 +4,4 @@ metadata:
   name: process-cfgmap
 data:
   file-from-cfgmap: |
-    ${loadGeneratorStarter.bpmnProcessContent}
+    ${bpmnProcessFile}
