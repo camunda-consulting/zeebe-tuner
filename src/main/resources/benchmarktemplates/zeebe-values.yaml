@@ -112,7 +112,7 @@ zeebe-gateway:
     - name: ZEEBE_GATEWAY_MONITORING_ENABLED
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
-      value: "15"
+      value: "${gateway.vcpus}"
 
 # RetentionPolicy configuration to configure the elasticsearch index retention policies
 retentionPolicy:
@@ -139,7 +139,7 @@ tasklist:
 
 # ELASTIC
 elasticsearch:
-  enabled: true
+  enabled: false
   imageTag: ${elasticSearch.databaseVersion}
 
   replicas: ${elasticSearch.clusterSize}
@@ -160,7 +160,7 @@ elasticsearch:
       requests:
         storage: ${elasticSearch.storageCapacity}Gi
 
-  esJavaOpts: "-Xmx4g -Xms4g"
+  esJavaOpts: "-XX:MaxRAMPercentage=50.0"
 
 # PrometheusServiceMonitor configuration for the prometheus service monitor
 prometheusServiceMonitor:

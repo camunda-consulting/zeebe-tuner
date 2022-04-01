@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: process-cfgmap
 data:
-  file-from-cfgmap: |
+  process.bpmn: |
     ${loadGeneratorStarter.bpmnProcessContent}

@@ -21,6 +21,7 @@ clean-eks-cluster:
 	-kubectl delete -n default pvc -l app.kubernetes.io/name=grafana
 #	-kubectl delete pvc --all
 	eksctl delete cluster -f eksctl-config.yaml --wait
+	@echo "Please check the CloudFormation console if the cluster has really been deleted: https://$(region).console.aws.amazon.com/cloudformation/home?region=$(region)#/stacks?filteringStatus=active&filteringText=eksctl-$(clustername)-cluster&viewNested=true&hideStacks=false&stackId="
 
 .PHONY: urls
 urls:
