@@ -1,5 +1,7 @@
 server:
-  port : 8082  
+  port : 8082
+ccb:
+  bpmnfile: BACWAM.bpmn
 google:
   sheetId: 1y6EP1PcftdchClBFHIRbhHG510vWzS9sweJcaOWSItI
   inputs: A1:BH

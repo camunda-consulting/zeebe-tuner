@@ -1,5 +1,6 @@
 package io.camunda.benchmark.service;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -7,7 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -18,6 +21,9 @@ import io.camunda.benchmark.utils.GgSheetHeaderUtils;
 @Service
 public class ScenarioBuilderService {
 	
+	@Value("${ccb.bpmnfile}")
+	public String bpmnFile;
+	
 	@Autowired
 	private KubeConfig kubeConfig;
 
@@ -26,7 +32,12 @@ public class ScenarioBuilderService {
 	
 	private List<Map<String, String>> inputMaps = new ArrayList<>();
 	
+	
 	public void BuildScenariiInputs() throws IOException, GeneralSecurityException {
+		
+		FileInputStream bpmnFileIs = new FileInputStream(bpmnFile);
+	    String processFileContent = IOUtils.toString(bpmnFileIs, "UTF-8").replaceAll("(>[^<]*<)", "><");
+        
 		ValueRange response = googleSheetService.getValues();
 
 		List<List<Object>> values = response.getValues();
@@ -41,6 +52,7 @@ public class ScenarioBuilderService {
             	int idxCol=0;
             	if (idxRow>1) {
             		inputMaps.add(new HashMap<>());
+            		inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
             		inputMaps.get(idxRow-2).put("namespace", kubeConfig.namespace);
             		inputMaps.get(idxRow-2).put("region", kubeConfig.kubeRegion);
             	}
@@ -56,7 +68,10 @@ public class ScenarioBuilderService {
             		} else if (idxRow==1) {
             			headersMap.put(idxCol, GgSheetHeaderUtils.toCamelCase(value));
             		} else {
-            			inputMaps.get(idxRow-2).put(prefixHeadersMap.get(idxCol)+headersMap.get(idxCol), (String) cell);
+            			if (prefixHeadersMap.containsKey(idxCol)) {
+            				prefixHeader = prefixHeadersMap.get(idxCol);
+            			}
+            			inputMaps.get(idxRow-2).put(prefixHeader+headersMap.get(idxCol), (String) cell);
             		}
             		idxCol++;
             	}
