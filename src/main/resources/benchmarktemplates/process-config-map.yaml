@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: process-cfgmap
+data:
+  file-from-cfgmap: |
+    ${loadGeneratorStarter.bpmnProcessContent}
