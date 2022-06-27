@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: process-cfgmap
-data:
-  process.bpmn: |
-    ${bpmnProcessFile}
