@@ -8,7 +8,8 @@ echo "Running test for config: ${testScenarioName}"
 cd ${testScenarioName}
 
 # get the start time of the run
-startTime=$(date +%s)
+# Note that grafana expects timestamps as millis since epoch
+startTime=$(date +%s000)
 echo "start time = $(date -r $startTime)"
 
 # Start Zeebe
@@ -26,7 +27,7 @@ echo 'Finished. Cleaning up now...'
 make clean
 
 # get the endtime of the run
-endTime=$(date +%s)
+endTime=$(date +%s000)
 echo "end time = $(date -r $endTime)"
 
 # Generate Dashboard Links
