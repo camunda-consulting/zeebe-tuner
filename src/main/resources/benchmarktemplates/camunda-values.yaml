@@ -21,7 +21,7 @@ zeebe:
   replicationFactor: "${engine.replicationFactor}"
   cpuThreadCount: ${engine.cpuThreadPoolSizeNode}
   ioThreadCount: ${engine.ioThreadPoolSizeNode}
-  persistenceType: memory
+  persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ssd
   env:
@@ -32,6 +32,9 @@ zeebe:
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
+  image:
+    repository: gcr.io/camunda-researchanddevelopment/roman-zeebe
+    tag: roman.1
   replicas: ${gateway.replicas}
   resources:
     limits:
@@ -44,7 +47,9 @@ zeebe-gateway:
     - name: ZEEBE_GATEWAY_MONITORING_ENABLED
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
-      value: "${gateway.vcpus}"
+      value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_EXPERIMENTAL_MAXJOBSTOACTIVATEPERPARTITION
+      value: "${gateway.maxJobsToActivatePartition}"
 operate:
   enabled: false
 tasklist:
