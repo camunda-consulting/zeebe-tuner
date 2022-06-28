@@ -14,7 +14,7 @@ make
 ## wait for the starter job to be finished
 echo 'Waiting for completion of benchmark run...'
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
-sleep 20m
+sleep 1200
 
 #############
 ## Cleanup
