@@ -8,11 +8,11 @@ all: camunda await-zeebe deploy-models benchmark
 .PHONY: clean
 clean: clean-benchmark clean-camunda
 
-include ~/projects/camunda-8-helm-profiles/include/camunda.mk
+include ../../../../camunda-8-helm-profiles/include/camunda.mk
 
 .PHONY: deploy-models
 deploy-models:
-	kubectl create configmap models --from-file=process-8-service-tasks.bpmn   -n $(namespace)
+	kubectl create configmap models --from-file=${loadGeneratorStarter.processModel}.bpmn   -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
 	kubectl delete configmap models                                       -n $(namespace)
