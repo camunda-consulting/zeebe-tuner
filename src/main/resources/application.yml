@@ -9,7 +9,7 @@ google:
     clientid: 202746300897-c92mh622ma8f1tolt1f7u7brqn8d4c2u.apps.googleusercontent.com
     clientsecret: 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
     callbackPort: 8888
-    username: paul.lungu@camunda.com
+    username: falko.menge@camunda.com
 kube:
   namespace: camunda
   region: us-east-1
