@@ -20,10 +20,10 @@ import io.camunda.benchmark.utils.GgSheetHeaderUtils;
 
 @Service
 public class ScenarioBuilderService {
-	
-	@Value("${ccb.bpmnfile}")
-	public String bpmnFile;
-	
+
+//	@Value("${ccb.bpmnfile}")
+//	public String bpmnFile;
+
 	@Autowired
 	private KubeConfig kubeConfig;
 
@@ -35,8 +35,8 @@ public class ScenarioBuilderService {
 	
 	public void BuildScenariiInputs() throws IOException, GeneralSecurityException {
 		
-		FileInputStream bpmnFileIs = new FileInputStream(bpmnFile);
-	    String processFileContent = IOUtils.toString(bpmnFileIs, "UTF-8").replaceAll("(>[^<]*<)", "><");
+//		FileInputStream bpmnFileIs = new FileInputStream(bpmnFile);
+//	    String processFileContent = IOUtils.toString(bpmnFileIs, "UTF-8").replaceAll("(>[^<]*<)", "><");
         
 		ValueRange response = googleSheetService.getValues();
 
@@ -52,7 +52,7 @@ public class ScenarioBuilderService {
             	int idxCol=0;
             	if (idxRow>1) {
             		inputMaps.add(new HashMap<>());
-            		inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
+//            		inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
             		inputMaps.get(idxRow-2).put("namespace", kubeConfig.namespace);
             		inputMaps.get(idxRow-2).put("region", kubeConfig.kubeRegion);
             	}

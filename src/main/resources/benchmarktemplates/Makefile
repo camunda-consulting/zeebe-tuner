@@ -8,7 +8,7 @@ all: camunda await-zeebe deploy-models benchmark
 .PHONY: clean
 clean: clean-benchmark clean-camunda
 
-include ../../../../../camunda-8-helm-profiles/include/camunda.mk
+include ~/projects/camunda-8-helm-profiles/include/camunda.mk
 
 .PHONY: deploy-models
 deploy-models:

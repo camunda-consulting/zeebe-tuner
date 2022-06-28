@@ -11,18 +11,18 @@ global:
 zeebe:
   resources:
     limits:
-      cpu: 5
-      memory: 18Gi
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
     requests:
-      cpu: 5
-      memory: 18Gi
-  clusterSize: "126"
-  partitionCount: "210"
-  replicationFactor: "3"
-  cpuThreadCount: 5
-  ioThreadCount: 1
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
+  clusterSize: "${engine.clusterSize}"
+  partitionCount: "${engine.partitions}"
+  replicationFactor: "${engine.replicationFactor}"
+  cpuThreadCount: ${engine.cpuThreadPoolSizeNode}
+  ioThreadCount: ${engine.ioThreadPoolSizeNode}
   persistenceType: memory
-  pvcSize: 128Gi
+  pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ssd
   env:
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
@@ -32,19 +32,19 @@ zeebe:
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
-  replicas: 6
+  replicas: ${gateway.replicas}
   resources:
     limits:
-      cpu: 15
-      memory: 27Gi
+      cpu: ${gateway.vcpus}
+      memory: ${gateway.ram}Gi
     requests:
-      cpu: 15
-      memory: 27Gi
+      cpu: ${gateway.vcpus}
+      memory: ${gateway.ram}Gi
   env:
     - name: ZEEBE_GATEWAY_MONITORING_ENABLED
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
-      value: "14"
+      value: "${gateway.vcpus}"
 operate:
   enabled: false
 tasklist:
