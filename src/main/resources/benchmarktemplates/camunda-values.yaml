@@ -28,7 +28,7 @@ zeebe:
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
-      value: "true"
+      value: "${engine.disableExplicitRaftFlush}"
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
