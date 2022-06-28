@@ -18,18 +18,15 @@ deploy-models:
 	kubectl delete configmap models                                       -n $(namespace)
 	kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
 
-.PHONY: clean-deploy-models
-clean-deploy-models:
-	kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
-	kubectl delete configmap models                                       -n $(namespace)
-
 .PHONY: benchmark
-benchmark:
-	kubectl apply -n $(namespace) -f benchmark.yaml
+benchmark: namespace
+	kubectl create configmap payload --from-file=payload.json -n $(namespace)
+	kubectl apply -f benchmark.yaml                           -n $(namespace)
 
 .PHONY: clean-benchmark
 clean-benchmark:
-	-kubectl delete -n $(namespace) -f benchmark.yaml
+	-kubectl delete -f benchmark.yaml -n $(namespace)
+	-kubectl delete configmap payload -n $(namespace)
 
 .PHONY: await-benchmark
 await-benchmark:
