@@ -5,11 +5,12 @@ testScenarioName=${1:-'example'}
 echo "###############################################"
 echo "Running test for config: ${testScenarioName}"
 
-cd testruns/${testScenarioName}
+cd ${testScenarioName}
 
 # Start Zeebe
 echo 'Starting Zeebe...'
-make zeebe await-zeebe
+#make zeebe await-zeebe
+make
 
 #make port-zeebe &
 #sleep 3
@@ -22,8 +23,8 @@ while [ "$(kubectl get statefulset ${testScenarioName}-zeebe -o json -n ${namesp
 # produced: error: error executing template "{{if eq .status.readyReplicas .status.replicas}}true{{end}}": template: output:1:5: executing "output" at <eq .status.readyReplicas .status.replicas>: error calling eq: invalid type for comparison
 
 # Start Starter
-echo 'Starting Starter and Worker...'
-make starter worker
+#echo 'Starting Starter and Worker...'
+#make starter worker
 
 ## wait for the starter job to be finished
 echo 'Waiting for completion of benchmark run...'
