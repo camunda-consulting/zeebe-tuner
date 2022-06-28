@@ -39,3 +39,4 @@ out/
 ### VS Code ###
 .vscode/
 runner/testruns/**
+runner/testruns-done/**
