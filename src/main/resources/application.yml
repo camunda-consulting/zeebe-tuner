@@ -4,12 +4,12 @@ ccb:
   bpmnfile: ***REMOVED***.bpmn
 google:
   sheetId: ***REMOVED***
-  inputs: A1:BH
+  inputs: A1:BI
   oauth:
-    clientid: XXX.apps.googleusercontent.com
+    clientid: ***REMOVED***
     clientsecret: ***REMOVED***
     callbackPort: 8888
-    username: XXX@camunda.com
+    username: ***REMOVED***
 kube:
-  namespace: falko-***REMOVED***
+  namespace: camunda
   region: us-east-1

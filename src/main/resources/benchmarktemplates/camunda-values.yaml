@@ -11,40 +11,67 @@ global:
 zeebe:
   resources:
     limits:
-      cpu: 5
-      memory: 18Gi
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
     requests:
-      cpu: 5
-      memory: 18Gi
-  clusterSize: "126"
-  partitionCount: "210"
-  replicationFactor: "3"
-  cpuThreadCount: 5
-  ioThreadCount: 1
-  persistenceType: memory
-  pvcSize: 128Gi
+      cpu: ${engine.vcpus}
+      memory: ${engine.ram}Gi
+  clusterSize: "${engine.clusterSize}"
+  partitionCount: "${engine.partitions}"
+  replicationFactor: "${engine.replicationFactor}"
+  cpuThreadCount: ${engine.cpuThreadPoolSizeNode}
+  ioThreadCount: ${engine.ioThreadPoolSizeNode}
+  persistenceType: ${engine.diskType}
+  pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ssd
   env:
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
+      value: "${engine.disableExplicitRaftFlush}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
+      value: "${engine.backPressureUseWindowed}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
+      value: "${engine.backPressureAlgorithm}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
+      value: "${engine.vegasAlpha}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
+      value: "${engine.vegasBeta}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
+      value: "${engine.minLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
+      value: "${engine.rttTolerance}"
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
-  replicas: 6
+  image:
+    repository: gcr.io/camunda-researchanddevelopment/roman-zeebe
+    tag: roman.3
+  replicas: ${gateway.replicas}
   resources:
     limits:
-      cpu: 15
-      memory: 27Gi
+      cpu: ${gateway.vcpus}
+      memory: ${gateway.ram}Gi
     requests:
-      cpu: 15
-      memory: 27Gi
+      cpu: ${gateway.vcpus}
+      memory: ${gateway.ram}Gi
   env:
     - name: ZEEBE_GATEWAY_MONITORING_ENABLED
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
-      value: "14"
+      value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_EXPERIMENTAL_MAXJOBSTOACTIVATEPERPARTITION
+      value: "${gateway.maxJobsToActivatePartition}"
+    - name: ZEEBE_GATEWAY_EXPERIMENTAL_MAXBROKERREQUESTSPERACTIVATEJOBSREQUEST
+      value: "${gateway.maxBrokerReqActivateJobs}"
 operate:
   enabled: false
 tasklist:
