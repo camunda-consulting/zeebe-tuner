@@ -29,10 +29,26 @@ zeebe:
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
+      value: "${engine.backPressureUseWindowed}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
       value: "${engine.backPressureAlgorithm}"
     - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
       value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
+      value: "${engine.vegasAlpha}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
+      value: "${engine.vegasBeta}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
+      value: "${engine.minLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
+      value: "${engine.rttTolerance}"
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
