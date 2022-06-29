@@ -29,6 +29,10 @@ zeebe:
       value: "true"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
+      value: "${engine.backPressureAlgorithm}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
+      value: "${engine.initialLimit}"
   affinity:
     podAntiAffinity: {}
 zeebe-gateway:
