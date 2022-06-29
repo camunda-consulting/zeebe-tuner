@@ -71,7 +71,7 @@ zeebe-gateway:
     - name: ZEEBE_GATEWAY_EXPERIMENTAL_MAXJOBSTOACTIVATEPERPARTITION
       value: "${gateway.maxJobsToActivatePartition}"
     - name: ZEEBE_GATEWAY_EXPERIMENTAL_MAXBROKERREQUESTSPERACTIVATEJOBSREQUEST
-      value: "${gateway.maxBrokerRequestsActivateJobs}"
+      value: "${gateway.maxBrokerReqActivateJobs}"
 operate:
   enabled: false
 tasklist:

@@ -38,6 +38,7 @@ spec:
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.startRateAdjustmentStrategy}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
+              -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
         resources:
           limits:
             cpu: ${engine.vcpus}
