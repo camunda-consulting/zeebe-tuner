@@ -36,8 +36,8 @@ spec:
               -Dbenchmark.payloadPath=payload.json
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
-              -Dbenchmark.startRateAdjustmentStrategy=backpressure
-              -Dbenchmark.startPiIncreaseFactor=0.4
+              -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.startRateAdjustmentStrategy}
+              -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
         resources:
           limits:
             cpu: ${engine.vcpus}
