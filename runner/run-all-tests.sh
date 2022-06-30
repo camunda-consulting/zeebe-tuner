@@ -1,11 +1,34 @@
 #!/bin/bash
-mkdir testruns-done
-for filename in testruns/*/;
+
+TESTRUNS_DONE_DIR="testruns-done"
+
+usage()
+{
+  echo ""
+  echo "Usage: $0 <options>"
+  echo "  -o <path> where to save a copy of testruns and csv file. default is '$TESTRUNS_DONE_DIR'"
+  echo "  -h print this help message"
+  echo ""
+}
+
+run()
+{
+  for filename in testruns/*/;
+  do
+    testScenarioName=$(basename "$filename")
+	  ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
+  done
+}
+
+while getopts "ho:" opt
 do
-#    testScenarioName=$(basename "$filename")
-    echo "$filename";
-#	  mv $filename "testruns/$testScenarioName.yaml"
-	  ./run-single-test.sh "$filename"
-#    mv "testruns/$testScenarioName.yaml" testruns/done/
-    mv "$filename" testruns-done/
+  case "$opt" in
+     (h) usage; exit 0;;
+     (o) TESTRUNS_DONE_DIR=${OPTARG};;
+     (*) usage; exit 0;;
+  esac
 done
+
+run;
+exit 0
+
