@@ -54,7 +54,7 @@ zeebe:
 zeebe-gateway:
   image:
     repository: gcr.io/camunda-researchanddevelopment/roman-zeebe
-    tag: roman.3
+    tag: ${engine.engineVersion}
   replicas: ${gateway.replicas}
   resources:
     limits:
