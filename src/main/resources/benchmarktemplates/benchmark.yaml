@@ -26,7 +26,7 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.worker.max-jobs-active=2000
+              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.maxBackpressurePercentage=1.0
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
