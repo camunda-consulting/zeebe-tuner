@@ -40,3 +40,6 @@ out/
 .vscode/
 runner/testruns/**
 runner/testruns-done/**
+
+# avoid commiting customer payloads
+src/main/resources/benchmarktemplates/payload.json
