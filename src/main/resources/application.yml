@@ -4,7 +4,7 @@ ccb:
   bpmnfile: ***REMOVED***.bpmn
 google:
   sheetId: ***REMOVED***
-  inputs: A1:BI
+  inputs: A1:BR
   oauth:
     clientid: ***REMOVED***
     clientsecret: ***REMOVED***
