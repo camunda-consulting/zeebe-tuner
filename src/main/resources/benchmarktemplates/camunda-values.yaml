@@ -53,7 +53,7 @@ zeebe:
     podAntiAffinity: {}
 zeebe-gateway:
   image:
-    repository: gcr.io/camunda-researchanddevelopment/roman-zeebe
+    repository: a11513/zeebe-rd
     tag: ${engine.engineVersion}
   replicas: ${gateway.replicas}
   resources:
