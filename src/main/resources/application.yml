@@ -3,13 +3,13 @@ server:
 ccb:
   bpmnfile: ***REMOVED***.bpmn
 google:
-  sheetId: ***REMOVED***
+  sheetId: <YOUR_GOOGLE_SHEET_ID>
   inputs: A1:BR
   oauth:
-    clientid: ***REMOVED***
-    clientsecret: ***REMOVED***
+    clientid: <YOUR_GOOGLE_CLIENT_ID>.apps.googleusercontent.com
+    clientsecret: <YOUR_GOOGLE_CLIENT_SECRET>
     callbackPort: 8888
-    username: ***REMOVED***
+    username: <YOUR_GOOGLE_USERNAME>
 kube:
   namespace: camunda
   region: us-east-1
