@@ -20,7 +20,7 @@ public class ZeebeStarterService {
 		ProcessUtils.execBlocking("helm repo add camunda-cloud https://helm.camunda.io");
 		ProcessUtils.execBlocking("helm repo update camunda-cloud");
 		ProcessUtils.execBlocking("helm search repo camunda-cloud/ccsm-helm");
-		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.namespace+" "+kubeConfig.namespace+"-***REMOVED*** camunda-cloud/ccsm-helm -f testruns/zeebe-values.yaml --skip-crds");
+		ProcessUtils.execBlocking("helm install --namespace "+kubeConfig.namespace+" "+kubeConfig.namespace+" camunda-cloud/ccsm-helm -f testruns/zeebe-values.yaml --skip-crds");
 	}
 	
 	public boolean watchZeebe() throws IOException, InterruptedException {
@@ -35,7 +35,7 @@ public class ZeebeStarterService {
 	}
 	
 	public void exposeZeebe() throws IOException, InterruptedException {
-		ProcessUtils.execBlocking("kubectl port-forward svc/"+kubeConfig.namespace+"-***REMOVED***-zeebe-gateway 26500:26500 -n "+kubeConfig.namespace);
+		ProcessUtils.execBlocking("kubectl port-forward svc/"+kubeConfig.namespace+"-zeebe-gateway 26500:26500 -n "+kubeConfig.namespace);
 	}
 	
 	public void deployProcess() throws IOException, InterruptedException {
