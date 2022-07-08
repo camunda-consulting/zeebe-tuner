@@ -10,6 +10,6 @@
 - Added parameters for benchmark tool: `startPiIncreaseFactor` and `startRateAdjustmentStrategy`. Set `startRateAdjustmentStrategy=none` for long tests.
 - Able to configure Disable Explicit Raft Flush Column from spreadsheet. 
 - Grafana urls are printed to CSV
-- Able to control payload used by repl***REMOVED***ng `payload.json` in the benchmarktemplates directory
+- Able to control payload used by replacing `payload.json` in the benchmarktemplates directory
 - Fixed so `sleep` command works on BSD operating systems (including mac osx)
 - First version of the project

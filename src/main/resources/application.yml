@@ -1,7 +1,7 @@
 server:
   port : 8082
 ccb:
-  bpmnfile: ***REMOVED***.bpmn
+  bpmnfile: EightTasks.bpmn
 google:
   sheetId: <YOUR_GOOGLE_SHEET_ID>
   inputs: A1:BR
