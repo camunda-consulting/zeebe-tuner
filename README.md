@@ -1,6 +1,6 @@
 # Zeebe Tuner
 
-A set of tools that can run series of benchmarks on a Kubernetes cluster based on configuration parameters from a spreadsheet.
+A set of tools that can run series of benchmarks on a Kubernetes cluster based on configuration parameters from a spreadsheet. If you don't have a Kubernetes cluster yet, have a look at [Camunda 8 Kubernetes Installation](https://github.com/camunda-community-hub/camunda8-greenfield-installation).
 
 ## Initial setup
 
