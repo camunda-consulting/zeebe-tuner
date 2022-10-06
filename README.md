@@ -6,7 +6,7 @@ A set of tools that can run series of benchmarks on a Kubernetes cluster based o
 
 0. Clone the following GitHub projects into the same parrent folder:
     * https://github.com/camunda-consulting/zeebe-tuner (this project)
-    * https://github.com/falko/camunda-8-helm-profiles (dependencies)
+    * https://github.com/camunda-community-hub/camunda-8-helm-profiles (dependencies)
 1. Create a copy of the [Zeebe Benchmark Result Template](https://docs.google.com/spreadsheets/d/1YZFp5uDd4783qTr7fvQIyXzoz8o01GLadurXLXU9sMc).
    This is were you will plan your test runs.
    (see also: [Camunda Blog: Zeebe Performance Tuning tool](https://camunda.com/blog/2020/11/zeebe-performance-tool/))
