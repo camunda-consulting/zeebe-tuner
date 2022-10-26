@@ -73,6 +73,8 @@ prometheusServiceMonitor:
   enabled: true
 identity:
   enabled: false
+  keycloak:
+    enabled: false
 elasticsearch:
   enabled: ${elasticSearch.enabled}
   replicas: ${elasticSearch.clusterSize}
