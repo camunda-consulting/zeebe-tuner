@@ -7,7 +7,7 @@ global:
   image:
     tag: ${engine.engineVersion}
   elasticsearch:
-    disableExporter: true
+    disableExporter: false
 zeebe:
   resources:
     limits:
@@ -63,16 +63,8 @@ zeebe-gateway:
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
       value: "${gateway.numberOfThreads}"
-operate:
-  enabled: false
-tasklist:
-  enabled: false
-optimize:
-  enabled: false
 prometheusServiceMonitor:
   enabled: true
-identity:
-  enabled: false
 elasticsearch:
   enabled: ${elasticSearch.enabled}
   replicas: ${elasticSearch.clusterSize}

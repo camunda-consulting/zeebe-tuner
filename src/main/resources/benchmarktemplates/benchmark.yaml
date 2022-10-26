@@ -32,11 +32,11 @@ spec:
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.jobType=benchmark-task
-              -Dbenchmark.multipleJobTypes=${jobWorker.numberOfDifferentJobTypes}
+              -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.payloadPath=payload.json
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
-              -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.startRateAdjustmentStrategy}
+              -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
               -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
         resources:
