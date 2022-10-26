@@ -12,11 +12,11 @@ A set of tools that can run series of benchmarks on a Kubernetes cluster based o
    (see also: [Camunda Blog: Zeebe Performance Tuning tool](https://camunda.com/blog/2020/11/zeebe-performance-tool/))
 2. Enter the id of your spreadsheet in [application.yml](src/main/resources/application.yml) as `google.sheetId` and ensure that `google.inputs` matches your sheet's parameter range.
 3. Enter your Google username in [application.yml](src/main/resources/application.yml) as `google.oauth.username`. This will be the user whom's data are accessed, e.g. the spreadsheet above.
-4. Create a Google Cloud project with the Sheets API enabled. To create a project and enable an API, refer to [Create a project and enable the API](https://developers.google.com/workspace/guides/create-project).
-5. Create credentials for a desktop application, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials).
+4. [Create a Google Cloud project](https://developers.google.com/workspace/guides/create-project).
+5. Create OAuth client credentials for a desktop application, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials).
 6. Enter the app credentials in [application.yml](src/main/resources/application.yml) as `google.oauth.clientid` and `google.oauth.clientsecret`.
-7. Start the Spring Boot application for the first time and it will print an authentication link in the console
-   that you have to open in your browser.
+7. Start the Spring Boot application for the first time using your IDE or `./gradlew bootRun` and it will print an authentication link in the console that you have to open in your browser.
+8. After that you will get an error message in the console containing another link to enable the Google Sheets API for your project. Click on the and you're all set.
 
 ## Running a series of brenchmarks against a Kubernetes cluster
 0. Enter the configuration parameters for the benchmarks you want to schedule in your copy of the [Zeebe Benchmark Result Template](https://docs.google.com/spreadsheets/d/1YZFp5uDd4783qTr7fvQIyXzoz8o01GLadurXLXU9sMc).
