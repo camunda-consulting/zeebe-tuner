@@ -21,20 +21,20 @@ deploy-models:
 
 .PHONY: deploy-chaos
 deploy-chaos:
-	ifeq ($(shell test ${engine.interRegionLatency} -gt 0; echo $$?),0)
-	    kubectl apply -f chaos-network-brokers.yaml -n default
-	endif
-	ifeq ($(shell test ${gateway.interRegionLatency} -gt 0; echo $$?),0)
-	    kubectl apply -f chaos-network-gateway.yaml -n default
-	endif
+	@if [ ${engine.interRegionLatency} > 0 ]; then\
+	    kubectl apply -f chaos-network-brokers.yaml -n default;\
+	fi
+	@if [ ${gateway.interRegionLatency} > 0 ]; then\
+	    kubectl apply -f chaos-network-gateway.yaml -n default;\
+	fi
 	
 
 .PHONY: rebalance-partitions
 rebalance-partitions:
-	kubectl port-forward --namespace camunda $(kubectl get pod --namespace camunda --selector="app=camunda-platform,app.kubernetes.io/component=zeebe-gateway,app.kubernetes.io/instance=camunda,app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=zeebe-gateway,app.kubernetes.io/part-of=camunda-platform" --output jsonpath='{.items[0].metadata.name}') 5432:9600 &
-	curl -X POST http://localhost:5432/actuator/rebalance/
+	kubectl port-forward --namespace camunda $$(kubectl get pod --namespace camunda --selector="app=camunda-platform,app.kubernetes.io/component=zeebe-gateway,app.kubernetes.io/instance=camunda,app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=zeebe-gateway,app.kubernetes.io/part-of=camunda-platform" --output jsonpath='{.items[0].metadata.name}') 5433:9600 > pid.txt &
+	curl -X POST http://localhost:5433/actuator/rebalance/
 	sleep 10
-	pkill -f "port-forward"
+	kill $$(ps aux | grep 'kubectl' | awk '{print $$1}')
 
 .PHONY: benchmark
 benchmark: namespace

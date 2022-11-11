@@ -2,7 +2,7 @@ kind: NetworkChaos
 apiVersion: chaos-mesh.org/v1alpha1
 metadata:
   namespace: default
-  name: chaos-network
+  name: chaos-network-brokers
 spec:
   selector:
     namespaces:

@@ -2,15 +2,13 @@ kind: NetworkChaos
 apiVersion: chaos-mesh.org/v1alpha1
 metadata:
   namespace: default
-  name: chaos-network
+  name: chaos-network-gateway
 spec:
   selector:
     namespaces:
       - camunda
     labelSelectors:
-      app.kubernetes.io/component: zeebe-broker
-    podPhaseSelectors:
-      - Running
+      app.kubernetes.io/component: zeebe-gateway
   mode: all
   action: delay
   delay:
