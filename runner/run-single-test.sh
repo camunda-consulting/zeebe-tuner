@@ -21,7 +21,7 @@ echo 'Starting Zeebe...'
 # wait for the starter job to be finished
 echo 'Waiting for completion of benchmark run...'
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
-sleep 1800
+sleep 1200
 
 # cleanup
 echo 'Finished. Cleaning up now...'
