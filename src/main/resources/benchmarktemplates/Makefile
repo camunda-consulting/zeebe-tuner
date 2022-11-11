@@ -1,9 +1,10 @@
 namespace ?= camunda
 release ?= camunda
 chart ?= camunda/camunda-platform
+chartValues ?= "camunda-values.yaml"
 
 .PHONY: all
-all: camunda await-zeebe deploy-models benchmark 
+all: camunda await-zeebe deploy-models rebalance-partitions deploy-chaos benchmark 
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
@@ -12,11 +13,28 @@ include ../../../../camunda-8-helm-profiles/include/camunda.mk
 
 .PHONY: deploy-models
 deploy-models:
-	kubectl create configmap models --from-file=${loadGeneratorStarter.processModel}.bpmn   -n $(namespace)
+	kubectl create configmap models --from-file=singleProcess.bpmn   -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
 	kubectl delete configmap models                                       -n $(namespace)
 	kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
+
+.PHONY: deploy-chaos
+deploy-chaos:
+	ifeq ($(shell test ${engine.interRegionLatency} -gt 0; echo $$?),0)
+	    kubectl apply -f chaos-network-brokers.yaml -n default
+	endif
+	ifeq ($(shell test ${gateway.interRegionLatency} -gt 0; echo $$?),0)
+	    kubectl apply -f chaos-network-gateway.yaml -n default
+	endif
+	
+
+.PHONY: rebalance-partitions
+rebalance-partitions:
+	kubectl port-forward --namespace camunda $(kubectl get pod --namespace camunda --selector="app=camunda-platform,app.kubernetes.io/component=zeebe-gateway,app.kubernetes.io/instance=camunda,app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=zeebe-gateway,app.kubernetes.io/part-of=camunda-platform" --output jsonpath='{.items[0].metadata.name}') 5432:9600 &
+	curl -X POST http://localhost:5432/actuator/rebalance/
+	sleep 10
+	pkill -f "port-forward"
 
 .PHONY: benchmark
 benchmark: namespace

@@ -17,11 +17,28 @@ spec:
     spec:
       containers:
       - name: benchmark
-        image: upgradingdave/camunda-8-benchmark:main
+        image: gcr.io/camunda-researchanddevelopment/falko-camunda-8-benchmark:0.0.1-SNAPSHOT
         imagePullPolicy: Always
         env:
+          - name: ZEEBE_CLIENT_BROKER_GATEWAY_ADDRESS
+            value: camunda-zeebe-gateway:26500
+          - name: ZEEBE_CLIENT_SECURITY_PLAINTEXT
+            value: "true"
+          #- name: BENCHMARK_MESSAGESCENARIO
+          #  value: "/scenario/msgscenario.json"
+          - name: BENCHMARK_MESSAGESSCENARIOSPERSECOND
+            value: "${loadGeneratorStarter.startThroughput}"
+          - name: BENCHMARK_DELAYBETWEENMESSAGES
+            value: "1"
+          - name: BENCHMARK_MESSAGESLOADDURATION
+            value: "3000000"
+          - name: BENCHMARK_STARTWORKERS
+            value: "false"
+          - name: BENCHMARK_TASKCOMPLETIONDELAY
+            value: "1"
           - name: JAVA_OPTIONS
             value: >-
+              -Dbenchmark.startProcesses=false
               -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
@@ -33,7 +50,9 @@ spec:
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
-              -Dbenchmark.payloadPath=payload.json
+              -Dbenchmark.messageScenario=msg-scenario.json
+              -Dbenchmark.delayBetweenMessages=10
+              -Dbenchmark.messagesLoadDuration=6000000
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}

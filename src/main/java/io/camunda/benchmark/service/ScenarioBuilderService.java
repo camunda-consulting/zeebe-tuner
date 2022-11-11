@@ -75,7 +75,25 @@ public class ScenarioBuilderService {
             		}
             		idxCol++;
             	}
-                idxRow++;
+            	if (idxRow>1) {
+              	String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
+              	try {
+                  int nbNodes = Integer.valueOf(nbNodesStr);
+                  String evenBrokers="";
+                  String oddBrokers="";
+                  for(int i=0;i<nbNodes;i++) {
+                    if (i%2==0) {
+                      evenBrokers+="          - camunda-zeebe-"+i+"\n";
+                    } else {
+                      oddBrokers+="          - camunda-zeebe-"+i+"\n";
+                    }
+                  }
+                  inputMaps.get(idxRow-2).put("evenBrokers",evenBrokers);
+                  inputMaps.get(idxRow-2).put("oddBrokers",oddBrokers);
+                } catch (NumberFormatException nfe) {
+                }
+            	}
+              idxRow++;
             }
         }
 	}

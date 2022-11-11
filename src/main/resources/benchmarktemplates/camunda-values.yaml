@@ -24,31 +24,33 @@ zeebe:
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ssd
+  extraInitContainers:
+    - name: init-exporter-job-worker
+      image: busybox:1.35
+      command: ['/bin/sh', '-c']
+      args: ['wget https://github.com/camunda-community-hub/zeebe-embedded-job-worker/releases/download/0.0.7/zeebe-embedded-job-worker-0.0.7.zip -O /exporters/jobworker.zip && unzip /exporters/jobworker.zip && mv target/nexus-staging/deferred/org/camunda/community/extension/zeebe/exporter/jobworker/zeebe-embedded-job-worker/0.0.7/zeebe-embedded-job-worker-0.0.7.jar /exporters/zeebe-embedded-job-worker-0.0.7.jar; ls -al exporters']
+      volumeMounts:
+      - name: exporters
+        mountPath: /exporters/
   env:
+    - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_JARPATH
+      value: "exporters/zeebe-embedded-job-worker-0.0.7.jar"
+    - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_CLASSNAME
+      value: org.camunda.community.extension.zeebe.exporter.jobworker.EmbeddedJobWorker
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
+      value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
-      value: "true"
-    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
-      value: "${engine.bpUseWindowed}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
-      value: "${engine.backPressureAlgorithm}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
-      value: "${engine.vegasAlpha}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
-      value: "${engine.vegasBeta}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
-      value: "${engine.minLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
-      value: "${engine.rttTolerance}"
+      value: "${engine.backpressure}"
+    - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
+      value: "${engine.networkCompression}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
+      value: "${engine.maxAppendsPerFollower}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
+      value: "${engine.maxAppendBatchSize}KB"
 zeebe-gateway:
   replicas: ${gateway.replicas}
   resources:
@@ -63,6 +65,8 @@ zeebe-gateway:
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
       value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
+      value: "${engine.networkCompression}"
 operate:
   enabled: false
 tasklist:

@@ -1,0 +1,27 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: chaos-network
+spec:
+  selector:
+    namespaces:
+      - camunda
+    pods:
+      camunda:
+${evenBrokers}
+  mode: all
+  action: delay
+  delay:
+    latency: ${engine.interRegionLatency}ms
+    correlation: '100'
+    jitter: '0'
+  direction: both
+  target:
+    selector:
+      namespaces:
+        - camunda
+      pods:
+        camunda:
+${oddBrokers}
+    mode: all
