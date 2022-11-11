@@ -76,6 +76,13 @@ public class ScenarioBuilderService {
             		idxCol++;
             	}
             	if (idxRow>1) {
+            	  String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
+            	  try {
+            	    int vcpuRequest = Integer.valueOf(vcpu)-1;
+            	    inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpuRequest));
+            	  } catch (NumberFormatException nfe) {
+            	    inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
+                }
               	String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
               	try {
                   int nbNodes = Integer.valueOf(nbNodesStr);
