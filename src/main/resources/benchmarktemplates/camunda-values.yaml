@@ -14,7 +14,7 @@ zeebe:
       cpu: ${engine.vcpus}
       memory: ${engine.ram}Gi
     requests:
-      cpu: ${engine.vcpus}
+      cpu: ${engine.vcpuRequest}
       memory: ${engine.ram}Gi
   clusterSize: "${engine.clusterSize}"
   partitionCount: "${engine.partitions}"

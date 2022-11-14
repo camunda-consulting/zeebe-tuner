@@ -22,10 +22,10 @@ deploy-models:
 .PHONY: deploy-chaos
 deploy-chaos:
 	@if [ ${engine.interRegionLatency} > 0 ]; then\
-	    kubectl apply -f chaos-network-brokers.yaml -n default;\
+	    kubectl apply -f chaos-network-brokers.yaml -n $(namespace);\
 	fi
 	@if [ ${gateway.interRegionLatency} > 0 ]; then\
-	    kubectl apply -f chaos-network-gateway.yaml -n default;\
+	    kubectl apply -f chaos-network-gateway.yaml -n $(namespace);\
 	fi
 	
 

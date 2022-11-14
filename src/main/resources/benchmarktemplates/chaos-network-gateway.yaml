@@ -1,7 +1,7 @@
 kind: NetworkChaos
 apiVersion: chaos-mesh.org/v1alpha1
 metadata:
-  namespace: default
+  namespace: camunda
   name: chaos-network-gateway
 spec:
   selector:
