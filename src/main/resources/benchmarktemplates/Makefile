@@ -4,7 +4,7 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 .PHONY: all
-all: camunda await-zeebe deploy-models rebalance-partitions deploy-chaos benchmark 
+all: camunda await-zeebe deploy-models rebalance-partitions ${chaosTarget} benchmark 
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
@@ -19,15 +19,13 @@ deploy-models:
 	kubectl delete configmap models                                       -n $(namespace)
 	kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
 
-.PHONY: deploy-chaos
-deploy-chaos:
-	@if [ ${engine.interRegionLatency} > 0 ]; then\
-	    kubectl apply -f chaos-network-brokers.yaml -n $(namespace);\
-	fi
-	@if [ ${gateway.interRegionLatency} > 0 ]; then\
-	    kubectl apply -f chaos-network-gateway.yaml -n $(namespace);\
-	fi
-	
+.PHONY: deploy-chaos-gateway
+deploy-chaos-gateway:
+	kubectl apply -f chaos-network-gateway.yaml -n $(namespace)	
+
+.PHONY: deploy-chaos-broker
+deploy-chaos-broker:
+	kubectl apply -f chaos-network-brokers.yaml -n $(namespace)	
 
 .PHONY: rebalance-partitions
 rebalance-partitions:

@@ -76,6 +76,16 @@ public class ScenarioBuilderService {
             		idxCol++;
             	}
             	if (idxRow>1) {
+                String chaosTarget = "";
+                String gatewayDelay = inputMaps.get(idxRow-2).get("gateway.interRegionLatency");
+                String brokersDelay = inputMaps.get(idxRow-2).get("engine.interRegionLatency");
+                if (!"0".equals(gatewayDelay)) {
+                  chaosTarget+="deploy-chaos-gateway";
+                }
+                if (!"0".equals(brokersDelay)) {
+                  chaosTarget+=" deploy-chaos-broker";
+                }
+                inputMaps.get(idxRow-2).put("chaosTarget",chaosTarget);
             	  String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
             	  try {
             	    int vcpuRequest = Integer.valueOf(vcpu)-1;
@@ -90,7 +100,7 @@ public class ScenarioBuilderService {
                   String oddBrokers="";
                   for(int i=0;i<nbNodes;i++) {
                     if (i%2==0) {
-                      evenBrokers+="          - camunda-zeebe-"+i+"\n";
+                      evenBrokers+="        - camunda-zeebe-"+i+"\n";
                     } else {
                       oddBrokers+="          - camunda-zeebe-"+i+"\n";
                     }
