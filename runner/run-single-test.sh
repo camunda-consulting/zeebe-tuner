@@ -3,7 +3,7 @@
 testScenarioName=${1:-'example'}
 TESTRUNS_DONE_DIR=${2:-'testruns-done'}
 TESTRUNS_DIR="testruns"
-dashboardId="uX16GP3nk"
+dashboardId="IDjA72vVz2"
 
 echo "###############################################"
 echo "Running test for config: ${testScenarioName}"

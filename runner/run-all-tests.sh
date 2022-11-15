@@ -16,6 +16,7 @@ run()
   for filename in testruns/*/;
   do
     testScenarioName=$(basename "$filename")
+	echo "Scenario $testScenarioName"
 	  ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
   done
 }
