@@ -9,6 +9,8 @@ global:
   elasticsearch:
     disableExporter: true
 zeebe:
+  image:
+    repository: ${engine.image}
   resources:
     limits:
       cpu: ${engine.vcpus}
@@ -23,7 +25,7 @@ zeebe:
   ioThreadCount: ${engine.ioThreadPoolSizeNode}
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
-  pvcStorageClassName: ssd
+  pvcStorageClassName: ${engine.fileSystem}
   extraInitContainers:
     - name: init-exporter-job-worker
       image: busybox:1.35
@@ -39,6 +41,8 @@ zeebe:
       value: org.camunda.community.extension.zeebe.exporter.jobworker.EmbeddedJobWorker
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
+      value: "${engine.logSegmentSize}MB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
       value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
@@ -52,6 +56,8 @@ zeebe:
     - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
       value: "${engine.maxAppendBatchSize}KB"
 zeebe-gateway:
+  image:
+    repository: ${engine.image}
   replicas: ${gateway.replicas}
   resources:
     limits:
