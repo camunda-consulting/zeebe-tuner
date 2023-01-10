@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 TESTRUNS_DONE_DIR="testruns-done"
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 testScenarioName=${1:-'example'}
 TESTRUNS_DONE_DIR=${2:-'testruns-done'}

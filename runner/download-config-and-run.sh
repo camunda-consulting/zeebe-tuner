@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # retrieve machine types from K8s
 machineType=$(kubectl get node -o json | jq -r '.items[0].metadata.labels."beta.kubernetes.io/instance-type"')
