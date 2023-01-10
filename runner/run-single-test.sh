@@ -9,29 +9,29 @@ dashboardId="IDjA72vVz2"
 echo "###############################################"
 echo "Running test for config: ${testScenarioName}"
 
-# get the start time of the run
+# Start Zeebe
+echo 'Starting Zeebe...'
+(cd "${TESTRUNS_DIR}/${testScenarioName}" && make)
+
+# get the start time of the benchmark
 # Note that grafana expects timestamps as millis since epoch
 startTime=$(date +%s000)
 startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
 echo "start time = $startTimeIso"
 
-# Start Zeebe
-echo 'Starting Zeebe...'
-(cd "${TESTRUNS_DIR}/${testScenarioName}" && make)
-
 # wait for the starter job to be finished
-echo 'Waiting for completion of benchmark run...'
+echo "Waiting 20 minutes for completion of benchmark run ${testScenarioName} ..."
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
 sleep 1200
+
+# get the endtime of the benchmark
+endTime=$(date +%s000)
+endTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
+echo "end time = $endTimeIso"
 
 # cleanup
 echo 'Finished. Cleaning up now...'
 (cd "${TESTRUNS_DIR}/${testScenarioName}" && make clean)
-
-# get the endtime of the run
-endTime=$(date +%s000)
-endTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
-echo "end time = $endTimeIso"
 
 # Generate Dashboard Links
 
