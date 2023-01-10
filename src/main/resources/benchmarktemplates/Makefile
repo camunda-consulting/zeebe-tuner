@@ -4,12 +4,16 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 .PHONY: all
-all: camunda await-zeebe deploy-models rebalance-partitions ${chaosTarget} benchmark 
+all: sync-image camunda await-zeebe deploy-models rebalance-partitions ${chaosTarget} benchmark 
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
 
 include ../../../../camunda-8-helm-profiles/include/camunda.mk
+
+.PHONY: sync-image
+sync-image:
+	docker buildx imagetools create --tag gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} gcr.io/zeebe-io/zeebe:${engine.engineVersion}
 
 .PHONY: deploy-models
 deploy-models:
