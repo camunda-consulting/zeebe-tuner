@@ -36,13 +36,15 @@ rebalance-partitions:
 
 .PHONY: benchmark
 benchmark: namespace
-	kubectl create configmap payload --from-file=payload.json -n $(namespace)
-	kubectl apply -f benchmark.yaml                           -n $(namespace)
+	kubectl create configmap payload      --from-file=payload.json      -n $(namespace)
+	kubectl create configmap msg-scenario --from-file=msg-scenario.json -n $(namespace)
+	kubectl apply -f benchmark.yaml                                     -n $(namespace)
 
 .PHONY: clean-benchmark
 clean-benchmark:
-	-kubectl delete -f benchmark.yaml -n $(namespace)
-	-kubectl delete configmap payload -n $(namespace)
+	-kubectl delete -f benchmark.yaml      -n $(namespace)
+	-kubectl delete configmap payload      -n $(namespace)
+	-kubectl delete configmap msg-scenario -n $(namespace)
 
 .PHONY: await-benchmark
 await-benchmark:

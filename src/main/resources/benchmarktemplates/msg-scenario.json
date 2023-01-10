@@ -4,16 +4,22 @@
             "messageName": "cct_singleProcess",
             "correlationKey": "Falko-S${COUNT}",
             "variables": {
-				"command_metadata":{
-					"channel_info": {
-						"ready_for_release": true
-					}
-				}
+                "correlation_key": "Falko-S${COUNT}",
+                "command_metadata": {
+                    "channel_info": {
+                        "ready_for_release": true
+                    }
+                }
             }
         },
         {
             "messageName": "command-delivered",
-            "correlationKey": "Falko-S${COUNT}"
+            "correlationKey": "Falko-S${COUNT}",
+            "variables": {
+                "command_metadata": {
+                    "command_status": "NonDelivered"
+                }
+            }
         },
         {
             "messageName": "gpi_accc_cct",
