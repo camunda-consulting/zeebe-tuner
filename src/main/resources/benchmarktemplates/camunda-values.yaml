@@ -34,6 +34,13 @@ zeebe:
       volumeMounts:
       - name: exporters
         mountPath: /exporters/
+  extraVolumes:
+    - name: tmpfs
+      emptyDir:
+        medium: Memory
+  extraVolumeMounts:
+    - mountPath: /usr/local/zeebe/state-data
+      name: tmpfs
   env:
     - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_JARPATH
       value: "exporters/zeebe-embedded-job-worker-0.0.7.jar"
