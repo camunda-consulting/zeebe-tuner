@@ -21,7 +21,7 @@ sync-image:
 
 .PHONY: deploy-models
 deploy-models:
-	kubectl create configmap models --from-file=singleProcess.bpmn   -n $(namespace)
+	kubectl create configmap models --from-file=${loadGeneratorStarter.processModel}.bpmn   -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
 	kubectl delete configmap models                                       -n $(namespace)
