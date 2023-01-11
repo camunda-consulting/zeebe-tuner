@@ -35,6 +35,7 @@ deploy-chaos-gateway:
 deploy-chaos-broker:
 	kubectl apply -f chaos-network-brokers.yaml -n $(namespace)	
 
+# TODO replace with curl job
 .PHONY: rebalance-partitions
 rebalance-partitions:
 	kubectl port-forward --namespace camunda $$(kubectl get pod --namespace camunda --selector="app=camunda-platform,app.kubernetes.io/component=zeebe-gateway,app.kubernetes.io/instance=camunda,app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=zeebe-gateway,app.kubernetes.io/part-of=camunda-platform" --output jsonpath='{.items[0].metadata.name}') 5433:9600 &
