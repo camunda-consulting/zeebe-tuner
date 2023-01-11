@@ -35,6 +35,7 @@ public class TemplatingService {
     }
 	
 	private Map<String, String> getSourcesAndTarget(File directory, String scenarioName) {
+		System.out.println("Scenario: " + scenarioName + ", Directory: " + directory.getAbsolutePath());
 		Map<String, String> result = new HashMap<>();
 		
 		for(File file : directory.listFiles()) {
