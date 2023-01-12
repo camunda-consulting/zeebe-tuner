@@ -3,6 +3,7 @@ package io.camunda.benchmark.service;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,11 @@ public class ScenarioBuilderService {
         	String prefixHeader="";
         	int idxRow=0;
             for (List<Object> row : values) {
+				String testName = (String) row.get(0);
+				String testTime = (String) row.get(1);
+				if (idxRow>1 && (testName.isEmpty() || !testTime.isEmpty())) {
+					continue;
+				}
             	int idxCol=0;
             	if (idxRow>1) {
             		inputMaps.add(new HashMap<>());
