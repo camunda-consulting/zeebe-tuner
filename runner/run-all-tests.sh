@@ -14,11 +14,14 @@ usage()
 
 run()
 {
-  for filename in testruns/*/;
-  do
-    testScenarioName=$(basename "$filename")
-	echo "Scenario $testScenarioName"
-	  ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
+  while true; do
+    for filename in testruns/*/;
+    do
+      testScenarioName=$(basename "$filename")
+      echo "Scenario $testScenarioName"
+      ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
+    done
+    sleep 10 # just so that it doesn't busyloop
   done
 }
 
