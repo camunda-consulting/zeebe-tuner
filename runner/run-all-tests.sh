@@ -15,9 +15,8 @@ usage()
 run()
 {
   while true; do
-    for filename in testruns/*/;
-    do
-      testScenarioName=$(basename "$filename")
+    find testruns -mindepth 1 -maxdepth 1 -type d | sort | while IFS= read -r testScenarioDir; do
+      testScenarioName=$(basename "$testScenarioDir")
       echo "Scenario $testScenarioName"
       ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
     done
