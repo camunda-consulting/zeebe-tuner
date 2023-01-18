@@ -62,6 +62,8 @@ zeebe:
       value: "${engine.maxAppendsPerFollower}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
       value: "${engine.maxAppendBatchSize}KB"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
+      value: "${rocksdb.disableWal}"
 zeebe-gateway:
   image:
     repository: ${engine.image}

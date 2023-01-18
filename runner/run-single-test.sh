@@ -20,9 +20,9 @@ startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
 echo "start time = $startTimeIso"
 
 # wait for the starter job to be finished
-echo "Waiting 10 minutes for completion of benchmark run ${testScenarioName} ..."
+echo "Waiting 20 minutes for completion of benchmark run ${testScenarioName} ..."
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
-sleep 600
+sleep 1200
 
 # get the endtime of the benchmark
 endTime=$(date +%s000)
