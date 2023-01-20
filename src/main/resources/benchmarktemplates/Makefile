@@ -8,7 +8,7 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 .PHONY: all
-all: sync-image camunda await-zeebe deploy-models rebalance-partitions ${chaosTarget} benchmark 
+all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark 
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
@@ -36,12 +36,12 @@ deploy-chaos-broker:
 	kubectl apply -f chaos-network-brokers.yaml -n $(namespace)	
 
 # TODO replace with curl job
-.PHONY: rebalance-partitions
-rebalance-partitions:
+.PHONY: rebalance-leaders
+rebalance-leaders:
 	kubectl port-forward --namespace camunda $$(kubectl get pod --namespace camunda --selector="app=camunda-platform,app.kubernetes.io/component=zeebe-gateway,app.kubernetes.io/instance=camunda,app.kubernetes.io/managed-by=Helm,app.kubernetes.io/name=zeebe-gateway,app.kubernetes.io/part-of=camunda-platform" --output jsonpath='{.items[0].metadata.name}') 5433:9600 &
 	sleep 10
 	curl -X POST http://localhost:5433/actuator/rebalance/
-	killall kubectl
+	kill $$(ps | grep 'kubectl' | awk '{print $$1}')
 
 .PHONY: benchmark
 benchmark: namespace
