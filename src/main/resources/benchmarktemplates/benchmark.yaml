@@ -31,7 +31,7 @@ spec:
           - name: BENCHMARK_DELAYBETWEENMESSAGES
             value: "1"
           - name: BENCHMARK_MESSAGESLOADDURATION
-            value: "3000000"
+            value: "${loadGeneratorStarter.runDuration}000"
           - name: BENCHMARK_STARTWORKERS
             value: "false"
           - name: BENCHMARK_TASKCOMPLETIONDELAY
@@ -52,7 +52,7 @@ spec:
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.messageScenario=msg-scenario.json
               -Dbenchmark.delayBetweenMessages=10
-              -Dbenchmark.messagesLoadDuration=6000000
+              -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}
