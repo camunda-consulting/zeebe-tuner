@@ -30,7 +30,7 @@ zeebe:
     - name: init-exporter-job-worker
       image: busybox:1.35
       command: ['/bin/sh', '-c']
-      args: ['wget https://github.com/camunda-community-hub/zeebe-embedded-job-worker/releases/download/0.0.10/zeebe-embedded-job-worker-0.0.10.zip -O /exporters/jobworker.zip && unzip /exporters/jobworker.zip && mv target/nexus-staging/deferred/org/camunda/community/extension/zeebe/exporter/jobworker/zeebe-embedded-job-worker/0.0.10/zeebe-embedded-job-worker-0.0.10.jar /exporters/zeebe-embedded-job-worker-0.0.10.jar; ls -al exporters']
+      args: ['wget https://github.com/camunda-community-hub/zeebe-embedded-job-worker/releases/download/0.0.7/zeebe-embedded-job-worker-0.0.7.zip -O /exporters/jobworker.zip && unzip /exporters/jobworker.zip && mv target/nexus-staging/deferred/org/camunda/community/extension/zeebe/exporter/jobworker/zeebe-embedded-job-worker/0.0.7/zeebe-embedded-job-worker-0.0.7.jar /exporters/zeebe-embedded-job-worker-0.0.7.jar; ls -al exporters']
       volumeMounts:
       - name: exporters
         mountPath: /exporters/
@@ -43,7 +43,7 @@ zeebe:
       name: tmpfs
   env:
     - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_JARPATH
-      value: "exporters/zeebe-embedded-job-worker-0.0.10.jar"
+      value: "exporters/zeebe-embedded-job-worker-0.0.7.jar"
     - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_CLASSNAME
       value: org.camunda.community.extension.zeebe.exporter.jobworker.EmbeddedJobWorker
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
