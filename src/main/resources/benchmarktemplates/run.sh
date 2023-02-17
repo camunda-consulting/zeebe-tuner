@@ -1,7 +1,8 @@
 #echo "###############################################"
 #echo "Running test for config: ${testCaseName}"
 
-echo "Waiting ${loadGeneratorStarter.runDuration} seconds for completion of benchmark run ${testCaseName} ..."
+
+echo "Waiting $((${loadGeneratorStarter.runDuration}/60)) minutes for completion of benchmark run ${testCaseName} ..."
 sleep ${loadGeneratorStarter.runDuration}
 
 # Start Zeebe

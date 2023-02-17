@@ -19,10 +19,10 @@ startTime=$(date +%s000)
 startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
 echo "start time = $startTimeIso"
 
-# wait for the starter job to be finished
-echo "Waiting 60 minutes for completion of benchmark run ${testScenarioName} ..."
+# execute dynamic sleep in generated run.sh file
+(cd "${TESTRUNS_DIR}/${testScenarioName}" && source run.sh)
+# TODO run c8b as a job (see: https://github.com/falko/zeebe-benchmark/blob/hackdays-2020/Dockerfile#L28) and wait the job to be finished, e.g. using:
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
-sleep 3600
 
 # get the endtime of the benchmark
 endTime=$(date +%s000)
