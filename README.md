@@ -20,11 +20,11 @@ A set of tools that can run series of benchmarks on a Kubernetes cluster based o
 
 ## Running a series of brenchmarks against a Kubernetes cluster
 0. Enter the configuration parameters for the benchmarks you want to schedule in your copy of the [Zeebe Benchmark Result Template](https://docs.google.com/spreadsheets/d/1YZFp5uDd4783qTr7fvQIyXzoz8o01GLadurXLXU9sMc).
-1. Start the Spring Boot application.
+1. Start the Spring Boot application using your IDE or `./gradlew bootRun`.
    For each row in the spreadsheet it will create a folder and generate
    Helm chart values, Kubernetes manifests and a Makefile to run the benchmark
    in `runner/testruns`.
-2. Stop the Spring Boot application.
+2. The Spring Boot application will automatically stop once all test runs have been generated.
 3. Go to `runner/testruns` and delete older test runs that you already executed in earlier runs.
    Currently, the tool will export all rows regardless of whether they have results or not (see #3).
 4. Ensure `kubectl` is setup to connect to your Kubernetes cluster that should have Prometheus and Grafana set up already.
