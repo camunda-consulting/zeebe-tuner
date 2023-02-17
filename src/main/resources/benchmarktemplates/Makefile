@@ -58,3 +58,6 @@ clean-benchmark:
 await-benchmark:
 	kubectl wait --for=condition=Ready pod -n $(namespace) -l app=benchmark --timeout=900s
 
+.PHONY: logs-benchmark
+logs-benchmark:
+	kubectl logs -f -l app=benchmark -n $(namespace)
