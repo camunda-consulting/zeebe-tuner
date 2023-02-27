@@ -1,0 +1,25 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: camunda
+  name: chaos-network-gateway
+spec:
+  selector:
+    namespaces:
+      - camunda
+    labelSelectors:
+      app.kubernetes.io/component: zeebe-gateway
+  mode: all
+  action: delay
+  delay:
+    latency: ${gateway.interRegionLatency}ms
+    correlation: '50'
+    jitter: '0'
+  direction: both
+  target:
+    selector:
+      namespaces:
+        - camunda
+      labelSelectors:
+        app.kubernetes.io/component: zeebe-broker
+    mode: all

@@ -7,7 +7,7 @@ public class GgSheetHeaderUtils {
 	private GgSheetHeaderUtils() {}
 	
 	public static String toCamelCase(String header) {
-		String withoutBrackets = header.replace("/", " ").replaceAll("\\(.*\\)", "").trim();
+		String withoutBrackets = header.replace("/", " ").replace("-", " ").replaceAll("\\(.*\\)", "").trim();
 		return CaseUtils.toCamelCase(withoutBrackets, false, ' ');
 	}
 	

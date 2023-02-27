@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 TESTRUNS_DONE_DIR="testruns-done"
 
@@ -13,10 +14,13 @@ usage()
 
 run()
 {
-  for filename in testruns/*/;
-  do
-    testScenarioName=$(basename "$filename")
-	  ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
+  while true; do
+    find testruns -mindepth 1 -maxdepth 1 -type d | sort | while IFS= read -r testScenarioDir; do
+      testScenarioName=$(basename "$testScenarioDir")
+      echo "Scenario $testScenarioName"
+      ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
+    done
+    sleep 10 # just so that it doesn't busyloop
   done
 }
 
