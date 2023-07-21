@@ -8,7 +8,7 @@ spec:
       containers:
       - name: zbctl-deploy
         image: camunda/zeebe
-        command: ["zbctl", "--host", "camunda-zeebe-gateway", "--insecure", "deploy", "/models/${loadGeneratorStarter.processModel}.bpmn"]
+        command: ["zbctl", "--host", "camunda-zeebe-gateway", "--insecure", "deploy", "/models/*"]
         volumeMounts:
         - name: models
           mountPath: /models/${loadGeneratorStarter.processModel}.bpmn
