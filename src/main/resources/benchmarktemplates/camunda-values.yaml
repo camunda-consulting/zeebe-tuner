@@ -8,6 +8,12 @@ global:
     tag: ${engine.engineVersion}
   elasticsearch:
     disableExporter: true
+  identity:
+    auth:
+      # Disable the Identity authentication
+      # it will fall back to basic-auth: demo/demo as default user
+      enabled: false
+
 zeebe:
   image:
     repository: ${engine.image}
