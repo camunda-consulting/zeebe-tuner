@@ -7,6 +7,9 @@ chart ?= camunda/camunda-platform
 
 chartValues ?= "camunda-values.yaml"
 
+# TODO configure through runner
+models ?= "../../../../poc-redirection/benchmark/models"
+
 .PHONY: all
 all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark 
 
@@ -21,13 +24,20 @@ sync-image:
 	docker buildx imagetools create --tag gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} gcr.io/zeebe-io/zeebe:${engine.engineVersion}
   endif
 
-.PHONY: deploy-models
-deploy-models:
-	kubectl create configmap models --from-file=./models/   -n $(namespace)
+#: Deploy BPMN and DMN models using zbctl in a k8s job
+deploy-models: job-deploy-models clean-job-deploy-models
+
+#: Create k8s job to deploy BPMN and DMN models using zbctl
+job-deploy-models:
+	kubectl create configmap models --from-file=$(models)                 -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
-	kubectl delete configmap models                                       -n $(namespace)
-	kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
+
+#: Delete k8s job to deploy BPMN and DMN models using zbctl
+clean-job-deploy-models:
+	-kubectl logs job.batch/zbctl-deploy                                   -n $(namespace)
+	-kubectl delete configmap models                                       -n $(namespace)
+	-kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
 
 .PHONY: deploy-chaos-gateway
 deploy-chaos-gateway:
