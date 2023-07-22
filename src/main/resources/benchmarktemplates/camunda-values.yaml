@@ -94,12 +94,14 @@ tasklist:
   enabled: false
 optimize:
   enabled: false
-prometheusServiceMonitor:
-  enabled: true
+connectors:
+  enabled: false
 identity:
   enabled: false
   keycloak:
     enabled: false
+prometheusServiceMonitor:
+  enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
   replicas: ${elasticSearch.clusterSize}
