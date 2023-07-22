@@ -24,21 +24,14 @@ spec:
             value: >-
               -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
               -Dzeebe.client.security.plaintext=true
-              -Dzeebe.client.request-timeout=600s
-              -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
-              -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
-              -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
-              -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
-              -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}
-              -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
-              -Dbenchmark.maxBackpressurePercentage=1.0
-              -Dbenchmark.jobType=benchmark-task
-              -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
-              -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
-              -Dbenchmark.payloadPath=file:/payload.json
+              -Dbenchmark.startProcesses=false
+              -Dbenchmark.startWorkers=false
+              -Dbenchmark.messageScenario=file:/msg-scenario.json
+              -Dbenchmark.messagesTtl=${loadGeneratorStarter.messageTtl}
+              -Dbenchmark.messagesScenariosPerSecond=${loadGeneratorStarter.startThroughput}
+              -Dbenchmark.delayBetweenMessages=1
+              -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
               -Dbenchmark.autoDeployProcess=false
-              -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
         resources:
           limits:
             cpu: ${engine.vcpus}
@@ -51,7 +44,14 @@ spec:
           mountPath: payload.json
           subPath: payload.json
           readOnly: true
+        - name: msg-scenario
+          mountPath: msg-scenario.json
+          subPath: msg-scenario.json
+          readOnly: true
       volumes:
       - name: payload
         configMap:
           name: payload
+      - name: msg-scenario
+        configMap:
+          name: msg-scenario

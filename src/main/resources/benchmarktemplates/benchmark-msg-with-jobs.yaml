@@ -22,28 +22,23 @@ spec:
         env:
           - name: JAVA_OPTIONS
             value: >-
-              -Dbenchmark.startProcesses=false
               -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
               -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
-              -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
-              -Dbenchmark.maxBackpressurePercentage=1.0
-              -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
-              -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
-              -Dbenchmark.startWorkers=false
+              -Dbenchmark.startProcesses=false
+              -Dbenchmark.startWorkers=true
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
-              -Dbenchmark.messageScenario=msg-scenario.json
+              -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
+              -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
+              -Dbenchmark.messageScenario=file:/msg-scenario.json
+              -Dbenchmark.messagesTtl=${loadGeneratorStarter.messageTtl}
+              -Dbenchmark.messagesScenariosPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.delayBetweenMessages=1
               -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
-              -Dbenchmark.messagesTtl=${loadGeneratorStarter.messageTtl}
               -Dbenchmark.autoDeployProcess=false
-              -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
-              -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}
-              -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
-              -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
         resources:
           limits:
             cpu: ${engine.vcpus}
@@ -56,7 +51,14 @@ spec:
           mountPath: payload.json
           subPath: payload.json
           readOnly: true
+        - name: msg-scenario
+          mountPath: msg-scenario.json
+          subPath: msg-scenario.json
+          readOnly: true
       volumes:
       - name: payload
         configMap:
           name: payload
+      - name: msg-scenario
+        configMap:
+          name: msg-scenario
