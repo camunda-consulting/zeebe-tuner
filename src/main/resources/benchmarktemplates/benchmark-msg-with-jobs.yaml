@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: benchmark
-        image: gcr.io/camunda-researchanddevelopment/falko-camunda-8-benchmark:0.0.1-SNAPSHOT
+        image: camundacommunityhub/camunda-8-benchmark:main
         imagePullPolicy: Always
         env:
           - name: JAVA_OPTIONS
@@ -26,7 +26,6 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
               -Dbenchmark.startProcesses=false
               -Dbenchmark.startWorkers=true
               -Dbenchmark.jobType=benchmark-task
@@ -39,6 +38,7 @@ spec:
               -Dbenchmark.delayBetweenMessages=1
               -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
               -Dbenchmark.autoDeployProcess=false
+# TODO make this work: -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
         resources:
           limits:
             cpu: ${engine.vcpus}

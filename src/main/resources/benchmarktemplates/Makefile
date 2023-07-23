@@ -8,7 +8,7 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 # TODO configure through runner
-models ?= "../../../../poc-redirection/benchmark/models"
+models ?= ../../../models
 
 .PHONY: all
 all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark 
@@ -49,14 +49,15 @@ deploy-chaos-broker:
 
 .PHONY: benchmark
 benchmark: namespace
-	kubectl create configmap payload      --from-file=payload.json      -n $(namespace)
-	kubectl create configmap msg-scenario --from-file=msg-scenario.json -n $(namespace)
-	kubectl apply -f benchmark.yaml                                     -n $(namespace)
+	kubectl create configmap payload      --from-file=$(models)/payload.json      -n $(namespace)
+	kubectl create configmap msg-scenario --from-file=$(models)/msg-scenario.json -n $(namespace)
+	kubectl apply -f benchmark.yaml                                               -n $(namespace)
 
 # Getting url for grafana is vendor specific
 .PHONY: url-grafana
 url-grafana:
 	@echo "http://`kubectl get svc metrics-grafana-loadbalancer -n default -o 'custom-columns=ip:status.loadBalancer.ingress[0].ip' | tail -n 1`/d/IDjA72vVz2/zeebe-low-latency?var-namespace=$(namespace)"
+# TODO fix Grafana URL or import target from helm profiles
 
 .PHONY: clean-benchmark
 clean-benchmark:

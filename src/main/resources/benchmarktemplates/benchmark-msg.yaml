@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: benchmark
-        image: gcr.io/camunda-researchanddevelopment/falko-camunda-8-benchmark:0.0.1-SNAPSHOT
+        image: camundacommunityhub/camunda-8-benchmark:main
         imagePullPolicy: Always
         env:
           - name: JAVA_OPTIONS

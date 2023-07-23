@@ -74,6 +74,8 @@ else
   rm -rf "${TESTRUNS_DIR}/${testScenarioName}"
 fi
 
+echo "Benchmark ${testScenarioName} has been completed."
+
 # immediately persist test config
 cp -r ../src/main/resources "${TESTRUNS_DONE_DIR}/zeebe-tuner-config"
 cd $TESTRUNS_DONE_DIR

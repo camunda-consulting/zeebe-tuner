@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: benchmark
-        image: gcr.io/camunda-researchanddevelopment/falko-camunda-8-benchmark:0.0.1-SNAPSHOT
+        image: camundacommunityhub/camunda-8-benchmark:main
         imagePullPolicy: Always
         env:
           - name: JAVA_OPTIONS
@@ -26,7 +26,6 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
@@ -39,6 +38,7 @@ spec:
               -Dbenchmark.payloadPath=file:/payload.json
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
+# TODO make this work: -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
         resources:
           limits:
             cpu: ${engine.vcpus}
