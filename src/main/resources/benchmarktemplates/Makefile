@@ -61,8 +61,7 @@ benchmark: namespace copy-models
 # Getting url for grafana is vendor specific
 .PHONY: url-grafana
 url-grafana:
-	@echo "http://`kubectl get svc metrics-grafana-loadbalancer -n default -o 'custom-columns=ip:status.loadBalancer.ingress[0].ip' | tail -n 1`/d/IDjA72vVz2/zeebe-low-latency?var-namespace=$(namespace)"
-# TODO fix Grafana URL or import target from helm profiles
+	@echo "http://`kubectl get svc metrics-grafana-loadbalancer -n default -o 'custom-columns=ip:status.loadBalancer.ingress[0].ip' | tail -n 1`/d/zeebe-dashboard/zeebe?var-namespace=$(namespace)"
 
 .PHONY: clean-benchmark
 clean-benchmark:
