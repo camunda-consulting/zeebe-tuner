@@ -8,13 +8,21 @@ global:
     tag: ${engine.engineVersion}
   elasticsearch:
     disableExporter: false
+  identity:
+    auth:
+      # Disable the Identity authentication
+      # it will fall back to basic-auth: demo/demo as default user
+      enabled: false
+
 zeebe:
+  image:
+    repository: ${engine.image}
   resources:
     limits:
       cpu: ${engine.vcpus}
       memory: ${engine.ram}Gi
     requests:
-      cpu: ${engine.vcpus}
+      cpu: ${engine.vcpuRequest}
       memory: ${engine.ram}Gi
   clusterSize: "${engine.clusterSize}"
   partitionCount: "${engine.partitions}"
@@ -23,14 +31,18 @@ zeebe:
   ioThreadCount: ${engine.ioThreadPoolSizeNode}
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
-  pvcStorageClassName: ssd
+  pvcStorageClassName: ${engine.fileSystem}
   env:
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
+      value: "${engine.logSegmentSize}MB"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
+      value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
-      value: "true"
+      value: "${engine.backpressure}"
     - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
       value: "${engine.bpUseWindowed}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
@@ -49,7 +61,17 @@ zeebe:
       value: "${engine.initialLimit}"
     - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
       value: "${engine.rttTolerance}"
+    - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
+      value: "${engine.networkCompression}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
+      value: "${engine.maxAppendsPerFollower}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
+      value: "${engine.maxAppendBatchSize}KB"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
+      value: "${rocksdb.disableWal}"
 zeebe-gateway:
+  image:
+    repository: ${engine.image}
   replicas: ${gateway.replicas}
   resources:
     limits:
@@ -63,6 +85,20 @@ zeebe-gateway:
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
       value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
+      value: "${engine.networkCompression}"
+operate:
+  enabled: true
+tasklist:
+  enabled: true
+optimize:
+  enabled: false
+connectors:
+  enabled: false
+identity:
+  enabled: false
+  keycloak:
+    enabled: false
 prometheusServiceMonitor:
   enabled: true
 elasticsearch:
