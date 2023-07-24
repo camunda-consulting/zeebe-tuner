@@ -27,9 +27,13 @@ sync-image:
 #: Deploy BPMN and DMN models using zbctl in a k8s job
 deploy-models: job-deploy-models clean-job-deploy-models
 
+.PHONY: copy-models
+copy-models:
+	cp -r $(models) models
+
 #: Create k8s job to deploy BPMN and DMN models using zbctl
-job-deploy-models:
-	kubectl create configmap models --from-file=$(models)                 -n $(namespace)
+job-deploy-models: copy-models
+	kubectl create configmap models --from-file=models                    -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
 
@@ -37,7 +41,7 @@ job-deploy-models:
 clean-job-deploy-models:
 	-kubectl logs job.batch/zbctl-deploy                                   -n $(namespace)
 	-kubectl delete configmap models                                       -n $(namespace)
-	-kubectl delete -f zbctl-deploy-job.yaml             				  -n $(namespace)
+	-kubectl delete -f zbctl-deploy-job.yaml             				   -n $(namespace)
 
 .PHONY: deploy-chaos-gateway
 deploy-chaos-gateway:
@@ -48,10 +52,11 @@ deploy-chaos-broker:
 	kubectl apply -f chaos-network-brokers.yaml -n $(namespace)	
 
 .PHONY: benchmark
-benchmark: namespace
-	kubectl create configmap payload      --from-file=$(models)/payload.json      -n $(namespace)
-	kubectl create configmap msg-scenario --from-file=$(models)/msg-scenario.json -n $(namespace)
-	kubectl apply -f benchmark.yaml                                               -n $(namespace)
+benchmark: namespace copy-models
+	kubectl create configmap payload      --from-file=models/payload.json      -n $(namespace)
+	kubectl create configmap msg-scenario --from-file=models/msg-scenario.json -n $(namespace)
+	kubectl apply -f benchmark-msg-with-jobs.yaml                              -n $(namespace)
+# TODO automatically switch/generate benchmark config
 
 # Getting url for grafana is vendor specific
 .PHONY: url-grafana
