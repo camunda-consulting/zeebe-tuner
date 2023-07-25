@@ -4,7 +4,8 @@ set -euo pipefail
 testScenarioName=${1:-'example'}
 TESTRUNS_DONE_DIR=${2:-'testruns-done'}
 TESTRUNS_DIR="testruns"
-dashboardId="IDjA72vVz2"
+dashboardId="zeebe-dashboard"
+dashboardName="zeebe"
 
 echo "###############################################"
 echo "Running test for config: ${testScenarioName}"
@@ -47,7 +48,7 @@ echo $grafanaUrl
 ipAddress="$(grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' <<< "$grafanaUrl")"
 
 # create the url to the low-latency dashboard in the correct time frame
-grafanaUrl="http://$ipAddress/d/$dashboardId/zeebe-low-latency?orgId=1&from=$startTime&to=$endTime&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All"
+grafanaUrl="http://$ipAddress/d/$dashboardId/$dashboardName?orgId=1&from=$startTime&to=$endTime&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All"
 #echo $grafanaUrl
 
 if [ ! -d "$TESTRUNS_DONE_DIR" ]; then
@@ -77,7 +78,7 @@ fi
 # immediately persist test config
 #cp -r ../src/main/resources "${TESTRUNS_DONE_DIR}/zeebe-tuner-config"
 #cd $TESTRUNS_DONE_DIR
-#git add . && git commit . -m 'Add more test configurations' && git push
+#git add . && git commit . -m "Add benchmark run ${testScenarioName}" && git push
 #cd -
 
 echo "Benchmark ${testScenarioName} has been completed."
