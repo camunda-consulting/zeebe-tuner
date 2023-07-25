@@ -53,9 +53,9 @@ deploy-chaos-broker:
 
 .PHONY: benchmark
 benchmark: namespace copy-models
-	kubectl create configmap payload      --from-file=models/payload.json      -n $(namespace)
-	kubectl create configmap msg-scenario --from-file=models/msg-scenario.json -n $(namespace)
-	kubectl apply -f benchmark-msg-with-jobs.yaml                              -n $(namespace)
+	kubectl create configmap payload      --from-file=payload.json=models/payload.json           -n $(namespace)
+	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
+	kubectl apply -f benchmark-msg-with-jobs.yaml                                                -n $(namespace)
 # TODO automatically switch/generate benchmark config
 
 # Getting url for grafana is vendor specific
