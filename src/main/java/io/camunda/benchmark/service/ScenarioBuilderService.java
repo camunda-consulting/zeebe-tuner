@@ -92,15 +92,22 @@ public class ScenarioBuilderService {
                   chaosTarget+=" deploy-chaos-broker";
                 }
                 inputMaps.get(idxRow-2).put("chaosTarget",chaosTarget);
-            	  String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
-            	  try {
-            	    int vcpuRequest = Integer.valueOf(vcpu)-1;
-            	    inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpuRequest));
-            	  } catch (NumberFormatException nfe) {
-            	    inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
+                String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
+                try {
+                  int vcpuRequest = Integer.valueOf(vcpu)-1;
+                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpuRequest));
+                } catch (NumberFormatException nfe) {
+                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
                 }
-              	String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
-              	try {
+                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpus");
+                try {
+                  int vcpuRequest = Integer.valueOf(vcpu)-1;
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpuRequest));
+                } catch (NumberFormatException nfe) {
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpu));
+                }
+                String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
+                try {
                   int nbNodes = Integer.valueOf(nbNodesStr);
                   String evenBrokers="";
                   String oddBrokers="";
@@ -115,7 +122,9 @@ public class ScenarioBuilderService {
                   inputMaps.get(idxRow-2).put("oddBrokers",oddBrokers);
                 } catch (NumberFormatException nfe) {
                 }
-            	}
+                inputMaps.get(idxRow-2).put("elasticSearch.disabled",
+                  String.valueOf(Boolean.valueOf(inputMaps.get(idxRow-2).get("elasticSearch.enabled")) == false));
+              }
               idxRow++;
             }
         }

@@ -7,7 +7,7 @@ global:
   image:
     tag: ${engine.engineVersion}
   elasticsearch:
-    disableExporter: true
+    disableExporter: ${elasticSearch.disabled}
   identity:
     auth:
       # Disable the Identity authentication
@@ -43,6 +43,24 @@ zeebe:
       value: "${engine.disableExplicitRaftFlush}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
       value: "${engine.backpressure}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
+      value: "${engine.bpUseWindowed}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
+      value: "${engine.backPressureAlgorithm}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
+      value: "${engine.vegasAlpha}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
+      value: "${engine.vegasBeta}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
+      value: "${engine.minLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
+      value: "${engine.initialLimit}"
+    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
+      value: "${engine.rttTolerance}"
     - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
       value: "${engine.networkCompression}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
@@ -70,9 +88,9 @@ zeebe-gateway:
     - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
       value: "${engine.networkCompression}"
 operate:
-  enabled: false
+  enabled: ${elasticSearch.enabled}
 tasklist:
-  enabled: false
+  enabled: ${elasticSearch.enabled}
 optimize:
   enabled: false
 connectors:
@@ -85,11 +103,12 @@ prometheusServiceMonitor:
   enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
+  imageTag: ${elasticSearch.version}
   replicas: ${elasticSearch.clusterSize}
   resources:
     limits:
       cpu: ${elasticSearch.vcpus}
       memory: ${elasticSearch.ram}Gi
     requests:
-      cpu: ${elasticSearch.vcpus}
+      cpu: ${elasticSearch.vcpuRequests}
       memory: ${elasticSearch.ram}Gi
