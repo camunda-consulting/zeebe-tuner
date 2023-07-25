@@ -29,7 +29,7 @@ deploy-models: job-deploy-models clean-job-deploy-models
 
 .PHONY: copy-models
 copy-models:
-	mkdir -p models && cp $(models)/* $_
+	mkdir -p models && cp $(models)/* models
 
 #: Create k8s job to deploy BPMN and DMN models using zbctl
 job-deploy-models: copy-models
