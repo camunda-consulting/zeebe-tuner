@@ -21,7 +21,7 @@ include ../../../../camunda-8-helm-profiles/include/camunda.mk
 .PHONY: sync-image
 sync-image:
   ifneq '${engine.image}' 'camunda/zeebe'
-	docker buildx imagetools create --tag gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} gcr.io/zeebe-io/zeebe:${engine.engineVersion}
+	docker manifest inspect gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} || docker buildx imagetools create --tag gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} gcr.io/zeebe-io/zeebe:${engine.engineVersion}
   endif
 
 #: Deploy BPMN and DMN models using zbctl in a k8s job
