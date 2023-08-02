@@ -4,6 +4,10 @@ all:
 install:
 	cd runner && ./run-all-tests.sh
 
+clean:
+	rm -r runner/testruns/*
+	rm runner/current/run
+
 meld-benchmark:
 	meld src/main/resources/benchmarktemplates/benchmark.yaml src/main/resources/benchmarktemplates/benchmark-msg-with-jobs.yaml
 	meld src/main/resources/benchmarktemplates/benchmark.yaml src/main/resources/benchmarktemplates/benchmark-msg.yaml
