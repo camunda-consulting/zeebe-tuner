@@ -1,6 +1,9 @@
 all:
 	./gradlew bootRun
 
+install:
+	cd runner && ./run-all-tests.sh
+
 meld-benchmark:
 	meld src/main/resources/benchmarktemplates/benchmark.yaml src/main/resources/benchmarktemplates/benchmark-msg-with-jobs.yaml
 	meld src/main/resources/benchmarktemplates/benchmark.yaml src/main/resources/benchmarktemplates/benchmark-msg.yaml
