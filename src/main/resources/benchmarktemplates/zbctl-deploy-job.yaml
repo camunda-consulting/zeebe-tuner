@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: zbctl-deploy
-        image: camunda/zeebe
+        image: camunda/zeebe:8.2.10
         command: ["sh", "-c", "zbctl --host camunda-zeebe-gateway --insecure deploy resource /models/*.bpmn /models/*.dmn"]
         volumeMounts:
         - name: models
