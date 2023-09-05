@@ -17,6 +17,8 @@ global:
 zeebe:
   image:
     repository: ${engine.image}
+  nodeSelector:
+    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${engine.vcpus}
@@ -73,6 +75,8 @@ zeebe-gateway:
   image:
     repository: ${engine.image}
   replicas: ${gateway.replicas}
+  nodeSelector:
+    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${gateway.vcpus}
@@ -105,6 +109,8 @@ elasticsearch:
   enabled: ${elasticSearch.enabled}
   imageTag: ${elasticSearch.version}
   replicas: ${elasticSearch.clusterSize}
+  nodeSelector:
+    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${elasticSearch.vcpus}
