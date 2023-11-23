@@ -16,7 +16,13 @@ all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarge
 .PHONY: clean
 clean: clean-benchmark clean-camunda
 
-include ../../../../camunda-8-helm-profiles/include/camunda.mk
+ifeq ($(OS),Windows_NT)
+    root ?= $(CURDIR)/../../../../camunda-8-helm-profiles
+else
+    root ?= $(shell pwd)/../../../../camunda-8-helm-profiles
+endif
+
+include $(root)/include/camunda.mk
 
 .PHONY: sync-image
 sync-image:
