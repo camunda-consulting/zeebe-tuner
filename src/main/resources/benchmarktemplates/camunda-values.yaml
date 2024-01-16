@@ -89,6 +89,18 @@ zeebe-gateway:
       value: "${engine.networkCompression}"
 operate:
   enabled: ${elasticSearch.enabled}
+  resources:
+    limits:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+    requests:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+  env:
+    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
+      value: "${operate.importerReaderthreadscount}"
+    - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
+      value: "${operate.importerThreadscount}"
 tasklist:
   enabled: ${elasticSearch.enabled}
 optimize:
