@@ -103,8 +103,10 @@ prometheusServiceMonitor:
   enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
-  imageTag: ${elasticSearch.version}
-  replicas: ${elasticSearch.clusterSize}
+  image:
+    tag: ${elasticSearch.version}
+  master:
+    replicaCount: ${elasticSearch.clusterSize}
   resources:
     limits:
       cpu: ${elasticSearch.vcpus}
