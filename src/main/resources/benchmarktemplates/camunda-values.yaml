@@ -118,6 +118,7 @@ elasticsearch:
   image:
     tag: ${elasticSearch.version}
   master:
+    heapSize: ${elasticSearch.heapSize}Gi
     replicaCount: ${elasticSearch.clusterSize}
   resources:
     limits:
