@@ -102,7 +102,9 @@ operate:
     - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
       value: "${operate.importerThreadscount}"
 tasklist:
-  enabled: ${elasticSearch.enabled}
+  enabled: false
+console:
+  enabled: false
 optimize:
   enabled: false
 connectors:
@@ -118,12 +120,12 @@ elasticsearch:
   image:
     tag: ${elasticSearch.version}
   master:
-    heapSize: ${elasticSearch.heapSize}Gi
+    heapSize: ${elasticSearch.heapSize}m
     replicaCount: ${elasticSearch.clusterSize}
-  resources:
-    limits:
-      cpu: ${elasticSearch.vcpus}
-      memory: ${elasticSearch.ram}Gi
-    requests:
-      cpu: ${elasticSearch.vcpuRequests}
-      memory: ${elasticSearch.ram}Gi
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpus}
+        memory: ${elasticSearch.ram}Gi
+      requests:
+        cpu: ${elasticSearch.vcpuRequests}
+        memory: ${elasticSearch.ram}Gi
