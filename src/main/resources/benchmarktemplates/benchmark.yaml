@@ -26,6 +26,7 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
+              -Dzeebe.client.default-job-worker-stream-enabled=true
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
