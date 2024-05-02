@@ -33,6 +33,10 @@ zeebe:
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
   env:
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
+      value: "${elasticSearch.clusterSize}"
+    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
+      value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
@@ -103,12 +107,25 @@ prometheusServiceMonitor:
   enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
-  imageTag: ${elasticSearch.version}
-  replicas: ${elasticSearch.clusterSize}
-  resources:
-    limits:
-      cpu: ${elasticSearch.vcpus}
-      memory: ${elasticSearch.ram}Gi
-    requests:
-      cpu: ${elasticSearch.vcpuRequests}
-      memory: ${elasticSearch.ram}Gi
+  image:
+    tag: ${elasticSearch.version}
+  master:
+    replicaCount: ${elasticSearch.clusterSize}
+#    masterOnly: true
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpus}
+        memory: ${elasticSearch.ram}Gi
+      requests:
+        cpu: ${elasticSearch.vcpuRequests}
+        memory: ${elasticSearch.ram}Gi
+#  data:
+#    replicaCount: ${elasticSearch.clusterSize}
+#    resources:
+#      limits:
+#        cpu: ${elasticSearch.vcpus}
+#        memory: ${elasticSearch.ram}Gi
+#      requests:
+#        cpu: ${elasticSearch.vcpuRequests}
+#        memory: ${elasticSearch.ram}Gi
+
