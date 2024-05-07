@@ -39,8 +39,8 @@ spec:
               -Dbenchmark.payloadPath=file:/payload.json
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
-              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
-              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
+#              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
+#              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
         resources:
           limits:
             cpu: ${engine.vcpus}
