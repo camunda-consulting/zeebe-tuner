@@ -34,7 +34,7 @@ zeebe:
   pvcStorageClassName: ${engine.fileSystem}
   env:
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
-      value: "${elasticSearch.clusterSize}"
+      value: "${elasticSearch.shards}"
     - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
@@ -119,6 +119,9 @@ elasticsearch:
       requests:
         cpu: ${elasticSearch.vcpuRequests}
         memory: ${elasticSearch.ram}Gi
+    persistence:
+      size: ${elasticSearch.storageCapacity}Gi
+#      storageClass: ${engine.fileSystem}
 #  data:
 #    replicaCount: ${elasticSearch.clusterSize}
 #    resources:
