@@ -69,7 +69,7 @@ zeebe:
       value: "${engine.maxAppendBatchSize}KB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
       value: "${rocksdb.disableWal}"
-zeebe-gateway:
+zeebeGateway:
   image:
     repository: ${engine.image}
   replicas: ${gateway.replicas}
@@ -101,6 +101,8 @@ operate:
       value: "${operate.importerReaderthreadscount}"
     - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
       value: "${operate.importerThreadscount}"
+    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
+      value: "${operate.shards}"
 tasklist:
   enabled: false
 console:
@@ -113,6 +115,8 @@ identity:
   enabled: false
   keycloak:
     enabled: false
+identityKeycloak:
+  enabled: false
 prometheusServiceMonitor:
   enabled: true
 elasticsearch:
@@ -120,12 +124,29 @@ elasticsearch:
   image:
     tag: ${elasticSearch.version}
   master:
-    heapSize: ${elasticSearch.heapSize}m
-    replicaCount: ${elasticSearch.clusterSize}
+    masterOnly: ${elasticSearch.masterOnly}
+    heapSize: ${elasticSearch.heapSizeMaster}m
+    replicaCount: ${elasticSearch.clusterSizeMaster}
+    persistence:
+      storageClass: ${elasticSearch.fileSystem}
     resources:
       limits:
-        cpu: ${elasticSearch.vcpus}
-        memory: ${elasticSearch.ram}Gi
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
       requests:
-        cpu: ${elasticSearch.vcpuRequests}
-        memory: ${elasticSearch.ram}Gi
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+  data:
+    heapSize: ${elasticSearch.heapSizeData}m
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+      requests:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+    replicaCount: ${elasticSearch.clusterSizeData}
+    persistence:
+      ## @param elasticsearch.master.persistence.size
+      size: ${elasticSearch.storageCapacity}Gi
+      storageClass: ${elasticSearch.fileSystem}

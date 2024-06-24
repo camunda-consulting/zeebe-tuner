@@ -35,7 +35,7 @@ spec:
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
-              -Dbenchmark.payloadPath=file:/payload.json
+              -Dbenchmark.payloadPath=file:/${loadGeneratorStarter.payload}
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
@@ -49,8 +49,8 @@ spec:
             memory: 1Gi
         volumeMounts:
         - name: payload
-          mountPath: payload.json
-          subPath: payload.json
+          mountPath: ${loadGeneratorStarter.payload}
+          subPath: ${loadGeneratorStarter.payload}
           readOnly: true
       volumes:
       - name: payload
