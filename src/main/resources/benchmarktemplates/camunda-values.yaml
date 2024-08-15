@@ -73,7 +73,7 @@ zeebe:
       value: "${engine.maxAppendBatchSize}KB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
       value: "${rocksdb.disableWal}"
-zeebe-gateway:
+zeebeGateway:
   image:
     repository: ${engine.image}
   replicas: ${gateway.replicas}
@@ -92,9 +92,25 @@ zeebe-gateway:
     - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
       value: "${engine.networkCompression}"
 operate:
-  enabled: ${elasticSearch.enabled}
+  enabled: ${operate.enabled}
+  resources:
+    limits:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+    requests:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+  env:
+    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
+      value: "${operate.importerReaderthreadscount}"
+    - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
+      value: "${operate.importerThreadscount}"
+    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
+      value: "${elasticSearch.shardsPerIndex}"
 tasklist:
-  enabled: ${elasticSearch.enabled}
+  enabled: false
+console:
+  enabled: false
 optimize:
   enabled: false
 connectors:
@@ -103,6 +119,8 @@ identity:
   enabled: false
   keycloak:
     enabled: false
+identityKeycloak:
+  enabled: false
 prometheusServiceMonitor:
   enabled: true
 elasticsearch:
@@ -110,25 +128,30 @@ elasticsearch:
   image:
     tag: ${elasticSearch.version}
   master:
-    replicaCount: ${elasticSearch.clusterSize}
-#    masterOnly: true
-    resources:
-      limits:
-        cpu: ${elasticSearch.vcpus}
-        memory: ${elasticSearch.ram}Gi
-      requests:
-        cpu: ${elasticSearch.vcpuRequests}
-        memory: ${elasticSearch.ram}Gi
+    masterOnly: ${elasticSearch.masterOnly}
+    heapSize: ${elasticSearch.heapSizeMaster}m
+    replicaCount: ${elasticSearch.clusterSizeMaster}
     persistence:
       size: ${elasticSearch.storageCapacity}Gi
-#      storageClass: ${engine.fileSystem}
-#  data:
-#    replicaCount: ${elasticSearch.clusterSize}
-#    resources:
-#      limits:
-#        cpu: ${elasticSearch.vcpus}
-#        memory: ${elasticSearch.ram}Gi
-#      requests:
-#        cpu: ${elasticSearch.vcpuRequests}
-#        memory: ${elasticSearch.ram}Gi
-
+      storageClass: ${elasticSearch.fileSystem}
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+      requests:
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+  data:
+    heapSize: ${elasticSearch.heapSizeData}m
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+      requests:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+    replicaCount: ${elasticSearch.clusterSizeData}
+    persistence:
+      ## @param elasticsearch.master.persistence.size
+      size: ${elasticSearch.storageCapacity}Gi
+      storageClass: ${elasticSearch.fileSystem}
