@@ -26,6 +26,7 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
+              -Dzeebe.client.default-job-worker-stream-enabled=true
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
@@ -38,8 +39,8 @@ spec:
               -Dbenchmark.payloadPath=file:/${loadGeneratorStarter.payload}
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
-              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
-              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
+#              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
+#              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
         resources:
           limits:
             cpu: ${engine.vcpus}

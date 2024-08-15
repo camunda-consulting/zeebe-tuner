@@ -26,10 +26,12 @@ spec:
               -Dzeebe.client.security.plaintext=true
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
+              -Dzeebe.client.default-job-worker-stream-enabled=true
               -Dbenchmark.startProcesses=false
               -Dbenchmark.startWorkers=true
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
+              -Dbenchmark.payloadPath=file:/payload.json
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
               -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
               -Dbenchmark.messageScenario=file:/msg-scenario.json
