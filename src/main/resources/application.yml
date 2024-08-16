@@ -4,7 +4,7 @@ ccb:
   bpmnfile: EightTasks.bpmn
 google:
   sheetId: <YOUR_GOOGLE_SHEET_ID>
-  inputs: A1:CB
+  inputs: A1:CM
   oauth:
     clientid: <YOUR_GOOGLE_CLIENT_ID>.apps.googleusercontent.com
     clientsecret: <YOUR_GOOGLE_CLIENT_SECRET>
