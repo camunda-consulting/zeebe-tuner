@@ -65,7 +65,7 @@ deploy-chaos-broker:
 
 .PHONY: benchmark
 benchmark: namespace copy-models
-	kubectl create configmap payload --from-file=payload.json=models/payload.json --from-file=bbb10kbPayload.json=models/bbb10kbPayload.json --from-file=bbb15kbPayload.json=models/bbb15kbPayload.json -n $(namespace)
+	kubectl create configmap payload --from-file=${loadGeneratorStarter.payload}=models/${loadGeneratorStarter.payload} -n $(namespace)
 	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
 	kubectl apply -f benchmark.yaml                                                -n $(namespace)
 # TODO automatically switch/generate benchmark config
