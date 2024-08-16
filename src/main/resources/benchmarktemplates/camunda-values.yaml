@@ -34,7 +34,7 @@ zeebe:
   pvcStorageClassName: ${engine.fileSystem}
   env:
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
-      value: "${elasticSearch.shards}"
+      value: "${elasticSearch.shardsPerIndex}"
     - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
