@@ -104,7 +104,7 @@ operate:
     - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
       value: "${operate.importerReaderthreadscount}"
     - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
-      value: "${operate.importerThreadsCount}"
+      value: "${operate.importerThreadscount}"
     - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
 tasklist:
