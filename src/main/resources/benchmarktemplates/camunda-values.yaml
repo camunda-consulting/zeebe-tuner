@@ -7,14 +7,22 @@ global:
   image:
     tag: ${engine.engineVersion}
   elasticsearch:
-    disableExporter: true
+    disableExporter: ${elasticSearch.disabled}
+  identity:
+    auth:
+      # Disable the Identity authentication
+      # it will fall back to basic-auth: demo/demo as default user
+      enabled: false
+
 zeebe:
+  image:
+    repository: ${engine.image}
   resources:
     limits:
       cpu: ${engine.vcpus}
       memory: ${engine.ram}Gi
     requests:
-      cpu: ${engine.vcpus}
+      cpu: ${engine.vcpuRequest}
       memory: ${engine.ram}Gi
   clusterSize: "${engine.clusterSize}"
   partitionCount: "${engine.partitions}"
@@ -23,14 +31,22 @@ zeebe:
   ioThreadCount: ${engine.ioThreadPoolSizeNode}
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
-  pvcStorageClassName: ssd
+  pvcStorageClassName: ${engine.fileSystem}
   env:
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
+      value: "${elasticSearch.shardsPerIndex}"
+    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
+      value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
+      value: "${engine.logSegmentSize}MB"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
+      value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
-      value: "true"
+      value: "${engine.backpressure}"
     - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
       value: "${engine.bpUseWindowed}"
     - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
@@ -49,7 +65,17 @@ zeebe:
       value: "${engine.initialLimit}"
     - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
       value: "${engine.rttTolerance}"
-zeebe-gateway:
+    - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
+      value: "${engine.networkCompression}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
+      value: "${engine.maxAppendsPerFollower}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
+      value: "${engine.maxAppendBatchSize}KB"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
+      value: "${rocksdb.disableWal}"
+zeebeGateway:
+  image:
+    repository: ${engine.image}
   replicas: ${gateway.replicas}
   resources:
     limits:
@@ -63,25 +89,69 @@ zeebe-gateway:
       value: "true"
     - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
       value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
+      value: "${engine.networkCompression}"
 operate:
-  enabled: false
+  enabled: ${operate.enabled}
+  resources:
+    limits:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+    requests:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+  env:
+    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
+      value: "${operate.importerReaderthreadscount}"
+    - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
+      value: "${operate.importerThreadscount}"
+    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
+      value: "${elasticSearch.shardsPerIndex}"
 tasklist:
+  enabled: false
+console:
   enabled: false
 optimize:
   enabled: false
-prometheusServiceMonitor:
-  enabled: true
+connectors:
+  enabled: false
 identity:
   enabled: false
   keycloak:
     enabled: false
+identityKeycloak:
+  enabled: false
+prometheusServiceMonitor:
+  enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
-  replicas: ${elasticSearch.clusterSize}
-  resources:
-    limits:
-      cpu: ${elasticSearch.vcpus}
-      memory: ${elasticSearch.ram}Gi
-    requests:
-      cpu: ${elasticSearch.vcpus}
-      memory: ${elasticSearch.ram}Gi
+  image:
+    tag: ${elasticSearch.version}
+  master:
+    masterOnly: ${elasticSearch.masterOnly}
+    heapSize: ${elasticSearch.heapSizeMaster}m
+    replicaCount: ${elasticSearch.clusterSizeMaster}
+    persistence:
+      size: ${elasticSearch.storageCapacity}Gi
+      storageClass: ${elasticSearch.fileSystem}
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+      requests:
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+  data:
+    heapSize: ${elasticSearch.heapSizeData}m
+    resources:
+      limits:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+      requests:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+    replicaCount: ${elasticSearch.clusterSizeData}
+    persistence:
+      ## @param elasticsearch.master.persistence.size
+      size: ${elasticSearch.storageCapacity}Gi
+      storageClass: ${elasticSearch.fileSystem}

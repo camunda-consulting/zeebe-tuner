@@ -28,24 +28,31 @@ public class TemplatingService {
 		String yamlFilesPath = yamlFilesUrl.getPath();
 
 		Map<String, String> files = getSourcesAndTarget(new File(yamlFilesPath), inputs.get("testCaseName"));
-		for(Map.Entry<String, String> file : files.entrySet()) {
-			String template = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(file.getKey()), Charset.defaultCharset());
-			FileUtils.createFile(sub.replace(template), file.getValue());
+		if (files != null) {
+			for(Map.Entry<String, String> file : files.entrySet()) {
+				String template = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(file.getKey()), Charset.defaultCharset());
+				FileUtils.createFile(sub.replace(template), file.getValue());
+			}
 		}
     }
 	
 	private Map<String, String> getSourcesAndTarget(File directory, String scenarioName) {
-		Map<String, String> result = new HashMap<>();
-		
-		for(File file : directory.listFiles()) {
+		if (scenarioName != null && !scenarioName.isEmpty()) {
+			System.out.println("Scenario: " + scenarioName);
+			Map<String, String> result = new HashMap<>();
 			
-			if (file.isDirectory()) {
-				result.putAll(getSourcesAndTarget(file, scenarioName));
-			} else {
-				String path = file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(YAML_FOLDER));
-				result.put(path, path.replace(YAML_FOLDER, "runner/testruns/"+scenarioName));
+			for(File file : directory.listFiles()) {
+				
+				if (file.isDirectory()) {
+					result.putAll(getSourcesAndTarget(file, scenarioName));
+				} else {
+					String path = file.getAbsolutePath().substring(file.getAbsolutePath().indexOf(YAML_FOLDER));
+					result.put(path, path.replace(YAML_FOLDER, "runner/testruns/"+scenarioName));
+				}
 			}
+			return result;			
+		} else {
+			return null;
 		}
-		return result;
 	}
 }

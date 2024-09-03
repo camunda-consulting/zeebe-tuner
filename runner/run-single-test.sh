@@ -1,36 +1,38 @@
 #!/bin/bash
+set -euo pipefail
 
 testScenarioName=${1:-'example'}
 TESTRUNS_DONE_DIR=${2:-'testruns-done'}
 TESTRUNS_DIR="testruns"
-dashboardId="uX16GP3nk"
+dashboardId="zeebe-dashboard"
+dashboardName="zeebe"
 
 echo "###############################################"
 echo "Running test for config: ${testScenarioName}"
-
-# get the start time of the run
-# Note that grafana expects timestamps as millis since epoch
-startTime=$(date +%s000)
-startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
-echo "start time = $startTimeIso"
 
 # Start Zeebe
 echo 'Starting Zeebe...'
 (cd "${TESTRUNS_DIR}/${testScenarioName}" && make)
 
-# wait for the starter job to be finished
-echo 'Waiting for completion of benchmark run...'
+# get the start time of the benchmark
+# Note that grafana expects timestamps as millis since epoch
+startTime=$(date +%s000)
+startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
+echo "start time = $startTimeIso"
+
+# execute dynamic sleep in generated run.sh file
+(cd "${TESTRUNS_DIR}/${testScenarioName}" && source run.sh)
+# TODO run c8b as a job (see: https://github.com/falko/zeebe-benchmark/blob/hackdays-2020/Dockerfile#L28) and wait the job to be finished, e.g. using:
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
-sleep 1800
+
+# get the endtime of the benchmark
+endTime=$(date +%s000)
+endTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
+echo "end time = $endTimeIso"
 
 # cleanup
 echo 'Finished. Cleaning up now...'
 (cd "${TESTRUNS_DIR}/${testScenarioName}" && make clean)
-
-# get the endtime of the run
-endTime=$(date +%s000)
-endTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
-echo "end time = $endTimeIso"
 
 # Generate Dashboard Links
 
@@ -46,7 +48,7 @@ echo $grafanaUrl
 ipAddress="$(grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' <<< "$grafanaUrl")"
 
 # create the url to the low-latency dashboard in the correct time frame
-grafanaUrl="http://$ipAddress/d/$dashboardId/zeebe-low-latency?orgId=1&from=$startTime&to=$endTime&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All"
+grafanaUrl="http://$ipAddress/d/$dashboardId/$dashboardName?orgId=1&from=$startTime&to=$endTime&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All"
 #echo $grafanaUrl
 
 if [ ! -d "$TESTRUNS_DONE_DIR" ]; then
@@ -73,4 +75,10 @@ else
   rm -rf "${TESTRUNS_DIR}/${testScenarioName}"
 fi
 
+# immediately persist test config
+#cp -r ../src/main/resources "${TESTRUNS_DONE_DIR}/zeebe-tuner-config"
+#cd $TESTRUNS_DONE_DIR
+#git add . && git commit . -m "Add benchmark run ${testScenarioName}" && git push
+#cd -
 
+echo "Benchmark ${testScenarioName} has been completed."

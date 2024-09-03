@@ -15,8 +15,12 @@ import com.google.api.client.json.gson.GsonFactory;
 @SpringBootApplication
 public class BenchmarkAutomateApplication {
 	
+	/**
+	 * Immediately exits after start since generatation happens during startup in {@link BenchmarkController#run()}
+	 */
 	public static void main(String[] args) {
-		SpringApplication.run(BenchmarkAutomateApplication.class, args);
+		SpringApplication.run(BenchmarkAutomateApplication.class, args)
+			.close();
 		
 		
 	}

@@ -3,6 +3,7 @@ package io.camunda.benchmark.service;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,11 @@ public class ScenarioBuilderService {
         	String prefixHeader="";
         	int idxRow=0;
             for (List<Object> row : values) {
+				String testName = (String) row.get(0);
+				String testTime = (String) row.get(1);
+				if (idxRow>1 && (testName.isEmpty() || !testTime.isEmpty())) {
+					continue;
+				}
             	int idxCol=0;
             	if (idxRow>1) {
             		inputMaps.add(new HashMap<>());
@@ -75,7 +81,51 @@ public class ScenarioBuilderService {
             		}
             		idxCol++;
             	}
-                idxRow++;
+            	if (idxRow>1) {
+                String chaosTarget = "";
+                String gatewayDelay = inputMaps.get(idxRow-2).get("gateway.interRegionLatency");
+                String brokersDelay = inputMaps.get(idxRow-2).get("engine.interRegionLatency");
+                if (!"0".equals(gatewayDelay)) {
+                  chaosTarget+="deploy-chaos-gateway";
+                }
+                if (!"0".equals(brokersDelay)) {
+                  chaosTarget+=" deploy-chaos-broker";
+                }
+                inputMaps.get(idxRow-2).put("chaosTarget",chaosTarget);
+                String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
+                try {
+                  int vcpuRequest = Integer.valueOf(vcpu)-1;
+                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpuRequest));
+                } catch (NumberFormatException nfe) {
+                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
+                }
+                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpus");
+                try {
+                  int vcpuRequest = Integer.valueOf(vcpu)-1;
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpuRequest));
+                } catch (NumberFormatException nfe) {
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpu));
+                }
+                String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
+                try {
+                  int nbNodes = Integer.valueOf(nbNodesStr);
+                  String evenBrokers="";
+                  String oddBrokers="";
+                  for(int i=0;i<nbNodes;i++) {
+                    if (i%2==0) {
+                      evenBrokers+="        - camunda-zeebe-"+i+"\n";
+                    } else {
+                      oddBrokers+="          - camunda-zeebe-"+i+"\n";
+                    }
+                  }
+                  inputMaps.get(idxRow-2).put("evenBrokers",evenBrokers);
+                  inputMaps.get(idxRow-2).put("oddBrokers",oddBrokers);
+                } catch (NumberFormatException nfe) {
+                }
+                inputMaps.get(idxRow-2).put("elasticSearch.disabled",
+                  String.valueOf(Boolean.valueOf(inputMaps.get(idxRow-2).get("elasticSearch.enabled")) == false));
+              }
+              idxRow++;
             }
         }
 	}

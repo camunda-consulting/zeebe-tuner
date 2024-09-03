@@ -1,0 +1,57 @@
+# config for https://github.com/camunda-community-hub/camunda-8-benchmark
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmark
+  labels:
+    app: benchmark
+spec:
+  selector:
+    matchLabels:
+      app: benchmark
+  replicas: ${loadGeneratorStarter.starterReplicas}
+  template:
+    metadata:
+      labels:
+        app: benchmark
+    spec:
+      containers:
+      - name: benchmark
+        image: camundacommunityhub/camunda-8-benchmark:main
+        imagePullPolicy: Always
+        env:
+          - name: JAVA_OPTIONS
+            value: >-
+              -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
+              -Dzeebe.client.security.plaintext=true
+              -Dbenchmark.startProcesses=false
+              -Dbenchmark.startWorkers=false
+              -Dbenchmark.messageScenario=file:/msg-scenario.json
+              -Dbenchmark.messagesTtl=${loadGeneratorStarter.messageTtl}
+              -Dbenchmark.messagesScenariosPerSecond=${loadGeneratorStarter.startThroughput}
+              -Dbenchmark.delayBetweenMessages=1
+              -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
+              -Dbenchmark.autoDeployProcess=false
+        resources:
+          limits:
+            cpu: ${engine.vcpus}
+            memory: ${engine.ram}Gi
+          requests:
+            cpu: 1
+            memory: 1Gi
+        volumeMounts:
+        - name: payload
+          mountPath: payload.json
+          subPath: payload.json
+          readOnly: true
+        - name: msg-scenario
+          mountPath: msg-scenario.json
+          subPath: msg-scenario.json
+          readOnly: true
+      volumes:
+      - name: payload
+        configMap:
+          name: payload
+      - name: msg-scenario
+        configMap:
+          name: msg-scenario
