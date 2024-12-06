@@ -1,15 +1,15 @@
 server:
-  port : 8082
+  port : 8075
 ccb:
   bpmnfile: EightTasks.bpmn
 google:
-  sheetId: <YOUR_GOOGLE_SHEET_ID>
+  sheetId: 1wAYwnktT_nHwfm_7YJxGrP8joHOPn8T6SliwbFd_UK4
   inputs: A1:CM
   oauth:
-    clientid: <YOUR_GOOGLE_CLIENT_ID>.apps.googleusercontent.com
-    clientsecret: <YOUR_GOOGLE_CLIENT_SECRET>
+    clientid: 403405972886-ednr3cvd2nl6s4mvmtjh0p1v03lpr6ft.apps.googleusercontent.com
+    clientsecret: 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
     callbackPort: 8888
-    username: <YOUR_GOOGLE_USERNAME>
+    username: jothikiruthika.viswanathan@camunda.com
 kube:
   namespace: camunda
   region: us-east-1

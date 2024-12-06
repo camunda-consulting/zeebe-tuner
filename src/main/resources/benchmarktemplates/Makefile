@@ -8,7 +8,8 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 # TODO configure through runner
-models ?= ../../../models
+#models ?= ../../../models
+models ?= ../../../../zeebe-benchmarks/dhl-express-clear/dhl-express-clear-pov/models
 
 .PHONY: all
 all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
@@ -66,8 +67,9 @@ deploy-chaos-broker:
 .PHONY: benchmark
 benchmark: namespace copy-models
 	kubectl create configmap payload --from-file=${loadGeneratorStarter.payload}=models/${loadGeneratorStarter.payload} -n $(namespace)
-	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
-	kubectl apply -f benchmark.yaml                                                -n $(namespace)
+#	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
+	kubectl apply -f benchmark.yaml -n $(namespace)
+	kubectl apply -f clear-worker-deployment.yaml   -n $(namespace)
 # TODO automatically switch/generate benchmark config
 
 # Getting url for grafana is vendor specific
@@ -78,8 +80,9 @@ url-grafana:
 .PHONY: clean-benchmark
 clean-benchmark:
 	-kubectl delete -f benchmark.yaml      -n $(namespace)
+	-kubectl delete -f clear-worker-deployment.yaml -n $(namespace)
 	-kubectl delete configmap payload      -n $(namespace)
-	-kubectl delete configmap msg-scenario -n $(namespace)
+#	-kubectl delete configmap msg-scenario -n $(namespace)
 
 .PHONY: await-benchmark
 await-benchmark:

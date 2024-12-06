@@ -4,8 +4,8 @@
 # https://github.com/camunda/camunda-platform-helm/blob/main/charts/camunda-platform/values.yaml
 
 global:
-  image:
-    tag: ${engine.engineVersion}
+#  image:
+#    tag: ${engine.engineVersion}
   elasticsearch:
     disableExporter: ${elasticSearch.disabled}
   identity:
@@ -17,12 +17,14 @@ global:
 zeebe:
   image:
     repository: ${engine.image}
+#  nodeSelector:
+#    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${engine.vcpus}
       memory: ${engine.ram}Gi
     requests:
-      cpu: ${engine.vcpuRequest}
+      cpu: ${engine.vcpus}
       memory: ${engine.ram}Gi
   clusterSize: "${engine.clusterSize}"
   partitionCount: "${engine.partitions}"
@@ -41,42 +43,12 @@ zeebe:
       value: "true"
     - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
       value: "${engine.logSegmentSize}MB"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
-      value: "${engine.preAllocateSegmentFiles}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
-      value: "${engine.disableExplicitRaftFlush}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
-      value: "${engine.backpressure}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
-      value: "${engine.bpUseWindowed}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
-      value: "${engine.backPressureAlgorithm}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
-      value: "${engine.vegasAlpha}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
-      value: "${engine.vegasBeta}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
-      value: "${engine.minLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
-      value: "${engine.rttTolerance}"
-    - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
-      value: "${engine.networkCompression}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
-      value: "${engine.maxAppendsPerFollower}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
-      value: "${engine.maxAppendBatchSize}KB"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
-      value: "${rocksdb.disableWal}"
 zeebeGateway:
   image:
     repository: ${engine.image}
   replicas: ${gateway.replicas}
+#  nodeSelector:
+#    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${gateway.vcpus}
@@ -93,6 +65,8 @@ zeebeGateway:
       value: "${engine.networkCompression}"
 operate:
   enabled: ${operate.enabled}
+#  nodeSelector:
+#    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     limits:
       cpu: ${operate.vcpus}
@@ -108,7 +82,7 @@ operate:
     - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
 tasklist:
-  enabled: false
+  enabled: true
 console:
   enabled: false
 optimize:
@@ -125,11 +99,13 @@ prometheusServiceMonitor:
   enabled: true
 elasticsearch:
   enabled: ${elasticSearch.enabled}
-  image:
-    tag: ${elasticSearch.version}
+#  image:
+#    tag: ${elasticSearch.version}
   master:
+#    nodeSelector:
+#      cloud.google.com/gke-nodepool: pool-${engine.machineType}
     masterOnly: ${elasticSearch.masterOnly}
-    heapSize: ${elasticSearch.heapSizeMaster}m
+#    heapSize: ${elasticSearch.heapSizeMaster}m
     replicaCount: ${elasticSearch.clusterSizeMaster}
     persistence:
       size: ${elasticSearch.storageCapacity}Gi
@@ -142,7 +118,9 @@ elasticsearch:
         cpu: ${elasticSearch.vcpusMaster}
         memory: ${elasticSearch.ramMaster}Gi
   data:
-    heapSize: ${elasticSearch.heapSizeData}m
+#    nodeSelector:
+#      cloud.google.com/gke-nodepool: pool-${engine.machineType}
+#    heapSize: ${elasticSearch.heapSizeData}m
     resources:
       limits:
         cpu: ${elasticSearch.vcpusData}
