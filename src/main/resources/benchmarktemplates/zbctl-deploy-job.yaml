@@ -5,9 +5,11 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        alpha.eksctl.io/nodegroup-name: t3-medium
       containers:
       - name: zbctl-deploy
-        image: camunda/zeebe:8.2.10
+        image: ${engine.image}
         command: ["sh", "-c", "zbctl --host camunda-zeebe-gateway --insecure deploy resource /models/*.*mn"]
         volumeMounts:
         - name: models

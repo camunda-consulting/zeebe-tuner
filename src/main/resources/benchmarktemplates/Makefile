@@ -9,10 +9,16 @@ chartValues ?= "camunda-values.yaml"
 
 # TODO configure through runner
 #models ?= ../../../models
-models ?= ../../../../zeebe-benchmarks/dhl-express-clear/dhl-express-clear-pov/models
+models ?= ../../../../zeebe-benchmarks/hsbc-virtusa/models
 
 .PHONY: all
-all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
+all: sync-image camunda await-zeebe sleep240 rebalance-leaders ${chaosTarget} benchmark
+
+.PHONY: sleep240
+sleep240:
+	echo "Deploy BPMN manually, fix zbctl deploy job"
+	$(shell sleep 240)
+	echo "Wait over, moving to rebalance leader"
 
 .PHONY: rebalance
 rebalance: rebalance-leaders
@@ -69,7 +75,7 @@ benchmark: namespace copy-models
 	kubectl create configmap payload --from-file=${loadGeneratorStarter.payload}=models/${loadGeneratorStarter.payload} -n $(namespace)
 #	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
 	kubectl apply -f benchmark.yaml -n $(namespace)
-	kubectl apply -f clear-worker-deployment.yaml   -n $(namespace)
+	#kubectl apply -f clear-worker-deployment.yaml   -n $(namespace)
 # TODO automatically switch/generate benchmark config
 
 # Getting url for grafana is vendor specific

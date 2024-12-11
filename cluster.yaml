@@ -1,0 +1,90 @@
+---
+apiVersion: eksctl.io/v1alpha5
+metadata:
+  name: jothi-poc-bm # e.g. camunda-cluster
+  region: us-west-2 # e.g. eu-central-1
+  version: "1.31"
+availabilityZones:
+  - us-west-2c # e.g. eu-central-1c, the minimal is two distinct Availability Zones (AZs) within the region
+  - us-west-2b
+  - us-west-2a
+cloudWatch:
+  clusterLogging: {}
+iam:
+  vpcResourceControllerPolicy: true
+addons:
+  - name: vpc-cni
+    resolveConflicts: overwrite
+    version: latest
+    useDefaultPodIdentityAssociations: true
+
+  - name: kube-proxy
+    resolveConflicts: overwrite
+    version: latest
+    useDefaultPodIdentityAssociations: true
+
+  - name: aws-ebs-csi-driver
+    resolveConflicts: overwrite
+    version: latest
+    useDefaultPodIdentityAssociations: true
+
+  - name: coredns
+    resolveConflicts: overwrite
+    version: latest
+    useDefaultPodIdentityAssociations: true
+
+  - name: eks-pod-identity-agent
+    version: latest
+
+kind: ClusterConfig
+kubernetesNetworkConfig:
+  ipFamily: IPv4
+managedNodeGroups:
+  - amiFamily: AmazonLinux2
+    desiredCapacity: 4 # number of default nodes spawned if no cluster autoscaler is used
+    disableIMDSv1: true
+    iam:
+      withAddonPolicies:
+        albIngress: true
+        autoScaler: true
+        cloudWatch: true
+        ebs: true
+        awsLoadBalancerController: true
+    instanceSelector: {}
+    instanceTypes:
+      - m6i.xlarge # node type that is selected as default
+    labels:
+      alpha.eksctl.io/cluster-name: jothi-poc-bm # e.g. camunda-cluster
+      alpha.eksctl.io/nodegroup-name: services
+    maxSize: 10 # maximum node pool size for cluster autoscaler
+    minSize: 1 # minimum node pool size for cluster autoscaler
+    name: services
+    privateNetworking: true
+    releaseVersion: ""
+    securityGroups:
+      withLocal: null
+      withShared: null
+    ssh:
+      allow: false
+      publicKeyPath: ""
+    tags:
+      alpha.eksctl.io/nodegroup-name: services
+      alpha.eksctl.io/nodegroup-type: managed
+    volumeIOPS: 3000
+    volumeSize: 80
+    volumeThroughput: 125
+    volumeType: gp3
+privateCluster:
+  enabled: false
+  skipEndpointCreation: false
+vpc:
+  autoAllocateIPv6: false
+  cidr: 10.192.0.0/16
+  clusterEndpoints:
+    privateAccess: false
+    publicAccess: true
+  manageSharedNodeSecurityGroupRules: true
+  nat:
+    gateway: HighlyAvailable
+secretsEncryption:
+  keyARN: arn:aws:kms:us-west-2:487945211782:key/7c43d6df-eac9-4c90-8ab2-6efc670a6b21
