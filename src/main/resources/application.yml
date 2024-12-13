@@ -3,13 +3,13 @@ server:
 ccb:
   bpmnfile: EightTasks.bpmn
 google:
-  sheetId: 14M9TF-zbwFmmWLnpiW_bgsP62Wy6cBUe81EkI-6BqBk
+  sheetId: xxxx
   inputs: A1:BX
   oauth:
-    clientid: 403405972886-ednr3cvd2nl6s4mvmtjh0p1v03lpr6ft.apps.googleusercontent.com
-    clientsecret: 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
+    clientid: xxxx
+    clientsecret: xxxx
     callbackPort: 8888
-    username: jothikiruthika.viswanathan@camunda.com
+    username: xx@xx.com
 kube:
   namespace: camunda
   region: us-east-1
