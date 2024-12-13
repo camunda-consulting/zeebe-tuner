@@ -2,7 +2,7 @@ all:
 	./gradlew bootRun
 
 install:
-	cd runner && ./run-all-tests.sh  -o /Users/jothikiruthikaviswanathan/Desktop/tryout-arena/zeebe-tuning/zeebe-benchmarks/hsbc-virtusa/testruns-done
+	cd runner && ./run-all-tests.sh  -o /Users/jothikiruthikaviswanathan/Desktop/tryout-arena/zeebe-tuning/zeebe-benchmarks/barclays-pre-trade/testruns-done
 
 clean:
 	-cd runner/current/run && $(MAKE) clean

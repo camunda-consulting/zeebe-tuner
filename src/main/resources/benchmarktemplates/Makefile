@@ -9,15 +9,15 @@ chartValues ?= "camunda-values.yaml"
 
 # TODO configure through runner
 #models ?= ../../../models
-models ?= ../../../../zeebe-benchmarks/hsbc-virtusa/models
+models ?= ../../../../zeebe-benchmarks/barclays-pre-trade/models
 
 .PHONY: all
-all: sync-image camunda await-zeebe sleep240 rebalance-leaders ${chaosTarget} benchmark
+all: sync-image camunda await-zeebe sleep150 rebalance-leaders ${chaosTarget} benchmark
 
-.PHONY: sleep240
-sleep240:
+.PHONY: sleep150
+sleep150:
 	echo "Deploy BPMN manually, fix zbctl deploy job"
-	$(shell sleep 240)
+	$(shell sleep 150)
 	echo "Wait over, moving to rebalance leader"
 
 .PHONY: rebalance
@@ -72,10 +72,9 @@ deploy-chaos-broker:
 
 .PHONY: benchmark
 benchmark: namespace copy-models
-	kubectl create configmap payload --from-file=${loadGeneratorStarter.payload}=models/${loadGeneratorStarter.payload} -n $(namespace)
+	kubectl create configmap payload --from-file=payload.json=models/payload.json -n $(namespace)
 #	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
 	kubectl apply -f benchmark.yaml -n $(namespace)
-	#kubectl apply -f clear-worker-deployment.yaml   -n $(namespace)
 # TODO automatically switch/generate benchmark config
 
 # Getting url for grafana is vendor specific
@@ -86,7 +85,6 @@ url-grafana:
 .PHONY: clean-benchmark
 clean-benchmark:
 	-kubectl delete -f benchmark.yaml      -n $(namespace)
-	-kubectl delete -f clear-worker-deployment.yaml -n $(namespace)
 	-kubectl delete configmap payload      -n $(namespace)
 #	-kubectl delete configmap msg-scenario -n $(namespace)
 

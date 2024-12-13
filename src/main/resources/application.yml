@@ -3,8 +3,8 @@ server:
 ccb:
   bpmnfile: EightTasks.bpmn
 google:
-  sheetId: 1wAYwnktT_nHwfm_7YJxGrP8joHOPn8T6SliwbFd_UK4
-  inputs: A1:CM
+  sheetId: 14M9TF-zbwFmmWLnpiW_bgsP62Wy6cBUe81EkI-6BqBk
+  inputs: A1:BX
   oauth:
     clientid: 403405972886-ednr3cvd2nl6s4mvmtjh0p1v03lpr6ft.apps.googleusercontent.com
     clientsecret: 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

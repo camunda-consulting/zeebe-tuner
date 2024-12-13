@@ -16,7 +16,7 @@ spec:
         app: benchmark
     spec:
       nodeSelector:
-        alpha.eksctl.io/nodegroup-name: t3-medium
+        alpha.eksctl.io/nodegroup-name: t3-4xlarge
       containers:
       - name: benchmark
         image: camundacommunityhub/camunda-8-benchmark:main
@@ -36,10 +36,10 @@ spec:
               -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
               -Dbenchmark.maxBackpressurePercentage=1.0
               -Dbenchmark.startWorkers=true
-              -Dbenchmark.jobType=io.camunda:http-json:1
+              -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
-              -Dbenchmark.payloadPath=file:/${loadGeneratorStarter.payload}
+              -Dbenchmark.payloadPath=file:/payload.json
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
 #              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
@@ -53,8 +53,8 @@ spec:
             memory: 1Gi
         volumeMounts:
         - name: payload
-          mountPath: ${loadGeneratorStarter.payload}
-          subPath: ${loadGeneratorStarter.payload}
+          mountPath: payload.json
+          subPath: payload.json
           readOnly: true
       volumes:
       - name: payload

@@ -1,0 +1,126 @@
++ export ZEEBE_BROKER_CLUSTER_NODEID=0
++ ZEEBE_BROKER_CLUSTER_NODEID=0
+++ ls -A /exporters/
++ '[' '' ']'
++ echo 'No exporters available.'
+No exporters available.
++ exec /usr/local/zeebe/bin/broker
+Picked up JAVA_TOOL_OPTIONS: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/usr/local/zeebe/data -XX:ErrorFile=/usr/local/zeebe/data/zeebe_error%p.log -XX:+ExitOnOutOfMemoryError
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+  ______  ______   ______   ____    ______     ____    _____     ____    _  __  ______   _____  
+ |___  / |  ____| |  ____| |  _ \  |  ____|   |  _ \  |  __ \   / __ \  | |/ / |  ____| |  __ \ 
+    / /  | |__    | |__    | |_) | | |__      | |_) | | |__) | | |  | | | ' /  | |__    | |__) |
+   / /   |  __|   |  __|   |  _ <  |  __|     |  _ <  |  _  /  | |  | | |  <   |  __|   |  _  / 
+  / /__  | |____  | |____  | |_) | | |____    | |_) | | | \ \  | |__| | | . \  | |____  | | \ \ 
+ /_____| |______| |______| |____/  |______|   |____/  |_|  \_\  \____/  |_|\_\ |______| |_|  \_\
+                                                                                                
+2024-12-13 11:38:38.435 [] [background-preinit] [] INFO 
+      org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2024-12-13 11:38:38.530 [] [main] [] INFO 
+      io.camunda.application.StandaloneBroker - Starting StandaloneBroker v8.6.6 using Java 21.0.5 with PID 7 (/usr/local/zeebe/lib/camunda-zeebe-8.6.6.jar started by camunda in /usr/local/zeebe)
+2024-12-13 11:38:38.533 [] [main] [] INFO 
+      io.camunda.application.StandaloneBroker - The following 2 profiles are active: "broker", "standalone"
+2024-12-13 11:38:39.999 [] [main] [] INFO 
+      org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-12-13 11:38:40.011 [] [main] [] INFO 
+      org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-0.0.0.0-8080"]
+2024-12-13 11:38:40.013 [] [main] [] INFO 
+      org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2024-12-13 11:38:40.013 [] [main] [] INFO 
+      org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.33]
+2024-12-13 11:38:40.075 [] [main] [] INFO 
+      org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-12-13 11:38:40.077 [] [main] [] INFO 
+      org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1491 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2024-12-13 11:38:40.579 [] [netty-messaging-event-nio-server-0] [] INFO 
+      io.atomix.cluster.messaging.impl.NettyMessagingService - TCP server listening for connections on 0.0.0.0:26502
+2024-12-13 11:38:40.608 [] [netty-messaging-event-nio-server-0] [] INFO 
+      io.atomix.cluster.messaging.impl.NettyMessagingService - Started messaging service bound to [0.0.0.0:26502], advertising camunda-zeebe-0.camunda-zeebe:26502, and using plaintext
+2024-12-13 11:38:40.619 [] [netty-unicast-event-nio-client-0] [] INFO 
+      io.atomix.cluster.messaging.impl.NettyUnicastService - Started plaintext unicast service bound to 0.0.0.0:26502, advertising camunda-zeebe-0.camunda-zeebe:26502
+2024-12-13 11:38:40.619 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.discovery.BootstrapDiscoveryProvider - Local node Node{id=0, address=camunda-zeebe-0.camunda-zeebe:26502} joined the bootstrap service
+2024-12-13 11:38:40.623 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.protocol.swim - Started
+2024-12-13 11:38:40.623 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.impl.DefaultClusterMembershipService - Started cluster membership service for member Member{id=0, address=camunda-zeebe-0.camunda-zeebe:26502, properties={}}
+2024-12-13 11:38:40.624 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.messaging.impl.DefaultClusterCommunicationService - Started
+2024-12-13 11:38:40.624 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.messaging.impl.DefaultClusterEventService - Started
+2024-12-13 11:38:40.925 [] [main] [] WARN 
+      io.camunda.service.license.CamundaLicense - No license detected when one is expected. Please provide a license through the CAMUNDA_LICENSE_KEY environment variable.
+2024-12-13 11:38:40.938 [] [main] [] WARN 
+      io.camunda.zeebe.broker.system - No backup store is configured. Backups will not be taken
+2024-12-13 11:38:40.951 [] [main] [] WARN 
+      org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'broker' defined in io.camunda.zeebe.broker.BrokerModuleConfiguration: Failed to instantiate [io.camunda.zeebe.broker.Broker]: Factory method 'broker' threw exception with message: null
+2024-12-13 11:38:40.951 [] [main] [] WARN 
+      org.springframework.beans.factory.support.DisposableBeanAdapter - Invocation of close method failed on bean with name 'brokerModuleConfiguration': java.lang.NullPointerException: Cannot invoke "io.camunda.zeebe.broker.Broker.close()" because "this.broker" is null
+2024-12-13 11:38:40.953 [] [main] [] INFO 
+      io.atomix.cluster.messaging.impl.DefaultClusterCommunicationService - Stopped
+2024-12-13 11:38:40.954 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.messaging.impl.DefaultClusterEventService - Stopped
+2024-12-13 11:38:40.954 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.protocol.swim - 0 - Member deactivated: Member{id=0, address=camunda-zeebe-0.camunda-zeebe:26502, properties={}}
+2024-12-13 11:38:40.955 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.protocol.swim - Stopped
+2024-12-13 11:38:40.955 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.discovery.BootstrapDiscoveryProvider - Local node Member{id=0, address=camunda-zeebe-0.camunda-zeebe:26502, properties={}} left the bootstrap servide
+2024-12-13 11:38:40.956 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.impl.DefaultClusterMembershipService - Stopped cluster membership service for member Member{id=0, address=camunda-zeebe-0.camunda-zeebe:26502, properties={}}
+2024-12-13 11:38:41.070 [] [ForkJoinPool.commonPool-worker-1] [] INFO 
+      io.atomix.cluster.messaging.impl.NettyUnicastService - Stopped plaintext unicast service bound to 0.0.0.0:26502, advertising camunda-zeebe-0.camunda-zeebe:26502
+2024-12-13 11:38:41.185 [] [ForkJoinPool.commonPool-worker-1] [] INFO 
+      io.atomix.cluster.messaging.impl.NettyMessagingService - Stopped messaging service bound to [0.0.0.0:26502], advertising camunda-zeebe-0.camunda-zeebe:26502, and using plaintext
+2024-12-13 11:38:41.185 [] [atomix-cluster-0] [] INFO 
+      io.atomix.cluster.AtomixCluster - Stopped
+2024-12-13 11:38:41.200 [] [main] [] INFO 
+      org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2024-12-13 11:38:41.223 [] [main] [] INFO 
+      org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-12-13 11:38:41.241 [] [main] [] ERROR
+      org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'broker' defined in io.camunda.zeebe.broker.BrokerModuleConfiguration: Failed to instantiate [io.camunda.zeebe.broker.Broker]: Factory method 'broker' threw exception with message: null
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:648) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1355) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1185) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971) ~[spring-context-6.1.14.jar:6.1.14]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.14.jar:6.1.14]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.6.jar:3.3.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) [spring-boot-3.3.6.jar:3.3.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) [spring-boot-3.3.6.jar:3.3.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) [spring-boot-3.3.6.jar:3.3.6]
+	at io.camunda.application.StandaloneBroker.main(StandaloneBroker.java:30) [camunda-zeebe-8.6.6.jar:8.6.6]
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [io.camunda.zeebe.broker.Broker]: Factory method 'broker' threw exception with message: null
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:178) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:644) ~[spring-beans-6.1.14.jar:6.1.14]
+	... 17 more
+Caused by: java.lang.NullPointerException
+	at java.base/java.util.concurrent.ConcurrentHashMap.putVal(Unknown Source) ~[?:?]
+	at java.base/java.util.concurrent.ConcurrentHashMap.putIfAbsent(Unknown Source) ~[?:?]
+	at java.base/java.lang.ClassLoader.getClassLoadingLock(Unknown Source) ~[?:?]
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(Unknown Source) ~[?:?]
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(Unknown Source) ~[?:?]
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(Unknown Source) ~[?:?]
+	at java.base/java.lang.ClassLoader.loadClass(Unknown Source) ~[?:?]
+	at io.camunda.zeebe.broker.exporter.repo.ExporterRepository.load(ExporterRepository.java:82) ~[zeebe-broker-8.6.6.jar:8.6.6]
+	at io.camunda.zeebe.broker.Broker.buildExporterRepository(Broker.java:150) ~[zeebe-broker-8.6.6.jar:8.6.6]
+	at io.camunda.zeebe.broker.Broker.<init>(Broker.java:71) ~[zeebe-broker-8.6.6.jar:8.6.6]
+	at io.camunda.zeebe.broker.Broker.<init>(Broker.java:49) ~[zeebe-broker-8.6.6.jar:8.6.6]
+	at io.camunda.zeebe.broker.BrokerModuleConfiguration.broker(BrokerModuleConfiguration.java:87) ~[camunda-zeebe-8.6.6.jar:8.6.6]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:146) ~[spring-beans-6.1.14.jar:6.1.14]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:644) ~[spring-beans-6.1.14.jar:6.1.14]
+	... 17 more
