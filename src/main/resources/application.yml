@@ -8,7 +8,7 @@ google:
   oauth:
     clientid: xxxx
     clientsecret: xxxx
-    callbackPort: 8888
+    callbackPort: xx
     username: xx@xx.com
 kube:
   namespace: camunda
