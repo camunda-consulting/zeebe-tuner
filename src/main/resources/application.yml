@@ -5,11 +5,11 @@ ccb:
 google:
   sheetId: xxxx
   inputs: A1:BX
-  oauth:
-    clientid: xxxx
-    clientsecret: xxxx
-    callbackPort: xx
-    username: xx@xx.x
+#  oauth:
+#    clientid: xxxx
+#    clientsecret: xxxx
+#    callbackPort: xx
+#    username: xx@xx.x
 kube:
   namespace: camunda
   region: us-east-1
