@@ -75,6 +75,15 @@ zeebe:
       value: "${engine.maxAppendBatchSize}KB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
       value: "${rocksdb.disableWal}"
+    # Enable JSON logging for Google Cloud Stackdriver
+    - name: ZEEBE_LOG_APPENDER
+      value: Stackdriver
+    - name: ZEEBE_LOG_STACKDRIVER_SERVICENAME
+      value: zeebe
+    - name: ZEEBE_LOG_STACKDRIVER_SERVICEVERSION
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
 zeebeGateway:
   image:
     repository: ${engine.image}
@@ -95,6 +104,15 @@ zeebeGateway:
       value: "${gateway.numberOfThreads}"
     - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
       value: "${engine.networkCompression}"
+    # Enable JSON logging for Google Cloud Stackdriver
+    - name: ZEEBE_LOG_APPENDER
+      value: Stackdriver
+    - name: ZEEBE_LOG_STACKDRIVER_SERVICENAME
+      value: zeebe
+    - name: ZEEBE_LOG_STACKDRIVER_SERVICEVERSION
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
 operate:
   enabled: ${operate.enabled}
   resources:
