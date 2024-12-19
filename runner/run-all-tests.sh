@@ -18,9 +18,10 @@ run()
     find testruns -mindepth 1 -maxdepth 1 -type d | sort | while IFS= read -r testScenarioDir; do
       testScenarioName=$(basename "$testScenarioDir")
       echo "Scenario $testScenarioName"
-      # create a symlink for quickly debugging the current test run (not used for execution)
+      # create a symlink for quickly debugging the current test run (not (yet) used for execution)
       mkdir -p current
-      ln -fs "../$testScenarioDir" "current/run"
+      rm -f current/run
+      ln -s "../$testScenarioDir" "current/run"
       ./run-single-test.sh "$testScenarioName" "$TESTRUNS_DONE_DIR"
       rm -rf current # remove debug symlink
     done
