@@ -8,13 +8,18 @@ chart ?= camunda/camunda-platform
 chartValues ?= "camunda-values.yaml"
 
 # TODO configure through runner
-models ?= ../../../models
+modelDir ?= ../../../models
+models ?= *.*mn
+#models ?= ${loadGeneratorStarter.processModel}.bpmn
+benchmark ?= benchmark.yaml
+#benchmark ?= benchmark-msg.yaml
+#benchmark ?= benchmark-msg-with-jobs.yaml
+payload ?= ${loadGeneratorStarter.payload}
+scenario ?= msg-scenario.json
+#scenario ?= msg-scenario-references.json
 
 .PHONY: all
-all: sync-image camunda await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
-
-.PHONY: rebalance
-rebalance: rebalance-leaders
+all: sync-image camunda pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
@@ -26,6 +31,7 @@ else
 endif
 
 include $(root)/include/camunda.mk
+include $(root)/metrics/metrics.mk # for Grafana URL
 
 .PHONY: sync-image
 sync-image:
@@ -38,7 +44,10 @@ deploy-models: copy-models job-deploy-models logs-job-deploy-models clean-job-de
 
 .PHONY: copy-models
 copy-models:
-	mkdir -p models && cp $(models)/* models
+	mkdir -p models
+	cp $(modelDir)/$(models) models
+	cp $(modelDir)/$(payload) models
+	cp $(modelDir)/$(scenario) models
 
 #: Create k8s job to deploy BPMN and DMN models using zbctl
 job-deploy-models:
@@ -65,19 +74,15 @@ deploy-chaos-broker:
 
 .PHONY: benchmark
 benchmark: namespace copy-models
-	kubectl create configmap payload --from-file=${loadGeneratorStarter.payload}=models/${loadGeneratorStarter.payload} -n $(namespace)
+	kubectl create configmap payload      --from-file=$(payload)=models/$(payload)       -n $(namespace)
 	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
-	kubectl apply -f benchmark.yaml                                                -n $(namespace)
+	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/$(scenario) -n $(namespace)
+	kubectl apply -f $(benchmark)                                                          -n $(namespace)
 # TODO automatically switch/generate benchmark config
-
-# Getting url for grafana is vendor specific
-.PHONY: url-grafana
-url-grafana:
-	@echo "http://`kubectl get svc metrics-grafana-loadbalancer -n default -o 'custom-columns=ip:status.loadBalancer.ingress[0].ip' | tail -n 1`/d/zeebe-dashboard/zeebe?var-namespace=$(namespace)"
 
 .PHONY: clean-benchmark
 clean-benchmark:
-	-kubectl delete -f benchmark.yaml      -n $(namespace)
+	-kubectl delete -f $(benchmark)        -n $(namespace)
 	-kubectl delete configmap payload      -n $(namespace)
 	-kubectl delete configmap msg-scenario -n $(namespace)
 
