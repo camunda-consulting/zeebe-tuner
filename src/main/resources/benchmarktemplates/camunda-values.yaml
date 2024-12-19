@@ -112,7 +112,7 @@ operate:
     - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
 tasklist:
-  enabled: false
+  enabled: ${elasticSearch.enabled}
 console:
   enabled: false
 optimize:
