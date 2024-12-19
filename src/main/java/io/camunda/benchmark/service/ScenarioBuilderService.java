@@ -99,12 +99,19 @@ public class ScenarioBuilderService {
                 } catch (NumberFormatException nfe) {
                   inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
                 }
-                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpus");
+                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpusMaster");
                 try {
                   int vcpuRequest = Integer.valueOf(vcpu)-1;
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpuRequest));
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusMasterRequests",String.valueOf(vcpuRequest));
                 } catch (NumberFormatException nfe) {
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpuRequests",String.valueOf(vcpu));
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusMasterRequests",String.valueOf(vcpu));
+                }
+                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpusData");
+                try {
+                  int vcpuRequest = Integer.valueOf(vcpu)-1;
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusDataRequests",String.valueOf(vcpuRequest));
+                } catch (NumberFormatException nfe) {
+                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusDataRequests",String.valueOf(vcpu));
                 }
                 String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
                 try {

@@ -145,7 +145,7 @@ elasticsearch:
         cpu: ${elasticSearch.vcpusMaster}
         memory: ${elasticSearch.ramMaster}Gi
       requests:
-        cpu: ${elasticSearch.vcpusMaster}
+        cpu: ${elasticSearch.vcpusMasterRequests}
         memory: ${elasticSearch.ramMaster}Gi
   data:
     heapSize: ${elasticSearch.heapSizeData}m
@@ -154,7 +154,7 @@ elasticsearch:
         cpu: ${elasticSearch.vcpusData}
         memory: ${elasticSearch.ramData}Gi
       requests:
-        cpu: ${elasticSearch.vcpusData}
+        cpu: ${elasticSearch.vcpusDataRequests}
         memory: ${elasticSearch.ramData}Gi
     replicaCount: ${elasticSearch.clusterSizeData}
     persistence:
