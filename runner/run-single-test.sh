@@ -35,21 +35,13 @@ echo 'Finished. Cleaning up now...'
 (cd "${TESTRUNS_DIR}/${testScenarioName}" && make clean)
 
 # Generate Dashboard Links
-
 echo 'Getting Graphana URL'
 grafanaUrl=$(cd "${TESTRUNS_DIR}/${testScenarioName}" && make url-grafana)
-#grafanaUrl="http://34.73.2.98/d/I4lo7_EZk/zeebe?var-namespace=camunda"
+#GCP: http://34.79.232.100/d/zeebe-dashboard/zeebe?var-namespace=camunda
+#AWS: http://a6a265857589c4623922c83765970a12-346210104.us-east-2.elb.amazonaws.com/d/zeebe-dashboard/zeebe?var-namespace=camunda
 echo $grafanaUrl
-
-#http://34.73.2.98/d/uX16GP3nk/zeebe-low-latency?orgId=1&from=1656406606147&to=1656407414704&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All
-
-#get and parse dashboard id
-#parse the IP Address from the base grafana url
-ipAddress="$(grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' <<< "$grafanaUrl")"
-
-# create the url to the low-latency dashboard in the correct time frame
-grafanaUrl="http://$ipAddress/d/$dashboardId/$dashboardName?orgId=1&from=$startTime&to=$endTime&var-DS_PROMETHEUS=Prometheus&var-namespace=camunda&var-pod=All&var-partition=All"
-#echo $grafanaUrl
+grafanaUrl=$(echo "$grafanaUrl&from=$startTime&to=$endTime" | sed "s|zeebe-dashboard/zeebe|$dashboardId/$dashboardName|")
+echo $grafanaUrl
 
 if [ ! -d "$TESTRUNS_DONE_DIR" ]; then
   mkdir $TESTRUNS_DONE_DIR
