@@ -19,7 +19,7 @@ scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
 .PHONY: all
-all: sync-image helm-chart-version.yaml camunda pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
+all: sync-image camunda chart-infos pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
