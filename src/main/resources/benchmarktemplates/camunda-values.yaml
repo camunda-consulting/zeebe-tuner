@@ -19,6 +19,7 @@ zeebe:
     repository: ${engine.image}
 #  nodeSelector:
 #    cloud.google.com/gke-nodepool: pool-${engine.machineType}
+#    alpha.eksctl.io/nodegroup-name: c7g-8xlarge
   resources:
     limits:
       cpu: ${engine.vcpus}
