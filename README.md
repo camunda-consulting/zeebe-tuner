@@ -16,7 +16,12 @@ A set of tools that can run series of benchmarks on a Kubernetes cluster based o
 5. Create OAuth client credentials for a desktop application, refer to [Create credentials](https://developers.google.com/workspace/guides/create-credentials).
 6. Enter the app credentials in [application.yml](src/main/resources/application.yml) as `google.oauth.clientid` and `google.oauth.clientsecret`.
 7. Start the Spring Boot application for the first time using your IDE or `./gradlew bootRun` and it will print an authentication link in the console that you have to open in your browser.
-8. After that you will get an error message in the console containing another link to enable the Google Sheets API for your project. Click on the and you're all set.
+8. After that you will get an error message in the console containing another link to enable the Google Sheets API for your project.
+```
+Please open the following address in your browser:                        
+  https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=000000000000-your-client-id-will-appear-here.apps.googleusercontent.com&redirect_uri=http://localhost:8888/Callback&response_type=code&scope=https://www.googleapis.com/auth/spreadsheets
+```
+9. Click on the link and allow Zeebe Tuner to read your spreadsheet.
 
 ## Running a series of brenchmarks against a Kubernetes cluster
 0. Enter the configuration parameters for the benchmarks you want to schedule in your copy of the [Zeebe Benchmark Result Template](https://docs.google.com/spreadsheets/d/19jSD20aXuJiXBIvZVhWpcMiMQNokshv40s8kvOdea4c).
@@ -35,3 +40,16 @@ A set of tools that can run series of benchmarks on a Kubernetes cluster based o
 5. Import the generated CSV file into Google Sheets and
    copy the first two collums with Grafana link and Timestamp into your result spreadsheet.
 6. Use Grafana to measure performance and enter the readings into the spreadsheet.
+
+## Troubleshooting
+If you get the following error when starting the application:
+```
+com.google.api.client.auth.oauth2.TokenResponseException: 400 Bad Request
+POST https://oauth2.googleapis.com/token
+{
+  "error": "invalid_grant",
+  "error_description": "Bad Request"
+}
+```
+delete the file `credStore/StoredCredential`
+and follow steps 7 to 9 of the initial setup described above.
