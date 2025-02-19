@@ -2,7 +2,7 @@ all:
 	./gradlew bootRun
 
 install:
-	cd runner && ./run-all-tests.sh
+	cd runner && ./run-all-tests.sh -o testruns-done
 
 clean:
 	-cd runner/current/run && $(MAKE) clean
