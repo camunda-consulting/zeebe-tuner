@@ -42,6 +42,7 @@ Please open the following address in your browser:
 6. Use Grafana to measure performance and enter the readings into the spreadsheet.
 
 ## Troubleshooting
+### TokenResponseException: 400 Bad Request
 If you get the following error when starting the application:
 ```
 com.google.api.client.auth.oauth2.TokenResponseException: 400 Bad Request
@@ -53,3 +54,31 @@ POST https://oauth2.googleapis.com/token
 ```
 delete the file `credStore/StoredCredential`
 and follow steps 7 to 9 of the initial setup described above.
+
+### No processes starting
+1. Check log output of `job.batch/zbctl-deploy` for deployment failures using:
+   ```sh
+   cd runner/current/run
+   make logs-job-deploy-models
+   ```
+   There could be messages indicating BPMN parsing issues or duplicate process ids
+2. Check log output of `benchmark` pod for startup failures using:
+   ```sh
+   cd runner/current/run
+   make logs-benchmark
+   ```
+3. Check Grafana > gRPC > `Total gRPC reqests` for any `CreateProcessInstance (NOT_FOUND)`.
+   ```sh
+   cd runner/current/run
+   make open-grafana
+   ```
+   This could indicate that the process id configured in the spreadsheet does not match the one in the deployed BPMN file.
+### Process instances not completing
+1. Check Grafana > Throughput > `Job Completion Per Second` and compare it with the rate of `Process instance completion per second` multiplied with the number of jobs your are expecting to execute. If too few jobs are executed you may have:
+   * Payload variables that 
+      * Make Gateways routing the wrong way
+      * Cause incidents (can be detected by checking the
+        [metrics](https://docs.camunda.io/docs/self-managed/zeebe-deployment/operations/metrics/#available-metrics) 
+        `zeebe_incident_events_total` and 
+        `zeebe_pending_incidents_total`,
+        which are not (yet) exposed by the Zeebe Grafana Dashboard)
