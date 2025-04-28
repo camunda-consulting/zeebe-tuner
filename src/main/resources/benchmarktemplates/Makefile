@@ -19,7 +19,7 @@ scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
 .PHONY: all
-all: sync-image camunda chart-infos pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
+all: sync-image camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
 
 .PHONY: clean
 clean: clean-benchmark clean-camunda
@@ -54,6 +54,12 @@ job-deploy-models:
 	kubectl create configmap models --from-file=models                    -n $(namespace)
 	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
 	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
+
+cpu-info.txt:
+	kubectl apply -f job-cpu-info.yaml                                    -n $(namespace)
+	kubectl wait --for=condition=complete job/job-cpu-info --timeout=300s -n $(namespace)
+	-kubectl logs job.batch/job-cpu-info                                  -n $(namespace) > cpu-info.txt
+	-kubectl delete -f job-cpu-info.yaml                                  -n $(namespace)
 
 #: Show output of k8s job to deploy BPMN and DMN models using zbctl
 logs-job-deploy-models:
