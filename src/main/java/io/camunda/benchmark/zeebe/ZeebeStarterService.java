@@ -24,7 +24,7 @@ public class ZeebeStarterService {
 	}
 	
 	public boolean watchZeebe() throws IOException, InterruptedException {
-		Map<String, Object> result = ProcessUtils.execBlocking("kubectl get pods -w -n "+kubeConfig.namespace+" -l app.kubernetes.io/name=zeebe");
+		Map<String, Object> result = ProcessUtils.execBlocking("kubectl get pods -w -n "+kubeConfig.namespace+" -l app.kubernetes.io/name=camunda-platform");
 		String output = (String) result.get("output");
 		//TODO:check output
 		if (output.indexOf("blop")>0) {
