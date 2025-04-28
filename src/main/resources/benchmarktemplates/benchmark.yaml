@@ -22,8 +22,9 @@ spec:
         env:
           - name: JAVA_OPTIONS
             value: >-
-              -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
-              -Dzeebe.client.security.plaintext=true
+              -Dcamunda.client.mode=selfmanaged
+              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500            
+              -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
               -Dzeebe.client.default-job-worker-stream-enabled=true
