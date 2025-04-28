@@ -42,6 +42,10 @@ zeebe:
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
+    - name: ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_FEATURES_ENABLEACTORMETRICS
+      value: "true"
     - name: ZEEBE_BROKER_DATA_LOGSEGMENTSIZE
       value: "${engine.logSegmentSize}MB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
