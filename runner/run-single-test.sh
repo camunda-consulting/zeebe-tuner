@@ -36,7 +36,7 @@ echo 'Finished. Cleaning up now...'
 
 # Generate Dashboard Links
 echo 'Getting Graphana URL'
-grafanaUrl=$(cd "${TESTRUNS_DIR}/${testScenarioName}" && make url-grafana)
+grafanaUrl=$(cd "${TESTRUNS_DIR}/${testScenarioName}" && make url-grafana --no-print-directory)
 #GCP: http://34.79.232.100/d/zeebe-dashboard/zeebe?var-namespace=camunda
 #AWS: http://a6a265857589c4623922c83765970a12-346210104.us-east-2.elb.amazonaws.com/d/zeebe-dashboard/zeebe?var-namespace=camunda
 echo $grafanaUrl
