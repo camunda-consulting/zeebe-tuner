@@ -7,7 +7,7 @@ global:
   image:
     tag: ${engine.engineVersion}
   elasticsearch:
-    disableExporter: ${elasticSearch.disabled}
+    enabled: ${elasticSearch.enabled}
   identity:
     auth:
       # Disable the Identity authentication
