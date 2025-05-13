@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: cpu-info
+  name: job-cpu-info
+spec:
+  template:
+    metadata:
+      labels:
+        batch.kubernetes.io/job-name: job-cpu-info
+        job-name: job-cpu-info
+    spec:
+#      nodeSelector:       
+#        cloud.google.com/gke-nodepool: pool-${engine.machineType}
+#        alpha.eksctl.io/nodegroup-name: c7g-8xlarge
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - cat /proc/cpuinfo
+        image: busybox
+        name: cpu-info
+      restartPolicy: Never
