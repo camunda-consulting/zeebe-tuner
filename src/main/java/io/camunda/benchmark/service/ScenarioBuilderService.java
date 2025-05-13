@@ -22,126 +22,126 @@ import io.camunda.benchmark.utils.GgSheetHeaderUtils;
 @Service
 public class ScenarioBuilderService {
 
-//	@Value("${ccb.bpmnfile}")
-//	public String bpmnFile;
+  // @Value("${ccb.bpmnfile}")
+  // public String bpmnFile;
 
-	@Autowired
-	private KubeConfig kubeConfig;
+  @Autowired
+  private KubeConfig kubeConfig;
 
-	@Autowired
-	private GoogleSheetService googleSheetService;
-	
-	private List<Map<String, String>> inputMaps = new ArrayList<>();
-	
-	
-	public void BuildScenariiInputs() throws IOException, GeneralSecurityException {
-		
-//		FileInputStream bpmnFileIs = new FileInputStream(bpmnFile);
-//	    String processFileContent = IOUtils.toString(bpmnFileIs, "UTF-8").replaceAll("(>[^<]*<)", "><");
-        
-		ValueRange response = googleSheetService.getValues();
+  @Autowired
+  private GoogleSheetService googleSheetService;
 
-		List<List<Object>> values = response.getValues();
-        if (values == null || values.isEmpty()) {
-            System.out.println("No data found.");
-        } else {
-        	Map<Integer, String> headersMap = new HashMap<>();
-        	Map<Integer, String> prefixHeadersMap = new HashMap<>();
-        	String prefixHeader="";
-        	int idxRow=0;
-            for (List<Object> row : values) {
-				String testName = (String) row.get(0);
-				String testTime = (String) row.get(1);
-				if (idxRow>1 && (testName.isEmpty() || !testTime.isEmpty())) {
-					continue;
-				}
-            	int idxCol=0;
-            	if (idxRow>1) {
-            		inputMaps.add(new HashMap<>());
-//            		inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
-            		inputMaps.get(idxRow-2).put("namespace", kubeConfig.namespace);
-            		inputMaps.get(idxRow-2).put("region", kubeConfig.kubeRegion);
-            	}
-            	for (Object cell : row) {
-            		String value = (String) cell;
-            		if (idxRow==0) {
-            			if (value.length()==0) {
-            				prefixHeadersMap.put(idxCol, prefixHeader);
-            			} else {
-            				prefixHeader = GgSheetHeaderUtils.toCamelCase(value)+".";
-                			prefixHeadersMap.put(idxCol, prefixHeader);
-            			}
-            		} else if (idxRow==1) {
-            			headersMap.put(idxCol, GgSheetHeaderUtils.toCamelCase(value));
-            		} else {
-            			if (prefixHeadersMap.containsKey(idxCol)) {
-            				prefixHeader = prefixHeadersMap.get(idxCol);
-            			}
-            			inputMaps.get(idxRow-2).put(prefixHeader+headersMap.get(idxCol), (String) cell);
-            		}
-            		idxCol++;
-            	}
-            	if (idxRow>1) {
-                String chaosTarget = "";
-                String gatewayDelay = inputMaps.get(idxRow-2).get("gateway.interRegionLatency");
-                String brokersDelay = inputMaps.get(idxRow-2).get("engine.interRegionLatency");
-                if (!"0".equals(gatewayDelay)) {
-                  chaosTarget+="deploy-chaos-gateway";
-                }
-                if (!"0".equals(brokersDelay)) {
-                  chaosTarget+=" deploy-chaos-broker";
-                }
-                inputMaps.get(idxRow-2).put("chaosTarget",chaosTarget);
-                String vcpu = inputMaps.get(idxRow-2).get("engine.vcpus");
-                try {
-                  int vcpuRequest = Integer.valueOf(vcpu)-1;
-                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpuRequest));
-                } catch (NumberFormatException nfe) {
-                  inputMaps.get(idxRow-2).put("engine.vcpuRequest",String.valueOf(vcpu));
-                }
-                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpusMaster");
-                try {
-                  int vcpuRequest = Integer.valueOf(vcpu)-1;
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusMasterRequests",String.valueOf(vcpuRequest));
-                } catch (NumberFormatException nfe) {
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusMasterRequests",String.valueOf(vcpu));
-                }
-                vcpu = inputMaps.get(idxRow-2).get("elasticSearch.vcpusData");
-                try {
-                  int vcpuRequest = Integer.valueOf(vcpu)-1;
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusDataRequests",String.valueOf(vcpuRequest));
-                } catch (NumberFormatException nfe) {
-                  inputMaps.get(idxRow-2).put("elasticSearch.vcpusDataRequests",String.valueOf(vcpu));
-                }
-                String nbNodesStr = inputMaps.get(idxRow-2).get("engine.clusterSize");
-                try {
-                  int nbNodes = Integer.valueOf(nbNodesStr);
-                  String evenBrokers="";
-                  String oddBrokers="";
-                  for(int i=0;i<nbNodes;i++) {
-                    if (i%2==0) {
-                      evenBrokers+="        - camunda-zeebe-"+i+"\n";
-                    } else {
-                      oddBrokers+="          - camunda-zeebe-"+i+"\n";
-                    }
-                  }
-                  inputMaps.get(idxRow-2).put("evenBrokers",evenBrokers);
-                  inputMaps.get(idxRow-2).put("oddBrokers",oddBrokers);
-                } catch (NumberFormatException nfe) {
-                }
-                inputMaps.get(idxRow-2).put("elasticSearch.disabled",
-                  String.valueOf(Boolean.valueOf(inputMaps.get(idxRow-2).get("elasticSearch.enabled")) == false));
-              }
-              idxRow++;
-            }
+  private List<Map<String, String>> inputMaps = new ArrayList<>();
+
+  public void BuildScenariiInputs() throws IOException, GeneralSecurityException {
+
+    // FileInputStream bpmnFileIs = new FileInputStream(bpmnFile);
+    // String processFileContent = IOUtils.toString(bpmnFileIs,
+    // "UTF-8").replaceAll("(>[^<]*<)", "><");
+
+    ValueRange response = googleSheetService.getValues();
+
+    List<List<Object>> values = response.getValues();
+    if (values == null || values.isEmpty()) {
+      System.out.println("No data found.");
+    } else {
+      Map<Integer, String> headersMap = new HashMap<>();
+      Map<Integer, String> prefixHeadersMap = new HashMap<>();
+      String prefixHeader = "";
+      int idxRow = 0;
+      for (List<Object> row : values) {
+        String testName = (String) row.get(0);
+        String testTime = (String) row.get(1);
+        if (idxRow > 1 && (testName.isEmpty() || !testTime.isEmpty())) {
+          continue;
         }
-	}
-	
-	public Map<String, String> getInputs(int idx) {
-		return inputMaps.get(idx);
-	}
-	
-	public int getNbScenarii() {
-		return inputMaps.size();
-	}
+        int idxCol = 0;
+        if (idxRow > 1) {
+          inputMaps.add(new HashMap<>());
+          // inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
+          inputMaps.get(idxRow - 2).put("namespace", kubeConfig.namespace);
+          inputMaps.get(idxRow - 2).put("region", kubeConfig.kubeRegion);
+        }
+        for (Object cell : row) {
+          String value = (String) cell;
+          if (idxRow == 0) {
+            if (value.length() == 0) {
+              prefixHeadersMap.put(idxCol, prefixHeader);
+            } else {
+              prefixHeader = GgSheetHeaderUtils.toCamelCase(value) + ".";
+              prefixHeadersMap.put(idxCol, prefixHeader);
+            }
+          } else if (idxRow == 1) {
+            headersMap.put(idxCol, GgSheetHeaderUtils.toCamelCase(value));
+          } else {
+            if (prefixHeadersMap.containsKey(idxCol)) {
+              prefixHeader = prefixHeadersMap.get(idxCol);
+            }
+            inputMaps.get(idxRow - 2).put(prefixHeader + headersMap.get(idxCol), (String) cell);
+          }
+          idxCol++;
+        }
+        if (idxRow > 1) {
+          String chaosTarget = "";
+          String gatewayDelay = inputMaps.get(idxRow - 2).get("gateway.interRegionLatency");
+          String brokersDelay = inputMaps.get(idxRow - 2).get("engine.interRegionLatency");
+          if (!"0".equals(gatewayDelay)) {
+            chaosTarget += "deploy-chaos-gateway";
+          }
+          if (!"0".equals(brokersDelay)) {
+            chaosTarget += " deploy-chaos-broker";
+          }
+          inputMaps.get(idxRow - 2).put("chaosTarget", chaosTarget);
+          String vcpu = inputMaps.get(idxRow - 2).get("engine.vcpus");
+          try {
+            int vcpuRequest = Integer.valueOf(vcpu) - 1;
+            inputMaps.get(idxRow - 2).put("engine.vcpuRequest", String.valueOf(vcpuRequest));
+          } catch (NumberFormatException nfe) {
+            inputMaps.get(idxRow - 2).put("engine.vcpuRequest", String.valueOf(vcpu));
+          }
+          vcpu = inputMaps.get(idxRow - 2).get("elasticSearch.vcpusMaster");
+          try {
+            int vcpuRequest = Integer.valueOf(vcpu) - 1;
+            inputMaps.get(idxRow - 2).put("elasticSearch.vcpusMasterRequests", String.valueOf(vcpuRequest));
+          } catch (NumberFormatException nfe) {
+            inputMaps.get(idxRow - 2).put("elasticSearch.vcpusMasterRequests", String.valueOf(vcpu));
+          }
+          vcpu = inputMaps.get(idxRow - 2).get("elasticSearch.vcpusData");
+          try {
+            int vcpuRequest = Integer.valueOf(vcpu) - 1;
+            inputMaps.get(idxRow - 2).put("elasticSearch.vcpusDataRequests", String.valueOf(vcpuRequest));
+          } catch (NumberFormatException nfe) {
+            inputMaps.get(idxRow - 2).put("elasticSearch.vcpusDataRequests", String.valueOf(vcpu));
+          }
+          String nbNodesStr = inputMaps.get(idxRow - 2).get("engine.clusterSize");
+          try {
+            int nbNodes = Integer.valueOf(nbNodesStr);
+            String evenBrokers = "";
+            String oddBrokers = "";
+            for (int i = 0; i < nbNodes; i++) {
+              if (i % 2 == 0) {
+                evenBrokers += "        - camunda-zeebe-" + i + "\n";
+              } else {
+                oddBrokers += "          - camunda-zeebe-" + i + "\n";
+              }
+            }
+            inputMaps.get(idxRow - 2).put("evenBrokers", evenBrokers);
+            inputMaps.get(idxRow - 2).put("oddBrokers", oddBrokers);
+          } catch (NumberFormatException nfe) {
+          }
+          inputMaps.get(idxRow - 2).put("elasticSearch.disabled",
+              String.valueOf(Boolean.valueOf(inputMaps.get(idxRow - 2).get("elasticSearch.enabled")) == false));
+        }
+        idxRow++;
+      }
+    }
+  }
+
+  public Map<String, String> getInputs(int idx) {
+    return inputMaps.get(idx);
+  }
+
+  public int getNbScenarii() {
+    return inputMaps.size();
+  }
 }
