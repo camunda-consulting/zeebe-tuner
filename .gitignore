@@ -43,4 +43,4 @@ runner/testruns/**
 runner/testruns-done/**
 runner/current/run
 
-application.yml
+src/main/resources/application.yml
