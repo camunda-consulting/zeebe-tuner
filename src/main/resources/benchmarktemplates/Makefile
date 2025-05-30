@@ -5,7 +5,7 @@ release ?= camunda
 # Helm chart coordinates for Camunda
 chart ?= camunda/camunda-platform
 
-chartValues ?= "camunda-values.yaml"
+chartValues ?= camunda-values.yaml --version=${engine.helmChartVersion}
 
 # TODO configure through runner
 modelDir ?= ../../../models
@@ -84,6 +84,8 @@ benchmark: namespace copy-models
 #	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/msg-scenario.json -n $(namespace)
 	kubectl create configmap msg-scenario --from-file=msg-scenario.json=models/$(scenario) -n $(namespace)
 	kubectl apply -f $(benchmark)                                                          -n $(namespace)
+	kubectl expose deployment benchmark --type=ClusterIP   --name=benchmark-svc  --port=8088 --target-port=8088
+	kubectl apply -f benchmark-service-monitor.yaml -n $(namespace)
 # TODO automatically switch/generate benchmark config
 
 .PHONY: clean-benchmark

@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: benchmark
+    release: metrics
+  name: benchmark
+  namespace: camunda
+
+spec:
+  endpoints:
+    - honorLabels: true
+      interval: 10s
+      path: /actuator/prometheus
+  selector:
+    matchLabels:
+      app: benchmark
