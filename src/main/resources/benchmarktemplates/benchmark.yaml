@@ -27,7 +27,7 @@ spec:
               -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.default-job-worker-stream-enabled=true
+              -Dcamunda.client.zeebe.default-job-worker-stream-enabled=true
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
               -Dbenchmark.startPiIncreaseFactor=${loadGeneratorStarter.startPiIncreaseFactor}
@@ -44,11 +44,11 @@ spec:
 #              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
         resources:
           limits:
-            cpu: ${engine.vcpus}
-            memory: ${engine.ram}Gi
+            cpu: ${jobWorker.vcpus}
+            memory: ${jobWorker.ram}Gi
           requests:
-            cpu: 1
-            memory: 1Gi
+            cpu: ${jobWorker.vcpus}
+            memory: ${jobWorker.ram}Gi
         volumeMounts:
         - name: payload
           mountPath: ${loadGeneratorStarter.payload}

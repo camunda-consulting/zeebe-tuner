@@ -128,10 +128,8 @@ operate:
       cpu: ${operate.vcpus}
       memory: ${operate.ram}Gi
   env:
-    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
-      value: "${operate.importerReaderthreadscount}"
     - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
-      value: "${operate.importerThreadscount}"
+      value: "${operate.importerThreads}"
     - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
 tasklist:
