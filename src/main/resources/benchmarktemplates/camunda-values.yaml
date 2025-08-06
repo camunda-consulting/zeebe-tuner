@@ -4,28 +4,24 @@
 # https://github.com/camunda/camunda-platform-helm/blob/main/charts/camunda-platform/values.yaml
 
 global:
-  image:
-    tag: ${engine.engineVersion}
   elasticsearch:
     enabled: ${elasticSearch.enabled}
   identity:
     auth:
-      # Disable the Identity authentication
+      # Disabling the Identity authentication
       # it will fall back to basic-auth: demo/demo as default user
-      enabled: false
+      enabled: ${optimize.enabled}
 
 zeebe:
-  image:
-    repository: ${engine.image}
 #  nodeSelector:
 #    cloud.google.com/gke-nodepool: pool-${engine.machineType}
 #    alpha.eksctl.io/nodegroup-name: c7g-8xlarge
   resources:
-    limits:
-      cpu: ${engine.vcpus}
-      memory: ${engine.ram}Gi
     requests:
       cpu: ${engine.vcpuRequest}
+      memory: ${engine.ram}Gi
+    limits:
+      cpu: null
       memory: ${engine.ram}Gi
   clusterSize: "${engine.clusterSize}"
   partitionCount: "${engine.partitions}"
@@ -36,8 +32,11 @@ zeebe:
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
   env:
+    # comment this out when disabling Elasticsearch
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
+      value: "1"
     - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
@@ -80,6 +79,10 @@ zeebe:
       value: "${engine.maxAppendBatchSize}KB"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_DISABLEWAL
       value: "${rocksdb.disableWal}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLESSTPARTITIONING
+      value: "${rocksdb.enableSstPartitioning}"
+    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_MEMORYLIMIT
+      value: "${rocksdb.memoryLimit}"
     # Enable JSON logging for Google Cloud Stackdriver
     - name: ZEEBE_LOG_APPENDER
       value: Stackdriver
@@ -89,17 +92,16 @@ zeebe:
       valueFrom:
         fieldRef:
           fieldPath: metadata.namespace
+
 zeebeGateway:
-  image:
-    repository: ${engine.image}
   replicas: ${gateway.replicas}
 #  nodeSelector:
 #    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
-    limits:
+    requests:
       cpu: ${gateway.vcpus}
       memory: ${gateway.ram}Gi
-    requests:
+    limits:
       cpu: ${gateway.vcpus}
       memory: ${gateway.ram}Gi
   env:
@@ -118,67 +120,178 @@ zeebeGateway:
       valueFrom:
         fieldRef:
           fieldPath: metadata.namespace
+    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+      value: "none"
+
 operate:
   enabled: ${operate.enabled}
   resources:
-    limits:
-      cpu: ${operate.vcpus}
-      memory: ${operate.ram}Gi
     requests:
       cpu: ${operate.vcpus}
       memory: ${operate.ram}Gi
+    limits:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
   env:
+    - name: JAVA_OPTS
+      value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
+    - name: CAMUNDA_OPERATE_ARCHIVER_ROLLOVERBATCHSIZE
+      value: "${operate.archRolloverBatchSize}"
+    - name: CAMUNDA_OPERATE_ARCHIVER_THREADSCOUNT
+      value: "${operate.archThreads}"
+    - name: CAMUNDA_OPERATE_IMPORTER_QUEUESIZE
+      value: "${operate.importerQueueSize}"
+    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
+      value: "${operate.importerReaderThreads}"
     - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
       value: "${operate.importerThreads}"
     - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
+    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFREPLICAS
+      value: "1"
+    - name: CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_BATCHSIZE
+      value: "${operate.importPageSize}"
 tasklist:
-  enabled: ${elasticSearch.enabled}
-console:
-  enabled: false
+  enabled: ${operate.enabled}
+  #nodeSelector:
+  #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+  resources:
+    requests:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+    limits:
+      cpu: ${operate.vcpus}
+      memory: ${operate.ram}Gi
+  env:
+    - name: JAVA_OPTS
+      value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
+    - name: CAMUNDA_TASKLIST_ARCHIVER_ROLLOVERBATCHSIZE
+      value: "${operate.archRolloverBatchSize}"
+    - name: CAMUNDA_TASKLIST_ARCHIVER_THREADSCOUNT
+      value: "${operate.archThreads}"
+    - name: CAMUNDA_TASKLIST_IMPORTER_QUEUESIZE
+      value: "${operate.importerQueueSize}"
+    - name: CAMUNDA_TASKLIST_IMPORTER_READERTHREADSCOUNT
+      value: "${operate.importerReaderThreads}"
+    - name: CAMUNDA_TASKLIST_IMPORTER_THREADSCOUNT
+      value: "${operate.importerThreads}"
+    - name: CAMUNDA_TASKLIST_ELASTICSEARCH_NUMBEROFSHARDS
+      value: "${elasticSearch.shardsPerIndex}"
+    - name: CAMUNDA_TASKLIST_ELASTICSEARCH_NUMBEROFREPLICAS
+      value: "1"
+    - name: CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_BATCHSIZE
+      value: "${operate.importPageSize}"
+
 optimize:
-  enabled: false
+  enabled: ${optimize.enabled}
+  partitionCount: "${engine.partitions}"
+  #nodeSelector:
+  #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+  resources:
+    requests:
+      cpu: ${optimize.vcpus}
+      memory: ${optimize.ram}Gi
+    limits:
+      cpu: ${optimize.vcpus}
+      memory: ${optimize.ram}Gi
+  env:
+    - name: JAVA_OPTS
+      value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
+    - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
+      value: "${optimize.importPageSize}"
+    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_QUEUE_SIZE
+      value: "${optimize.importerQueueSize}"
+    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_THREAD_COUNT
+      value: "${optimize.importerThreads}"
+    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_SHARDS
+      value: "${optimize.shardsPerIndex}"
+    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_REPLICAS
+      value: "1"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_CRONTRIGGER
+      value: "0 18 * * *"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_TTL
+      value: "P5D"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_ENABLED
+      value: "true"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_CLEANUPMODE
+      value: "all"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_BATCHSIZE
+      value: "10000"
+
 connectors:
   enabled: false
+
+webModeler:
+  enabled: false
+  image:
+    pullSecrets:
+      - name: camunda-docker-registry
+  restapi:
+    mail:
+      fromAddress: YOUR_EE_EMAIL
+  env:
+    - name: PLAY_ENABLED
+      value: true
+
+console:
+  enabled: ${optimize.enabled}
+
 identity:
-  enabled: false
-  keycloak:
-    enabled: false
+  enabled: ${optimize.enabled}
+
 identityKeycloak:
+  enabled: ${optimize.enabled}
+  postgresql:
+    primary:
+      resourcesPreset: micro
+
+postgresql:
   enabled: false
+
 prometheusServiceMonitor:
   enabled: true
+
 elasticsearch:
   enabled: ${elasticSearch.enabled}
   image:
     tag: ${elasticSearch.version}
-#  nodeSelector:
-#    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   master:
     masterOnly: ${elasticSearch.masterOnly}
-    heapSize: ${elasticSearch.heapSizeMaster}m
     replicaCount: ${elasticSearch.clusterSizeMaster}
-    persistence:
-      size: ${elasticSearch.storageCapacity}Gi
-      storageClass: ${elasticSearch.fileSystem}
+    #nodeSelector:
+    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
     resources:
-      limits:
-        cpu: ${elasticSearch.vcpusMaster}
-        memory: ${elasticSearch.ramMaster}Gi
       requests:
         cpu: ${elasticSearch.vcpusMasterRequests}
         memory: ${elasticSearch.ramMaster}Gi
-  data:
-    heapSize: ${elasticSearch.heapSizeData}m
-    resources:
       limits:
-        cpu: ${elasticSearch.vcpusData}
-        memory: ${elasticSearch.ramData}Gi
+        cpu: ${elasticSearch.vcpusMaster}
+        memory: ${elasticSearch.ramMaster}Gi
+    heapSize: ${elasticSearch.heapSizeMaster}m
+    persistence:
+      size: ${elasticSearch.storageCapacity}Gi
+      storageClass: ${elasticSearch.fileSystem}
+  data:
+    replicaCount: ${elasticSearch.clusterSizeData}
+    #nodeSelector:
+    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+    resources:
       requests:
         cpu: ${elasticSearch.vcpusDataRequests}
         memory: ${elasticSearch.ramData}Gi
-    replicaCount: ${elasticSearch.clusterSizeData}
+      limits:
+        cpu: ${elasticSearch.vcpusData}
+        memory: ${elasticSearch.ramData}Gi
+    heapSize: ${elasticSearch.heapSizeData}m
     persistence:
-      ## @param elasticsearch.master.persistence.size
       size: ${elasticSearch.storageCapacity}Gi
       storageClass: ${elasticSearch.fileSystem}
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      honorLabels: true
+      namespace: default
+      labels:
+        release: metrics
+    resourcesPreset: small
