@@ -3,9 +3,9 @@ namespace ?= camunda
 # Helm release name
 release ?= camunda
 # Helm chart coordinates for Camunda
-chart ?= camunda/camunda-platform
+chart ?= camunda/camunda-platform --version=${engine.helmChartVersion}
 
-chartValues ?= camunda-values.yaml --version=${engine.helmChartVersion}
+chartValues ?= camunda-values.yaml
 
 # TODO configure through runner
 modelDir ?= ../../../models
