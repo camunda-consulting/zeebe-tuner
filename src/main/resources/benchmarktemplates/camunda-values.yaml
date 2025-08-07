@@ -32,11 +32,20 @@ zeebe:
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
   env:
-    # comment this out when disabling Elasticsearch
+    # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
       value: "${elasticSearch.shardsPerIndex}"
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
       value: "1"
+    # Export to separate Elasticsearch for Optimize
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_CLASSNAME
+    #  value: io.camunda.zeebe.exporter.ElasticsearchExporter
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_ARGS_URL
+    #  value: http://optimize-elasticsearch:9200
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_ARGS_INDEX_NUMBEROFSHARDS
+    #  value: "3"
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_ARGS_INDEX_NUMBEROFREPLICAS
+    #  value: "1"
     - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
@@ -197,6 +206,9 @@ optimize:
   env:
     - name: JAVA_OPTS
       value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
+    # Second Elasticsearch for Optimize
+    #- name: OPTIMIZE_ELASTICSEARCH_HOST
+    #  value: optimize-elasticsearch
     - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
       value: "${optimize.importPageSize}"
     - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_QUEUE_SIZE

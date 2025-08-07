@@ -7,3 +7,4 @@ parameters:
   type: pd-standard
   fsType: ext4
 allowVolumeExpansion: true
+reclaimPolicy: Delete

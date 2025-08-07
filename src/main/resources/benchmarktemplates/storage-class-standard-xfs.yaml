@@ -7,3 +7,4 @@ parameters:
   type: pd-standard
   fsType: xfs
 allowVolumeExpansion: true
+reclaimPolicy: Delete

@@ -9,8 +9,8 @@ chartValues ?= camunda-values.yaml --version=${engine.helmChartVersion}
 
 # TODO configure through runner
 modelDir ?= ../../../models
-models ?= *.*mn
-#models ?= ${loadGeneratorStarter.processModel}.bpmn
+#models ?= *.*mn
+models ?= ${loadGeneratorStarter.processModel}.bpmn
 benchmark ?= benchmark.yaml
 #benchmark ?= benchmark-msg.yaml
 #benchmark ?= benchmark-msg-with-jobs.yaml
@@ -19,10 +19,11 @@ scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
 .PHONY: all
-all: sync-image camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark
+all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark await-benchmark
+#all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
-clean: clean-benchmark clean-camunda
+clean: clean-benchmark clean-job-deploy-models uninstall-camunda
 
 ifeq ($(OS),Windows_NT)
     root ?= $(CURDIR)/../../../../camunda-8-helm-profiles
