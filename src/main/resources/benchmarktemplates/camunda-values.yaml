@@ -198,10 +198,10 @@ optimize:
   #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     requests:
-      cpu: ${optimize.vcpus}
+      cpu: "${optimize.vcpus}"
       memory: ${optimize.ram}Gi
     limits:
-      cpu: ${optimize.vcpus}
+      cpu: "${optimize.vcpus}"
       memory: ${optimize.ram}Gi
   env:
     - name: JAVA_OPTS
