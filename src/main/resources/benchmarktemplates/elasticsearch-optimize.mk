@@ -1,3 +1,5 @@
+# usage: make --makefile=elasticsearch-optimize.mk [target]
+
 # Camunda components will be installed into the following Kubernetes namespace
 namespace ?= camunda
 # Helm release name
