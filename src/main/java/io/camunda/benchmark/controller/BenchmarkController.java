@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +20,8 @@ import io.camunda.benchmark.service.EksService;
 import io.camunda.benchmark.service.ScenarioBuilderService;
 import io.camunda.benchmark.service.TemplatingService;
 import io.camunda.benchmark.zeebe.ZeebeStarterService;
+
+import jakarta.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/benchmark")

@@ -8,7 +8,7 @@ spec:
       containers:
       - name: zbctl-deploy
         image: camunda/zeebe:8.2.10
-        command: ["sh", "-c", "zbctl --host camunda-zeebe-gateway --insecure deploy resource /models/*.*mn"]
+        command: ["sh", "-c", "zbctl --host camunda-zeebe-gateway.camunda.svc.cluster.local:26500 --insecure deploy resource /models/*.*mn"]
         volumeMounts:
         - name: models
           mountPath: /models
