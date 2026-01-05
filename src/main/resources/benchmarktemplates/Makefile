@@ -53,8 +53,8 @@ copy-models:
 #: Create k8s job to deploy BPMN and DMN models using zbctl
 job-deploy-models:
 	kubectl create configmap models --from-file=models                    -n $(namespace)
-	kubectl apply -f zbctl-deploy-job.yaml                                -n $(namespace)
-	kubectl wait --for=condition=complete job/zbctl-deploy --timeout=300s -n $(namespace)
+	kubectl apply -f rest-deploy-job.yaml                                -n $(namespace)
+	kubectl wait --for=condition=complete job/deploy-via-rest --timeout=300s -n $(namespace)
 
 cpu-info.txt:
 	kubectl apply -f job-cpu-info.yaml                                    -n $(namespace)
@@ -64,12 +64,12 @@ cpu-info.txt:
 
 #: Show output of k8s job to deploy BPMN and DMN models using zbctl
 logs-job-deploy-models:
-	-kubectl logs job.batch/zbctl-deploy -n $(namespace)
+	-kubectl logs job.batch/deploy-via-rest -n $(namespace)
 
 #: Delete k8s job to deploy BPMN and DMN models using zbctl
 clean-job-deploy-models:
 	-kubectl delete configmap models         -n $(namespace)
-	-kubectl delete -f zbctl-deploy-job.yaml -n $(namespace)
+	-kubectl delete -f rest-deploy-job.yaml -n $(namespace)
 
 .PHONY: deploy-chaos-gateway
 deploy-chaos-gateway:

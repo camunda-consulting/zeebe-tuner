@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-via-rest
+spec:
+  template:
+    spec:
+      containers:
+      - name: deploy-via-rest
+        image: curlimages/curl
+        command:
+          - sh
+          - -c
+          - >
+            for f in /models/*.*mn; do
+              echo "Deploying $f";
+              curl -f -X POST \
+                "http://camunda-zeebe-gateway.camunda.svc.cluster.local:8080/orchestration/v2/deployments" \
+                -H "Content-Type: multipart/form-data" \
+                -F "resources=@$f";
+            done
+        volumeMounts:
+        - name: models
+          mountPath: /models
+          readOnly: true
+      volumes:
+      - name: models
+        configMap:
+          name: models
+      restartPolicy: Never
