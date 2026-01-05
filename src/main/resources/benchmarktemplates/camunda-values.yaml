@@ -18,6 +18,11 @@ global:
   elasticsearch:
     enabled:  ${elasticSearch.enabled}
 orchestration:
+  security:
+    authentication:
+      unprotectedApi: true
+    authorizations:
+      enabled: false
   ingress:
     grpc:
       enabled: true
@@ -41,18 +46,20 @@ orchestration:
   pvcStorageClassName: ${engine.fileSystem}
   env:
     # no authentication
-    - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI
-      value: "true"
-    - name: ZEEBE_GATEWAY_SECURITY_ENABLED
-      value: "false"
-    - name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
-      value: "none"
-    - name: CAMUNDA_GATEWAY_SECURITY_ENABLED
-      value: "false"
-    - name: CAMUNDA_GATEWAY_SECURITY_AUTHENTICATION_MODE
-      value: "none"
-    - name: CAMUNDA_GATEWAY_SECURITY_INSECURE_AUTHENTICATION_ENABLED
-      value: "true"
+    #- name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI
+    #   value: "true"
+    #- name: CAMUNDA_SECURITY_AUTHORIZATION_ENABLED
+    #   value: "false"
+    #- name: ZEEBE_GATEWAY_SECURITY_ENABLED
+    #  value: "false"
+    #- name: ZEEBE_GATEWAY_SECURITY_AUTHENTICATION_MODE
+    #  value: "none"
+    #- name: CAMUNDA_GATEWAY_SECURITY_ENABLED
+    #  value: "false"
+    #- name: CAMUNDA_GATEWAY_SECURITY_AUTHENTICATION_MODE
+    #  value: "none"
+    #- name: CAMUNDA_GATEWAY_SECURITY_INSECURE_AUTHENTICATION_ENABLED
+    #  value: "true"
     # no authorization
     - name: ZEEBE_BROKER_EXPERIMENTAL_ENGINE_AUTHORIZATIONS_ENABLEAUTHORIZATION
       value: "false"
