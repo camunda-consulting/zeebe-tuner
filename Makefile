@@ -1,7 +1,7 @@
 include config.mk
 
 all:
-	./gradlew bootRun
+	./gradlew --configuration-cache bootRun
 
 install:
 	cd runner && ./run-all-tests.sh -o $(TESTRUNS_DONE_DIR)

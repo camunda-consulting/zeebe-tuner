@@ -1,12 +1,17 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.5'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
 	id 'java'
 }
 
 group = 'io.camunda'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
 
 repositories {
 	mavenCentral()
@@ -14,20 +19,35 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
-	implementation 'com.google.api-client:google-api-client:1.33.4'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.33.1'
-    implementation 'com.google.apis:google-api-services-sheets:v4-rev614-1.18.0-rc'
+	implementation('com.google.api-client:google-api-client:2.7.1') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
+    implementation('com.google.oauth-client:google-oauth-client-jetty:1.36.0') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
+    implementation('com.google.apis:google-api-services-sheets:v4-rev20240826-2.0.0') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 
-
-	implementation 'commons-io:commons-io:2.11.0'
-	implementation 'org.apache.commons:commons-text:1.9'
+	implementation 'commons-io:commons-io:2.19.0'
+	implementation 'org.apache.commons:commons-text:1.13.0'
     
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.4'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
     
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Explicitly declare test framework to avoid deprecation warning
+testing {
+	suites {
+		test {
+			useJUnitJupiter()
+		}
+	}
 }
