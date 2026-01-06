@@ -51,13 +51,22 @@ fi
 # add the configuration that was used to generate the test scenario
 cp -r ../src/main/resources "${TESTRUN_DIR}/zeebe-tuner-config"
 
+# create a symlink for quickly comparing the last test run (not (yet) used for execution)
+mkdir -p last
+rm -f last/run
+
 if [ ! -d "${TESTRUNS_DONE_DIR}/${testScenarioName}" ]
 then
   mv "${TESTRUN_DIR}" "${TESTRUNS_DONE_DIR}/"
+  echo "Archived to $(realpath ${TESTRUNS_DONE_DIR}/${testScenarioName})"
+  ln -s "${TESTRUNS_DONE_DIR}/${testScenarioName}" "last/run"
 else
   timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
   mv "${TESTRUN_DIR}" "${TESTRUNS_DONE_DIR}/${testScenarioName}_${timestamp}"
+  echo "Archived to $(realpath ${TESTRUNS_DONE_DIR}/${testScenarioName}_${timestamp})"
+  ln -s "${TESTRUNS_DONE_DIR}/${testScenarioName}_${timestamp}" "last/run"
 fi
+echo "Symlinked to $(realpath last/run)"
 
 # immediately commit test config for colleagues to see
 cd $TESTRUNS_DONE_DIR

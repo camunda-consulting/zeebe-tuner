@@ -42,5 +42,6 @@ out/
 runner/testruns/**
 runner/testruns-done/**
 runner/current/run
+runner/last/run
 
 src/main/resources/application.yml

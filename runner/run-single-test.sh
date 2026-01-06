@@ -8,25 +8,37 @@ TESTRUNS_DIR="testruns"
 echo "###############################################"
 echo "Running test scenario: ${testScenarioName}"
 
-# Start Zeebe
-echo 'Starting Zeebe...'
-(cd "${TESTRUNS_DIR}/${testScenarioName}" && make)
+# Function to generate start-time.sh with benchmark timing information
+generate_start_time_script() {
+    local scenario_name="$1"
+    local testruns_dir="$2"
+    
+    # get the start time of the benchmark
+    # Note that grafana expects timestamps as millis since epoch
+    local startTime=$(date +%s000)
+    local startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
+    echo "start time: ${startTimeIso}"
 
-# get the start time of the benchmark
-# Note that grafana expects timestamps as millis since epoch
-startTime=$(date +%s000)
-startTimeIso=$(date +"%Y-%m-%d %H:%M:%S")
-echo "start time: ${startTimeIso}"
-
-cat <<EOF > "${TESTRUNS_DIR}/${testScenarioName}/start-time.sh"
+    cat <<EOF > "${testruns_dir}/${scenario_name}/start-time.sh"
 #!/bin/bash
 set -euo pipefail
-testScenarioName="${testScenarioName}"
+testScenarioName="${scenario_name}"
 startTime="${startTime}"
 startTimeIso="${startTimeIso}"
 echo "test scenario: \${testScenarioName}"
 echo "start time: \${startTimeIso}"
 EOF
+}
+
+# Generate a preliminary start-time.sh script
+generate_start_time_script "${testScenarioName}" "${TESTRUNS_DIR}"
+
+# Start Zeebe
+echo 'Starting Zeebe...'
+(cd "${TESTRUNS_DIR}/${testScenarioName}" && make)
+
+# Re-generate the start-time.sh script with the actual start time
+generate_start_time_script "${testScenarioName}" "${TESTRUNS_DIR}"
 
 # test that generated start-time.sh is working
 source "${TESTRUNS_DIR}/${testScenarioName}/start-time.sh"
@@ -37,3 +49,5 @@ source "${TESTRUNS_DIR}/${testScenarioName}/start-time.sh"
 #kubectl wait --for=condition=complete job/starter --timeout=1200s
 
 ./run-single-test-teardown.sh "$TESTRUNS_DIR/$testScenarioName" "$TESTRUNS_DONE_DIR"
+
+
