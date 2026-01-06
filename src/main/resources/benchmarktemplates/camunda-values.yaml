@@ -23,6 +23,16 @@ global:
       enabled: ${optimize.enabled}
 
 orchestration:
+  profiles:
+    operate: ${operate.enabled}
+    tasklist: ${tasklist.enabled}
+  exporters:
+    camunda:
+      enabled: false
+    zeebe:
+      enabled: false
+    rdbms:
+      enabled: false
   contextPath: /orchestration
   security:
     authentication:
@@ -46,10 +56,10 @@ orchestration:
   pvcStorageClassName: ${engine.fileSystem}
   env:
     # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
-      value: "${elasticSearch.shardsPerIndex}"
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
-      value: "1"
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
+    #  value: "${elasticSearch.shardsPerIndex}"
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
+    #  value: "1"
     # Export to separate Elasticsearch for Optimize
     #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_CLASSNAME
     #  value: io.camunda.zeebe.exporter.ElasticsearchExporter
@@ -114,10 +124,10 @@ orchestration:
       valueFrom:
         fieldRef:
           fieldPath: metadata.namespace
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
-      value: io.camunda.zeebe.exporter.ElasticsearchExporter
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
-      value: http://camunda-elasticsearch:9200
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
+    #  value: io.camunda.zeebe.exporter.ElasticsearchExporter
+    #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
+    #  value: http://camunda-elasticsearch:9200
     # Operate
     - name: CAMUNDA_OPERATE_ARCHIVER_ROLLOVERBATCHSIZE
       value: "${operate.archRolloverBatchSize}"
