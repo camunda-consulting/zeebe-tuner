@@ -1,8 +1,13 @@
+include config.mk
+
 all:
 	./gradlew bootRun
 
 install:
-	cd runner && ./run-all-tests.sh -o testruns-done
+	cd runner && ./run-all-tests.sh -o $(TESTRUNS_DONE_DIR)
+
+teardown-current-run:
+	cd runner && ./run-single-test-teardown.sh $$(realpath current/run) $(TESTRUNS_DONE_DIR)
 
 clean:
 	-cd runner/current/run && $(MAKE) clean

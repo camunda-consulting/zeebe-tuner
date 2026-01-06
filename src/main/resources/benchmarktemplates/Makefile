@@ -8,7 +8,7 @@ chart ?= camunda/camunda-platform --version=${engine.helmChartVersion}
 chartValues ?= camunda-values.yaml
 
 # TODO configure through runner
-modelDir ?= ../../../models
+include ../../../config.mk
 #models ?= *.*mn
 models ?= ${loadGeneratorStarter.processModel}.bpmn
 benchmark ?= benchmark.yaml
