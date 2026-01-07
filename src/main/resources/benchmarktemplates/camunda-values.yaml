@@ -15,7 +15,7 @@ global:
       enabled: true
       secretName: camunda-platform
   elasticsearch:
-    enabled: ${elasticSearch.enabled}
+    enabled: true
   identity:
     auth:
       # Disabling the Identity authentication
@@ -55,6 +55,16 @@ orchestration:
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
   env:
+    - name: CAMUNDA_DATABASE_SCHEMA_MANAGER_CREATE_SCHEMA
+      value: "false"
+    - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI
+      value: "true"
+    - name: CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED
+      value: "false"
+    - name: SPRING_PROFILES_ACTIVE
+      value: "broker,standalone"
+    - name: CAMUNDA_SECURITY_AUTHENTICATION_METHOD
+      value: "basic"
     # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch
     #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
     #  value: "${elasticSearch.shardsPerIndex}"
