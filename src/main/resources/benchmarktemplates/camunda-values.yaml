@@ -25,7 +25,7 @@ global:
 orchestration:
   profiles:
     operate: ${operate.enabled}
-    tasklist: ${tasklist.enabled}
+    tasklist: ${operate.enabled}
   exporters:
     camunda:
       enabled: false
