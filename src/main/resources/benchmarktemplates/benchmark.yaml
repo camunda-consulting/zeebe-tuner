@@ -25,9 +25,10 @@ spec:
               -Dcamunda.client.mode=selfmanaged
               -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500            
               -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
-              -Dzeebe.client.request-timeout=600s
-              -Dzeebe.client.job.poll-interval=1ms
+              -Dcamunda.client.zeebe.request-timeout=600s
+              -Dcamunda.client.zeebe.defaults.poll-interval=1ms
               -Dcamunda.client.zeebe.default-job-worker-stream-enabled=true
+              -Dcamunda.client.worker.defaults.stream-enabled=true
               -Dbenchmark.startProcesses=true
               -Dbenchmark.bpmnProcessId=${loadGeneratorStarter.processModel}
               -Dbenchmark.startPiPerSecond=${loadGeneratorStarter.startThroughput}
@@ -35,6 +36,7 @@ spec:
               -Dbenchmark.startRateAdjustmentStrategy=${loadGeneratorStarter.rateAdjustmentStrategy}
               -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
               -Dbenchmark.maxBackpressurePercentage=1.0
+              -Dbenchmark.startWorkers=true
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}

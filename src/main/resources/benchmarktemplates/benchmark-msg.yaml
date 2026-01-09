@@ -22,8 +22,9 @@ spec:
         env:
           - name: JAVA_OPTIONS
             value: >-
-              -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
-              -Dzeebe.client.security.plaintext=true
+              -Dcamunda.client.mode=selfmanaged
+              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500
+              -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
               -Dbenchmark.startProcesses=false
               -Dbenchmark.startWorkers=false
               -Dbenchmark.messageScenario=file:/msg-scenario.json
@@ -32,6 +33,7 @@ spec:
               -Dbenchmark.delayBetweenMessages=1
               -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
               -Dbenchmark.autoDeployProcess=false
+              -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
         resources:
           limits:
             cpu: ${engine.vcpus}
