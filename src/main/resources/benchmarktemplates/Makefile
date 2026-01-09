@@ -19,11 +19,11 @@ scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
 engineImage ?= ${engine.image}
-gatewayReplicas ?= ${gateway.replicas}
+gatewayReplicas ?= ${engine.clusterSize}
 gatewayPinning ?= ${gateway.pinning}
 
 .PHONY: all
-all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe await-gateway deploy-models rebalance-leaders ${chaosTarget} benchmark await-benchmark
+all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark await-benchmark
 #all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
@@ -91,7 +91,7 @@ deploy-chaos-broker:
 generate-benchmark-configs:
 ifeq ("$(gatewayPinning)", "TRUE")
 	@echo "Generating benchmark configs with dynamic gateway IPs..."
-	@GATEWAY_IPS=$$(kubectl get pods -l app.kubernetes.io/component=zeebe-gateway -n $(namespace) -o jsonpath='{.items[*].status.podIP}' | tr ' ' '\n' | sort); \
+	@GATEWAY_IPS=$$(kubectl get pods -l app.kubernetes.io/component=zeebe-broker -n $(namespace) -o jsonpath='{.items[*].status.podIP}' | tr ' ' '\n' | sort); \
 	IP_COUNT=$$(echo "$$GATEWAY_IPS" | wc -l); \
 	if [ $$IP_COUNT -eq 0 ]; then \
 		echo "No gateway IPs found!"; \
