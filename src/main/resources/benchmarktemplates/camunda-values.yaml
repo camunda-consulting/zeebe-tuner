@@ -10,10 +10,10 @@ global:
   ingress:
     enabled: true
     className: nginx
-    host: zeebe-grpc.camunda.example.com
+    host: "falko-benchmark.gke.c8sm.com"
     tls:
       enabled: true
-      secretName: camunda-platform
+      secretName: "tls-secret"
   elasticsearch:
     enabled: true
   identity:
@@ -21,8 +21,28 @@ global:
       # Disabling the Identity authentication
       # it will fall back to basic-auth: demo/demo as default user
       enabled: ${optimize.enabled}
+      publicIssuerUrl: "https://falko-benchmark.gke.c8sm.com/auth/realms/camunda-platform"
+      identity:
+        recirectUrl: "https://falko-benchmark.gke.c8sm.com/identity"
+      operate:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/operate"
+      tasklist:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/tasklist"
+      optimize:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/optimize"
+      connectors:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/connectors"
+      webModeler:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/modeler"
+      console:
+        redirectUrl: "https://falko-benchmark.gke.c8sm.com/console"
 
 orchestration:
+  # affinity:
+  #   podAntiAffinity: null
+  nodeSelector:
+    cloud.google.com/gke-nodepool: pool-${engine.machineType}
+  #   alpha.eksctl.io/nodegroup-name: c7g-8xlarge
   profiles:
     operate: ${operate.enabled}
     tasklist: ${operate.enabled}
@@ -54,6 +74,25 @@ orchestration:
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
+  # initContainers:
+  #   - name: init-exporter-job-worker
+  #     image: curlimages/curl:latest
+  #     command: ["/bin/sh", "-c"]
+  #     args: [
+  #       "curl -L https://camunda.jfrog.io/artifactory/camunda-bpm-community-extensions/org/camunda/community/extension/zeebe/exporter/jobworker/zeebe-embedded-job-worker/0.0.10/zeebe-embedded-job-worker-0.0.10.jar -o /exporters/zeebe-embedded-job-worker-0.0.10.jar; ls -al /exporters"
+  #     ]
+  #     securityContext:
+  #       runAsUser: 1001
+  #       runAsNonRoot: true
+  #     volumeMounts:
+  #     - name: exporters
+  #       mountPath: /exporters/
+  # extraVolumes:
+  #   - name: exporters-writable
+  #     emptyDir: {}
+  # extraVolumeMounts:
+  #   - name: exporters-writable
+  #     mountPath: /usr/local/zeebe/exporters/
   env:
     - name: CAMUNDA_DATABASE_SCHEMA_MANAGER_CREATE_SCHEMA
       value: "false"
@@ -65,6 +104,11 @@ orchestration:
       value: "broker,standalone"
     - name: CAMUNDA_SECURITY_AUTHENTICATION_METHOD
       value: "basic"
+    # - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_JARPATH
+    #   value: exporters/zeebe-embedded-job-worker-0.0.10.jar
+    # - name: ZEEBE_BROKER_EXPORTERS_JOBWORKER_CLASSNAME
+    #   value: org.camunda.community.extension.zeebe.exporter.jobworker.EmbeddedJobWorker
+
     # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch
     #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
     #  value: "${elasticSearch.shardsPerIndex}"
@@ -138,6 +182,13 @@ orchestration:
     #  value: io.camunda.zeebe.exporter.ElasticsearchExporter
     #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
     #  value: http://camunda-elasticsearch:9200
+    # Gateway
+    - name: ZEEBE_GATEWAY_MONITORING_ENABLED
+      value: "true"
+    - name: ZEEBE_GATEWAY_THREADS_MANAGEMENTTHREADS
+      value: "${gateway.numberOfThreads}"
+    - name: ZEEBE_GATEWAY_CLUSTER_MESSAGECOMPRESSION
+      value: "${engine.networkCompression}"
     # Operate
     - name: CAMUNDA_OPERATE_ARCHIVER_ROLLOVERBATCHSIZE
       value: "${operate.archRolloverBatchSize}"
@@ -175,9 +226,10 @@ orchestration:
 
 optimize:
   enabled: ${optimize.enabled}
+  contextPath: "/optimize"
   partitionCount: "${engine.partitions}"
-  #nodeSelector:
-  #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+  nodeSelector:
+    cloud.google.com/gke-nodepool: pool-${engine.machineType}
   resources:
     requests:
       cpu: "${optimize.vcpus}"
@@ -214,10 +266,13 @@ optimize:
 
 connectors:
   enabled: false
-  contextPath: /connectors
+  inbound:
+    mode: oauth
+  contextPath: "/connectors"
 
 webModeler:
   enabled: false
+  contextPath: "/modeler"
   image:
     pullSecrets:
       - name: camunda-docker-registry
@@ -230,12 +285,20 @@ webModeler:
 
 console:
   enabled: ${optimize.enabled}
+  contextPath: "/console"
 
 identity:
   enabled: ${optimize.enabled}
+  contextPath: "/identity"
+  fullURL: "https://falko-benchmark.gke.c8sm.com/identity"
 
 identityKeycloak:
   enabled: ${optimize.enabled}
+  extraEnvVars:
+    - name: KEYCLOAK_PROXY_ADDRESS_FORWARDING
+      value: "true"
+    - name: KEYCLOAK_FRONTEND_URL
+      value: "https://falko-benchmark.gke.c8sm.com/auth"
   postgresql:
     primary:
       resourcesPreset: micro
@@ -253,8 +316,8 @@ elasticsearch:
   master:
     masterOnly: ${elasticSearch.masterOnly}
     replicaCount: ${elasticSearch.clusterSizeMaster}
-    #nodeSelector:
-    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+    nodeSelector:
+      cloud.google.com/gke-nodepool: pool-${engine.machineType}
     resources:
       requests:
         cpu: ${elasticSearch.vcpusMasterRequests}
@@ -268,8 +331,8 @@ elasticsearch:
       storageClass: ${elasticSearch.fileSystem}
   data:
     replicaCount: ${elasticSearch.clusterSizeData}
-    #nodeSelector:
-    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+    nodeSelector:
+      cloud.google.com/gke-nodepool: pool-${engine.machineType}
     resources:
       requests:
         cpu: ${elasticSearch.vcpusDataRequests}

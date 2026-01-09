@@ -11,8 +11,8 @@ spec:
         batch.kubernetes.io/job-name: job-cpu-info
         job-name: job-cpu-info
     spec:
-#      nodeSelector:       
-#        cloud.google.com/gke-nodepool: pool-${engine.machineType}
+      nodeSelector:       
+        cloud.google.com/gke-nodepool: pool-${engine.machineType}
 #        alpha.eksctl.io/nodegroup-name: c7g-8xlarge
       containers:
       - command:

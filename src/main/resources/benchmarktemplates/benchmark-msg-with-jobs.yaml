@@ -22,17 +22,19 @@ spec:
         env:
           - name: JAVA_OPTIONS
             value: >-
-              -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
-              -Dzeebe.client.security.plaintext=true
-              -Dzeebe.client.request-timeout=600s
-              -Dzeebe.client.job.poll-interval=1ms
-              -Dzeebe.client.default-job-worker-stream-enabled=true
+              -Dcamunda.client.mode=selfmanaged
+              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500
+              -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
+              -Dcamunda.client.zeebe.request-timeout=600s
+              -Dcamunda.client.zeebe.defaults.poll-interval=1ms
+              -Dcamunda.client.zeebe.default-job-worker-stream-enabled=true
+              -Dcamunda.client.worker.defaults.stream-enabled=true
               -Dbenchmark.startProcesses=false
               -Dbenchmark.startWorkers=true
               -Dbenchmark.jobType=benchmark-task
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
-              -Dbenchmark.payloadPath=file:/payload.json
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
+              -Dbenchmark.payloadPath=file:/${loadGeneratorStarter.payload}
               -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
               -Dbenchmark.messageScenario=file:/msg-scenario.json
               -Dbenchmark.messagesTtl=${loadGeneratorStarter.messageTtl}
@@ -40,6 +42,7 @@ spec:
               -Dbenchmark.delayBetweenMessages=1
               -Dbenchmark.messagesLoadDuration=${loadGeneratorStarter.runDuration}000
               -Dbenchmark.autoDeployProcess=false
+              -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
 # TODO make this work: -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
         resources:
           limits:
