@@ -52,7 +52,7 @@ spec:
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dbenchmark.enablePartitionPinning=${jobWorker.partitionPinning}
               -Dbenchmark.partitionCount=${engine.partitions}
-              -Dbenchmark.numberOfStarters=${loadGeneratorStarter.starterReplicas}
+              -Dbenchmark.numberOfStarters=${engine.clusterSize}
 #              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway-grpc:26500            
 #              -Dzeebe.client.worker.max-jobs-active=${jobWorker.maxJobsActive}
 #              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
