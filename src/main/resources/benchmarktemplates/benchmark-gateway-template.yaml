@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: benchmark
+  name: benchmark-gateway-${BENCHMARK_ID}
   labels:
-    app: benchmark
+    app: benchmark-gateway-${BENCHMARK_ID}
 spec:
   selector:
     matchLabels:
-      app: benchmark
-  serviceName: benchmark
-  replicas: ${loadGeneratorStarter.starterReplicas}
+      app: benchmark-gateway-${BENCHMARK_ID}
+  serviceName: benchmark-gateway-${BENCHMARK_ID}
+  replicas: 1
   template:
     metadata:
 #      annotations:
 #        linkerd.io/inject: enabled
 #        config.linkerd.io/opaque-ports: "26500"
       labels:
-        app: benchmark
+        app: benchmark-gateway-${BENCHMARK_ID}
 #        istio.io/dataplane-mode: ambient
     spec:
       containers:
@@ -26,13 +26,11 @@ spec:
         imagePullPolicy: Always
         env:
           - name: BENCHMARK_STARTER_ID
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+            value: benchmark-gateway-${BENCHMARK_ID}
           - name: JAVA_OPTIONS
             value: >-
               -Dcamunda.client.mode=selfmanaged
-              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500
+              -Dcamunda.client.zeebe.grpc-address=http://${GATEWAY_IP}:26500            
               -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
               -Dcamunda.client.zeebe.request-timeout=600s
               -Dcamunda.client.zeebe.defaults.poll-interval=1ms
@@ -50,7 +48,6 @@ spec:
               -Dbenchmark.multipleJobTypes=${jobWorker.numberOfJobTypes}
               -Dbenchmark.taskCompletionDelay=${jobWorker.jobDuration}
               -Dbenchmark.payloadPath=file:/${loadGeneratorStarter.payload}
-              -Dbenchmark.fixedBackOffDelay=${jobWorker.fixedBackOffDelay}
               -Dbenchmark.autoDeployProcess=false
               -Dbenchmark.warmupPhaseDurationMillis=${loadGeneratorStarter.rampUpTime}000
               -Dbenchmark.enablePartitionPinning=${jobWorker.partitionPinning}
@@ -64,8 +61,8 @@ spec:
             cpu: ${engine.vcpus}
             memory: ${engine.ram}Gi
           requests:
-            cpu: 100m
-            memory: 512Mi
+            cpu: 5
+            memory: 5Gi
         volumeMounts:
         - name: payload
           mountPath: ${loadGeneratorStarter.payload}
