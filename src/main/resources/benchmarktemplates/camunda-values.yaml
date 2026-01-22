@@ -123,7 +123,7 @@ orchestration:
     #  value: "3"
     #- name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCHOPTIMIZE_ARGS_INDEX_NUMBEROFREPLICAS
     #  value: "1"
-    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
+    - name: CAMUNDA_CLUSTER_RAFT_FLUSHDELAY
       value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
@@ -165,10 +165,10 @@ orchestration:
       value: "${engine.maxAppendBatchSize}KB"
     - name: CAMUNDA_DATAPRIMARYSTORAGE_ROCKSDB_WALDISABLED
       value: "${rocksdb.disableWal}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLESSTPARTITIONING
+    - name: CAMUNDA_DATA_PRIMARYSTORAGE_ROCKSDB_SSTPARTITIONINGENABLED
       value: "${rocksdb.enableSstPartitioning}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_MEMORYLIMIT
-      value: "${rocksdb.memoryLimit}"
+    - name: CAMUNDA_DATA_PRIMARYSTORAGE_ROCKSDB_MEMORYLIMIT
+      value: "${rocksdb.memoryLimit}MB"
     # Enable JSON logging for Google Cloud Stackdriver
     - name: ZEEBE_LOG_APPENDER
       value: Stackdriver
