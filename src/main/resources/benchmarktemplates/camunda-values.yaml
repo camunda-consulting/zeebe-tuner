@@ -124,7 +124,7 @@ orchestration:
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLESSTPARTITIONING
       value: "${rocksdb.enableSstPartitioning}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_MEMORYLIMIT
-      value: "${rocksdb.memoryLimit}"
+      value: "${rocksdb.memoryLimit}MB"
     # Enable JSON logging for Google Cloud Stackdriver
     - name: ZEEBE_LOG_APPENDER
       value: Stackdriver
