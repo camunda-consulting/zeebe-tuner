@@ -91,6 +91,7 @@ benchmark: namespace copy-models
 
 .PHONY: clean-benchmark
 clean-benchmark:
+	-kubectl delete service benchmark-svc  -n $(namespace)
 	-kubectl delete -f $(benchmark)        -n $(namespace)
 	-kubectl delete configmap payload      -n $(namespace)
 	-kubectl delete configmap msg-scenario -n $(namespace)
