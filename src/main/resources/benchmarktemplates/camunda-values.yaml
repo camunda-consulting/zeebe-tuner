@@ -23,6 +23,8 @@ global:
       enabled: ${optimize.enabled}
 
 orchestration:
+  nodeSelector:
+    node.kubernetes.io/instance-type: ${engine.machineType}
   profiles:
     operate: ${operate.enabled}
     tasklist: ${operate.enabled}
@@ -176,8 +178,8 @@ orchestration:
 optimize:
   enabled: ${optimize.enabled}
   partitionCount: "${engine.partitions}"
-  #nodeSelector:
-  #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+  nodeSelector:
+    node.kubernetes.io/instance-type: ${engine.machineType}
   resources:
     requests:
       cpu: "${optimize.vcpus}"
@@ -253,8 +255,8 @@ elasticsearch:
   master:
     masterOnly: ${elasticSearch.masterOnly}
     replicaCount: ${elasticSearch.clusterSizeMaster}
-    #nodeSelector:
-    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+    nodeSelector:
+      node.kubernetes.io/instance-type: ${engine.machineType}
     resources:
       requests:
         cpu: ${elasticSearch.vcpusMasterRequests}
@@ -268,8 +270,8 @@ elasticsearch:
       storageClass: ${elasticSearch.fileSystem}
   data:
     replicaCount: ${elasticSearch.clusterSizeData}
-    #nodeSelector:
-    #  cloud.google.com/gke-nodepool: pool-${engine.machineType}
+    nodeSelector:
+      node.kubernetes.io/instance-type: ${engine.machineType}
     resources:
       requests:
         cpu: ${elasticSearch.vcpusDataRequests}
