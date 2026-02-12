@@ -15,6 +15,8 @@ spec:
       labels:
         app: benchmark
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: benchmark
         image: camundacommunityhub/camunda-8-benchmark:main
