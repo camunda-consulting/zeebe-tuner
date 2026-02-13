@@ -284,7 +284,7 @@ elasticsearch:
       size: ${elasticSearch.storageCapacity}Gi
       storageClass: ${elasticSearch.fileSystem}
   metrics:
-    enabled: true
+    enabled: ${elasticSearch.enabled}
     serviceMonitor:
       enabled: true
       honorLabels: true
