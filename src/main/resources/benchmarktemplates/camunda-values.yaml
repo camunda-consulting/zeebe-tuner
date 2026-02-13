@@ -30,7 +30,7 @@ orchestration:
     tasklist: ${operate.enabled}
   exporters:
     camunda:
-      enabled: false
+      enabled: ${elasticSearch.enabled}
     zeebe:
       enabled: false
     rdbms:
@@ -59,7 +59,7 @@ orchestration:
   javaOpts: "-XX:+Use${jvm.garbageCollector}GC"
   env:
     - name: CAMUNDA_DATABASE_SCHEMA_MANAGER_CREATE_SCHEMA
-      value: "false"
+      value: "${elasticSearch.enabled}"
     - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI
       value: "true"
     - name: CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED
