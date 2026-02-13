@@ -9,8 +9,13 @@ chartValues ?= camunda-values.yaml
 
 # TODO configure through runner
 include ../../../config.mk
-#models ?= *.*mn
+
+ifeq (${loadGeneratorStarter.deployMultipleModels},TRUE)
+models ?= *.*mn
+else
 models ?= ${loadGeneratorStarter.processModel}.bpmn
+endif
+
 benchmark ?= benchmark.yaml
 #benchmark ?= benchmark-msg.yaml
 #benchmark ?= benchmark-msg-with-jobs.yaml
