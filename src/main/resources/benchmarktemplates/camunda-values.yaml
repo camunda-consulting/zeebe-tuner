@@ -56,6 +56,7 @@ orchestration:
   persistenceType: ${engine.diskType}
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
+  javaOpts: "-XX:+Use${jvm.garbageCollector}GC"
   env:
     - name: CAMUNDA_DATABASE_SCHEMA_MANAGER_CREATE_SCHEMA
       value: "false"
