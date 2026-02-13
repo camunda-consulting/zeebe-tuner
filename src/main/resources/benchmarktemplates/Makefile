@@ -18,8 +18,14 @@ payload ?= ${loadGeneratorStarter.payload}
 scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
+ifeq (${elasticSearch.enabled},TRUE)
+esTarget ?= await-elasticsearch
+else
+esTarget ?=
+endif
+
 .PHONY: all
-all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} benchmark await-benchmark
+all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} ${esTarget} benchmark await-benchmark
 #all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
