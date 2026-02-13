@@ -16,6 +16,13 @@ else
 models ?= ${loadGeneratorStarter.processModel}.bpmn
 endif
 
+# switch between deploying models using zbctl in a k8s job or locally by port-forwarding to the Zeebe Gateway in k8s
+ifeq (${loadGeneratorStarter.deployWithLocalZbctl},TRUE)
+deployModels ?= deploy-models-zbctl-local
+else
+deployModels ?= deploy-models
+endif
+
 benchmark ?= benchmark.yaml
 #benchmark ?= benchmark-msg.yaml
 #benchmark ?= benchmark-msg-with-jobs.yaml
@@ -23,14 +30,15 @@ payload ?= ${loadGeneratorStarter.payload}
 scenario ?= msg-scenario.json
 #scenario ?= msg-scenario-references.json
 
+# add Make target to wait for Elasticsearch to be ready if enabled, otherwise leave it empty
 ifeq (${elasticSearch.enabled},TRUE)
-esTarget ?= await-elasticsearch
+awaitElasticsearch ?= await-elasticsearch
 else
-esTarget ?=
+awaitElasticsearch ?=
 endif
 
 .PHONY: all
-all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} ${esTarget} benchmark await-benchmark
+all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe ${deployModels} rebalance-leaders ${chaosTarget} ${awaitElasticsearch} benchmark await-benchmark
 #all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
@@ -53,6 +61,13 @@ sync-image:
 
 #: Deploy BPMN and DMN models using zbctl in a k8s job
 deploy-models: copy-models job-deploy-models logs-job-deploy-models clean-job-deploy-models
+
+.PHONY: deploy-models-zbctl-local # Deploy an unlimited number of BPMN and DMN models using zbctl locally by port-forwarding to the Zeebe Gateway in k8s
+deploy-models-zbctl-local: copy-models
+	kubectl port-forward svc/$(release)-zeebe-gateway 26500:grpc -n $(namespace) &
+	sleep 10
+	find models -iname '$(models)' -type f -print0| xargs -0 -I{} zbctl --insecure deploy resource {}
+	kill $$(ps | grep 'kubectl' | awk '{print $$1}')
 
 .PHONY: copy-models
 copy-models:
