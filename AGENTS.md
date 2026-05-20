@@ -25,6 +25,26 @@ make install               # run-all-tests.sh, moves done runs to TESTRUNS_DONE_
 make teardown-current-run  # tear down the currently active test run
 ```
 
+## Running a generated test run
+
+After `./gradlew bootRun` populates `runner/testruns/<id>/`, the top-level `runner/Makefile` resolves the lexicographically-first directory there and creates `runner/current/run` as a symlink to it. Operate the active run from there:
+
+```sh
+cd runner/current/run
+make all          # full pipeline: kube-node-pool, helm install Camunda, deploy models, start benchmark
+make clean        # clean-benchmark + uninstall-camunda
+make clean all    # full reset
+```
+
+Useful finer-grained targets when iterating:
+- `make deploy-models-zbctl-local` — port-forward to the gateway and `zbctl deploy resource` every model file. Faster than the k8s-job variant (`make deploy-models`) and gives direct stderr.
+- `make benchmark` / `make clean-benchmark` — start/stop just the benchmark deployment.
+- `make await-zeebe`, `make pods`, `make cpu-info.txt` — wait/inspect helpers.
+
+The `models` variable defaults to `*.*mn` (matches both `.bpmn` and `.dmn`). To deploy a single file: `make deploy-models-zbctl-local models=FirePremium.bpmn`.
+
+Finished runs are moved into `$(TESTRUNS_DONE_DIR)/<id>/` (configured in `config.mk`), and `runner/current/run` becomes a broken symlink — the top-level `runner/Makefile` auto-rebuilds the symlink to the next pending testrun the next time it's invoked.
+
 ## Cloud provider detection (in generated Makefiles)
 Machine type name pattern → provider:
 - contains `.` → AWS (e.g. `c8g.4xlarge`)
@@ -47,3 +67,4 @@ Machine type name pattern → provider:
 - Commit real OAuth credentials or `credStore/StoredCredential`
 - Edit files under `runner/testruns/` or `runner/testruns-done/` — they are generated/output artifacts
 - Add features beyond what a spreadsheet row drives without updating the template + `ScenarioBuilderService`
+- **Leak any customer-identifying information into this repo.** It is a public open-source project. That means no customer or project names in commit messages, code comments, sample data, screenshots, log excerpts, or filenames; no customer-owned BPMN/DMN models committed (even as test fixtures); no Sheet IDs, internal hostnames, or workload-specific configuration that would identify the customer. Use generic placeholders ("customer X", "project Y") in any documentation or test artefact that has to reference such material.
