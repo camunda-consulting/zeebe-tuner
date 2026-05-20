@@ -66,7 +66,7 @@ deploy-models: copy-models job-deploy-models logs-job-deploy-models clean-job-de
 deploy-models-zbctl-local: copy-models
 	kubectl port-forward svc/$(release)-zeebe-gateway 26500:grpc -n $(namespace) &
 	sleep 10
-	find models -iname '$(models)' -type f -print0| xargs -0 -I{} zbctl --insecure deploy resource {}
+	find models -iname '$(models)' -type f -print0 | xargs -0 -I{} sh -c 'echo "Deploying $$1"; zbctl --insecure deploy resource "$$1" || exit 255' sh {}
 	kill $$(ps | grep 'kubectl' | awk '{print $$1}')
 
 .PHONY: copy-models
