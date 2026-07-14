@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.camunda.benchmark.service.EksService;
+import io.camunda.benchmark.service.GoogleSheetService;
 import io.camunda.benchmark.service.ScenarioBuilderService;
 import io.camunda.benchmark.service.TemplatingService;
 import io.camunda.benchmark.zeebe.ZeebeStarterService;
@@ -39,6 +40,9 @@ public class BenchmarkController {
 
 	@Autowired
 	private ZeebeStarterService zeebeStarterService;
+
+	@Autowired
+	private GoogleSheetService googleSheetService;
 	
 	private Map<String, Integer> scenariiIdxMap;
 	
@@ -87,6 +91,11 @@ public class BenchmarkController {
 			Map<String, String> inputs = scenarioBuilderService.getInputs(i);
 			
 			templatingService.buildConfFiles(inputs);
+			try {
+				googleSheetService.markRowAsGenerated(scenarioBuilderService.getSheetRowNumber(i));
+			} catch (IOException | GeneralSecurityException e) {
+				System.err.println("Failed to mark row as generated in spreadsheet: " + e.getMessage());
+			}
 		}
 		
 		/*if (inputs.get("target").equals("eks")) {

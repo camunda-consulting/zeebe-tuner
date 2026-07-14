@@ -32,6 +32,7 @@ public class ScenarioBuilderService {
   private GoogleSheetService googleSheetService;
 
   private List<Map<String, String>> inputMaps = new ArrayList<>();
+  private List<Integer> sheetRowNumbers = new ArrayList<>();
 
   public void BuildScenariiInputs() throws IOException, GeneralSecurityException {
 
@@ -58,6 +59,7 @@ public class ScenarioBuilderService {
         int idxCol = 0;
         if (idxRow > 1) {
           inputMaps.add(new HashMap<>());
+          sheetRowNumbers.add(idxRow + 1);
           // inputMaps.get(idxRow-2).put("bpmnProcessFile", processFileContent);
           inputMaps.get(idxRow - 2).put("namespace", kubeConfig.namespace);
           inputMaps.get(idxRow - 2).put("region", kubeConfig.kubeRegion);
@@ -139,6 +141,10 @@ public class ScenarioBuilderService {
 
   public Map<String, String> getInputs(int idx) {
     return inputMaps.get(idx);
+  }
+
+  public int getSheetRowNumber(int idx) {
+    return sheetRowNumbers.get(idx);
   }
 
   public int getNbScenarii() {

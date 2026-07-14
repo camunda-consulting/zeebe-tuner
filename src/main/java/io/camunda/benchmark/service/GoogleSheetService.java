@@ -63,5 +63,15 @@ public class GoogleSheetService {
 	public ValueRange getValues() throws IOException, GeneralSecurityException {
 		return getSheets().spreadsheets().values().get(googleSheetConfig.googleSheetId, googleSheetConfig.sheetInputs).execute();
 	}
+
+	public void markRowAsGenerated(int sheetRowNumber) throws IOException, GeneralSecurityException {
+		String range = "B" + sheetRowNumber;
+		ValueRange body = new ValueRange()
+				.setValues(Arrays.asList(Arrays.asList("generated")));
+		getSheets().spreadsheets().values()
+				.update(googleSheetConfig.googleSheetId, range, body)
+				.setValueInputOption("RAW")
+				.execute();
+	}
 	
 }
