@@ -55,7 +55,7 @@ include $(root)/metrics/metrics.mk # for Grafana URL
 
 .PHONY: sync-image
 sync-image:
-  ifneq '${engine.image}' 'camunda/zeebe'
+  ifneq '${engine.image}' 'camunda/camunda'
 	docker manifest inspect gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} || docker buildx imagetools create --tag gcr.io/camunda-researchanddevelopment/falko-zeebe:${engine.engineVersion} gcr.io/zeebe-io/zeebe:${engine.engineVersion}
   endif
 
