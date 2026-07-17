@@ -101,25 +101,25 @@ orchestration:
       value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ENABLED
       value: "${engine.backpressure}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_WINDOWED
       value: "${engine.bpUseWindowed}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ALGORITHM
       value: "${engine.backPressureAlgorithm}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_FIXED_LIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_INITIALLIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_ALPHA
       value: "${engine.vegasAlpha}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_BETA
       value: "${engine.vegasBeta}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_MINLIMIT
       value: "${engine.minLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_INITIALLIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_RTTTOLERANCE
       value: "${engine.rttTolerance}"
     - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
       value: "${engine.networkCompression}"
