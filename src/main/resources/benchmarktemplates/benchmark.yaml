@@ -25,7 +25,7 @@ spec:
           - name: JAVA_OPTIONS
             value: >-
               -Dcamunda.client.mode=selfmanaged
-              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500            
+              -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500
               -Dcamunda.client.zeebe.prefer-rest-over-grpc=false
               -Dzeebe.client.request-timeout=600s
               -Dzeebe.client.job.poll-interval=1ms
@@ -47,11 +47,11 @@ spec:
 #              -Dzeebe.client.worker.threads=${jobWorker.numberOfThreads}
         resources:
           limits:
-            cpu: ${engine.vcpus}
+            cpu: "${engine.vcpus}"
             memory: ${engine.ram}Gi
           requests:
-            cpu: 1
-            memory: 1Gi
+            cpu: "${engine.vcpuRequest}"
+            memory: ${engine.ram}Gi
         volumeMounts:
         - name: payload
           mountPath: ${loadGeneratorStarter.payload}
