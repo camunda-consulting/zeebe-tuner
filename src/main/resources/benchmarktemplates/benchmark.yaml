@@ -50,8 +50,8 @@ spec:
             cpu: "${engine.vcpus}"
             memory: ${engine.ram}Gi
           requests:
-            cpu: "${engine.vcpuRequest}"
-            memory: ${engine.ram}Gi
+            cpu: "${loadGeneratorStarter.vcpus}"
+            memory: ${loadGeneratorStarter.ram}Gi
         volumeMounts:
         - name: payload
           mountPath: ${loadGeneratorStarter.payload}

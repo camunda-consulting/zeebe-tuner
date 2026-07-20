@@ -48,8 +48,8 @@ spec:
             cpu: ${engine.vcpus}
             memory: ${engine.ram}Gi
           requests:
-            cpu: 1
-            memory: 1Gi
+            cpu: "${loadGeneratorStarter.vcpus}"
+            memory: ${loadGeneratorStarter.ram}Gi
         volumeMounts:
         - name: payload
           mountPath: payload.json
