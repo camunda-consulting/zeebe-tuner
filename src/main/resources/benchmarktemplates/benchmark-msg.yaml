@@ -22,7 +22,7 @@ spec:
         image: camundacommunityhub/camunda-8-benchmark:main
         imagePullPolicy: Always
         env:
-          - name: JAVA_OPTIONS
+          - name: JAVA_TOOL_OPTIONS
             value: >-
               -Dzeebe.client.broker.gateway-address=camunda-zeebe-gateway:26500
               -Dzeebe.client.security.plaintext=true

@@ -22,7 +22,7 @@ spec:
         image: camundacommunityhub/camunda-8-benchmark:main
         imagePullPolicy: Always
         env:
-          - name: JAVA_OPTIONS
+          - name: JAVA_TOOL_OPTIONS
             value: >-
               -Dcamunda.client.mode=selfmanaged
               -Dcamunda.client.zeebe.grpc-address=http://camunda-zeebe-gateway:26500
