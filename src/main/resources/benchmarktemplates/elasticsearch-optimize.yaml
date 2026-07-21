@@ -1,26 +1,92 @@
 # disable all Camunda Platform components and install only Elasticsearch
 global:
+  ingress:
+    enabled: true
+    className: nginx
+    host: benchmark-test.ci.distro.ultrawombat.com
+    tls:
+      enabled: true
+      secretName: camunda-platform
   elasticsearch:
     enabled: ${elasticSearch.enabled}
-  identity:
+    # keycloak:
+    #   auth:
+    #     secret:
+    #       inlineSecret: admin
     auth:
-      enabled: false
-zeebe:
-  enabled: false
-zeebeGateway:
-  enabled: false
-operate:
-  enabled: false
-tasklist:
-  enabled: false
-optimize:
+      enabled: true
+      # Disabling the Identity authentication
+      # it will fall back to basic-auth: demo/demo as default user
+      # enabled: ${optimize.enabled}
+      # Browser-facing issuer URL (defaults to localhost:18080, only reachable via port-forward).
+      # Must match the public ingress host so OIDC redirects resolve outside the cluster.
+      publicIssuerUrl: "https://benchmark-test.ci.distro.ultrawombat.com/auth/realms/camunda-platform"
+      admin:
+        secret:
+          inlineSecret: test-admin
+      optimize:
+        secret:
+          inlineSecret: test-optimize
+        redirectUrl: "https://benchmark-test.ci.distro.ultrawombat.com/optimize"
+orchestration:
   enabled: false
 connectors:
   enabled: false
 identity:
-  enabled: false
+  enabled: ${optimize.enabled}
+  contextPath: /identity
 identityKeycloak:
-  enabled: false
+  enabled: ${optimize.enabled}
+  postgresql:
+    primary:
+      resourcesPreset: micro
+    auth:
+      existingSecret: "integration-test-credentials"
+      secretKeys:
+        adminPasswordKey: "identity-keycloak-postgresql-admin-password"
+        userPasswordKey: "identity-keycloak-postgresql-user-password"
+  auth:
+    existingSecret: "integration-test-credentials"
+    passwordSecretKey: "identity-keycloak-admin-password"
+optimize:
+  enabled: ${optimize.enabled}
+  contextPath: /optimize
+  partitionCount: "${engine.partitions}"
+  nodeSelector:
+    node.kubernetes.io/instance-type: ${engine.machineType}
+  resources:
+    requests:
+      cpu: "${optimize.vcpus}"
+      memory: ${optimize.ram}Gi
+    limits:
+      cpu: "${optimize.vcpus}"
+      memory: ${optimize.ram}Gi
+  env:
+    - name: JAVA_OPTS
+      value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
+    - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
+      value: "${optimize.importPageSize}"
+    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_QUEUE_SIZE
+      value: "${optimize.importerQueueSize}"
+    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_THREAD_COUNT
+      value: "${optimize.importerThreads}"
+    # Skip importing variable records into Optimize's own indices (belt-and-suspenders with the exporter-side variable=false above)
+    - name: CAMUNDA_OPTIMIZE_ZEEBE_VARIABLE_IMPORT_ENABLED
+      value: "false"
+    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_SHARDS
+      value: "${optimize.shardsPerIndex}"
+    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_REPLICAS
+      value: "1"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_CRONTRIGGER
+      value: "0 18 * * *"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_TTL
+      value: "P5D"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_ENABLED
+      value: "true"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_CLEANUPMODE
+      value: "all"
+    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_BATCHSIZE
+      value: "10000"
 
 elasticsearch:
   enabled: ${elasticSearch.enabled}

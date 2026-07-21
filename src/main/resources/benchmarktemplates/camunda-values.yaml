@@ -7,7 +7,7 @@ global:
   ingress:
     enabled: true
     className: nginx
-    host: zeebe-grpc.camunda.example.com
+    host: orchestration-benchmark-test.ci.distro.ultrawombat.com
     tls:
       enabled: true
       secretName: camunda-platform
@@ -15,17 +15,6 @@ global:
   # Kept for now since it still drives the secondary storage selection via a compatibility fallback.
   elasticsearch:
     enabled: true
-  identity:
-    auth:
-      # Disabling the Identity authentication
-      # it will fall back to basic-auth: demo/demo as default user
-      enabled: ${optimize.enabled}
-      admin:
-        secret:
-          inlineSecret: test-admin
-      optimize:
-        secret:
-          inlineSecret: test-optimize
 
 orchestration:
   nodeSelector:
@@ -40,9 +29,18 @@ orchestration:
       enabled: false
     rdbms:
       enabled: false
-  contextPath: /orchestration
+  contextPath: /
+  ingress:
+    grpc:
+      enabled: true
+      className: nginx
+      host: grpc-orchestration-benchmark-test.ci.distro.ultrawombat.com
+      tls:
+        enabled: true
+        secretName: camunda-platform-zeebe-gateway
   security:
     authentication:
+      method: basic
       unprotectedApi: true
     authorizations:
       enabled: false
@@ -69,24 +67,31 @@ orchestration:
       value: "true"
     - name: CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED
       value: "false"
-    - name: SPRING_PROFILES_ACTIVE
-      value: "broker,standalone"
-    - name: CAMUNDA_SECURITY_AUTHENTICATION_METHOD
-      value: "basic"
+    # - name: SPRING_PROFILES_ACTIVE
+    #   value: "broker,standalone"
+    # - name: CAMUNDA_SECURITY_AUTHENTICATION_METHOD
+    #   value: "basic"
     # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch, i.e. elasticSearch.enabled=false
-    # - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
-    #   value: "${elasticSearch.shardsPerIndex}"
-    # - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
-    #   value: "1"
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
+      value: io.camunda.zeebe.exporter.ElasticsearchExporter
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
+      value: "${elasticSearch.shardsPerIndex}"
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
+      value: "1"
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_OPTIMIZEMODEENABLED
+      value: "true"
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_VARIABLE
+      value: "${optimize.indexVariables}"
     # Export to separate Elasticsearch for Optimize, i.e. optimize.separateElasticsearch=true
-    # - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
-    #   value: http://optimize-elasticsearch:9200
-    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
-      value: "${engine.raftFlushDelay}"
+    # Enable only when there is separate Elasticsearch for optimize
+    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
+      value: http://optimize-elasticsearch:9200
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED
       value: "true"
+    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
+      value: "${engine.raftFlushDelay}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_FEATURES_ENABLEACTORMETRICS
       value: "true"
     - name: CAMUNDA_DATA_PRIMARYSTORAGE_LOGSTREAM_LOGSEGMENTSIZE
@@ -95,25 +100,25 @@ orchestration:
       value: "${engine.preAllocateSegmentFiles}"
     - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
       value: "${engine.disableExplicitRaftFlush}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ENABLED
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ENABLED
       value: "${engine.backpressure}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_USEWINDOWED
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_WINDOWED
       value: "${engine.bpUseWindowed}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_ALGORITHM
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ALGORITHM
       value: "${engine.backPressureAlgorithm}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_FIXED_LIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_FIXED_LIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_INITIALLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_INITIALLIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_ALPHA
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_ALPHA
       value: "${engine.vegasAlpha}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_VEGAS_BETA
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_BETA
       value: "${engine.vegasBeta}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_MINLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_MINLIMIT
       value: "${engine.minLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_INITIALLIMIT
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_INITIALLIMIT
       value: "${engine.initialLimit}"
-    - name: ZEEBE_BROKER_BACKPRESSURE_GRADIENT_RTTTOLERANCE
+    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_RTTTOLERANCE
       value: "${engine.rttTolerance}"
     - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
       value: "${engine.networkCompression}"
@@ -172,7 +177,9 @@ orchestration:
       value: "${operate.importPageSize}"
 
 optimize:
-  enabled: ${optimize.enabled}
+  # enabled: ${optimize.enabled}
+  enabled: false
+  contextPath: /optimize
   partitionCount: "${engine.partitions}"
   nodeSelector:
     node.kubernetes.io/instance-type: ${engine.machineType}
@@ -187,14 +194,17 @@ optimize:
     - name: JAVA_OPTS
       value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
     # Separate Elasticsearch for Optimize, i.e. optimize.separateElasticsearch=true
-    #- name: OPTIMIZE_ELASTICSEARCH_HOST
-    #  value: optimize-elasticsearch
+    - name: OPTIMIZE_ELASTICSEARCH_HOST
+      value: optimize-elasticsearch
     - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
       value: "${optimize.importPageSize}"
     - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_QUEUE_SIZE
       value: "${optimize.importerQueueSize}"
     - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_THREAD_COUNT
       value: "${optimize.importerThreads}"
+    # Skip importing variable records into Optimize's own indices (belt-and-suspenders with the exporter-side variable=false above)
+    - name: CAMUNDA_OPTIMIZE_ZEEBE_VARIABLE_IMPORT_ENABLED
+      value: "${optimize.indexVariables}"
     - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_SHARDS
       value: "${optimize.shardsPerIndex}"
     - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_REPLICAS
@@ -224,17 +234,29 @@ webModeler:
       fromAddress: YOUR_EE_EMAIL
 
 console:
-  enabled: ${optimize.enabled}
+  enabled: false
+  contextPath: /console
 
 identity:
-  enabled: ${optimize.enabled}
+  # enabled: ${optimize.enabled}
+  enabled: false
+  contextPath: /identity
 
 # DEPRECATED in 8.9 - the bundled Keycloak subchart is deprecated; prefer an external OIDC provider.
 identityKeycloak:
-  enabled: ${optimize.enabled}
+  # enabled: ${optimize.enabled}
+  enabled: false
   postgresql:
     primary:
       resourcesPreset: micro
+    auth:
+      existingSecret: "integration-test-credentials"
+      secretKeys:
+        adminPasswordKey: "identity-keycloak-postgresql-admin-password"
+        userPasswordKey: "identity-keycloak-postgresql-user-password"
+  auth:
+    existingSecret: "integration-test-credentials"
+    passwordSecretKey: "identity-keycloak-admin-password"
 
 prometheusServiceMonitor:
   enabled: true
