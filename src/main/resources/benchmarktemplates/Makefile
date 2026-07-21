@@ -37,12 +37,29 @@ else
 awaitElasticsearch ?=
 endif
 
+# add Make target to install/uninstall a separate Elasticsearch for Optimize if enabled, otherwise leave it empty
+ifeq (${optimize.separateElasticsearch},TRUE)
+elasticsearchOptimize ?= elasticsearch-optimize
+cleanElasticsearchOptimize ?= clean-elasticsearch-optimize
+else
+elasticsearchOptimize ?=
+cleanElasticsearchOptimize ?=
+endif
+
 .PHONY: all
-all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe ${deployModels} rebalance-leaders ${chaosTarget} ${awaitElasticsearch} benchmark await-benchmark
+all: chart sync-image ${elasticsearchOptimize} install-camunda chart-infos cpu-info.txt pods await-zeebe ${deployModels} rebalance-leaders ${chaosTarget} ${awaitElasticsearch} benchmark await-benchmark
 #all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
-clean: clean-benchmark clean-job-deploy-models uninstall-camunda
+clean: clean-benchmark clean-job-deploy-models uninstall-camunda ${cleanElasticsearchOptimize}
+
+.PHONY: elasticsearch-optimize
+elasticsearch-optimize:
+	$(MAKE) --makefile=elasticsearch-optimize.mk
+
+.PHONY: clean-elasticsearch-optimize
+clean-elasticsearch-optimize:
+	$(MAKE) --makefile=elasticsearch-optimize.mk clean
 
 ifeq ($(OS),Windows_NT)
     root ?= $(CURDIR)/../../../../camunda-8-helm-profiles

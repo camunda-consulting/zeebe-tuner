@@ -10,7 +10,7 @@ chart ?= camunda/camunda-platform
 chartValues ?= elasticsearch-optimize.yaml --version=${engine.helmChartVersion}
 
 .PHONY: all
-all: install-camunda pods await-elasticsearch
+all: install-camunda pods await-elasticsearch await-optimize
 
 .PHONY: clean
 clean: uninstall-camunda
