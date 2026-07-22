@@ -1,7 +1,7 @@
 # usage: make --makefile=elasticsearch-optimize.mk [target]
 
 # Camunda components will be installed into the following Kubernetes namespace
-namespace ?= camunda
+namespace ?= camunda-optimize
 # Helm release name
 release ?= optimize
 # Helm chart coordinates for Camunda
@@ -23,3 +23,11 @@ endif
 
 include $(root)/include/camunda.mk
 include $(root)/metrics/metrics.mk # for Grafana URL
+
+# Override camunda.mk's await-optimize: it assumes the Optimize deployment is named
+# "$(release)-optimize", which holds when release=camunda (-> camunda-optimize) but not
+# here, where release=optimize itself. Helm's fullname helper collapses "optimize-optimize"
+# down to just "optimize" since the release name already contains the chart name.
+.PHONY: await-optimize
+await-optimize:
+	kubectl rollout status --watch deployment/$(release) --timeout=900s -n $(namespace)

@@ -85,7 +85,7 @@ orchestration:
     # Export to separate Elasticsearch for Optimize, i.e. optimize.separateElasticsearch=true
     # Enable only when there is separate Elasticsearch for optimize
     - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
-      value: http://optimize-elasticsearch:9200
+      value: http://optimize-elasticsearch.camunda-optimize.svc.cluster.local:9200
     - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
       value: "true"
     - name: ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED
