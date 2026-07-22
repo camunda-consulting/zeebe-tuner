@@ -7,8 +7,7 @@ global:
     tls:
       enabled: true
       secretName: camunda-platform
-  elasticsearch:
-    enabled: ${elasticSearch.enabled}
+  identity:
     # keycloak:
     #   auth:
     #     secret:
@@ -28,6 +27,8 @@ global:
         secret:
           inlineSecret: test-optimize
         redirectUrl: "https://benchmark-test.ci.distro.ultrawombat.com/optimize"
+  elasticsearch:
+    enabled: ${elasticSearch.enabled}
 orchestration:
   enabled: false
 connectors:
@@ -62,6 +63,8 @@ optimize:
       cpu: "${optimize.vcpus}"
       memory: ${optimize.ram}Gi
   env:
+    # -name: OPTIMIZE_ELASTICSEARCH_HOST
+    #  value: <ES OF ORCHESTRATION CLUSSTER>
     - name: JAVA_OPTS
       value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
     - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
