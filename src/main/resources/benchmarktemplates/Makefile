@@ -81,10 +81,17 @@ deploy-models: copy-models job-deploy-models logs-job-deploy-models clean-job-de
 
 .PHONY: deploy-models-zbctl-local # Deploy an unlimited number of BPMN and DMN models using zbctl locally by port-forwarding to the Zeebe Gateway in k8s
 deploy-models-zbctl-local: copy-models
-	kubectl port-forward svc/$(release)-zeebe-gateway 26500:grpc -n $(namespace) &
-	sleep 10
-	find models -iname '$(models)' -type f -print0 | xargs -0 -I{} sh -c 'echo "Deploying $$1"; zbctl --insecure deploy resource "$$1" || exit 255' sh {}
-	killall kubectl
+	@set -e; \
+	kubectl port-forward svc/$(release)-zeebe-gateway 26500:grpc -n $(namespace) >/dev/null & \
+	pf_pid=$$!; \
+	trap 'kill $$pf_pid 2>/dev/null || true' EXIT INT TERM; \
+	ready=; for i in $$(seq 1 30); do \
+		if zbctl --insecure status >/dev/null 2>&1; then ready=1; break; fi; \
+		sleep 1; \
+	done; \
+	[ "$$ready" = 1 ] || { echo "gateway not reachable on :26500 after 30s" >&2; exit 1; }; \
+	find models -iname '$(models)' -type f -print0 | \
+		xargs -0 -I{} sh -c 'echo "Deploying $$1"; zbctl --insecure deploy resource "$$1" || exit 255' sh {}
 
 .PHONY: copy-models
 copy-models:
