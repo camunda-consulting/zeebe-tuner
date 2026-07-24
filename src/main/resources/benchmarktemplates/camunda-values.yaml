@@ -60,78 +60,11 @@ orchestration:
   pvcSize: ${engine.diskSize}Gi
   pvcStorageClassName: ${engine.fileSystem}
   javaOpts: "-XX:+Use${jvm.garbageCollector}GC"
+  # Environment variables that CANNOT be expressed via extraConfiguration:
+  # the Zeebe/Camunda log4j2.xml resolves these through Log4j2 ${env:...} lookups
+  # (not Spring's Environment), and ZEEBE_LOG_STACKDRIVER_SERVICEVERSION additionally
+  # relies on the Kubernetes downward API. They must stay as container env vars.
   env:
-    - name: CAMUNDA_DATABASE_SCHEMA_MANAGER_CREATE_SCHEMA
-      value: "${elasticSearch.enabled}"
-    - name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI
-      value: "true"
-    - name: CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED
-      value: "false"
-    # - name: SPRING_PROFILES_ACTIVE
-    #   value: "broker,standalone"
-    # - name: CAMUNDA_SECURITY_AUTHENTICATION_METHOD
-    #   value: "basic"
-    # comment out ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH* when disabling Elasticsearch, i.e. elasticSearch.enabled=false
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME
-      value: io.camunda.zeebe.exporter.ElasticsearchExporter
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFSHARDS
-      value: "${elasticSearch.shardsPerIndex}"
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_NUMBEROFREPLICAS
-      value: "1"
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_OPTIMIZEMODEENABLED
-      value: "true"
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_INDEX_VARIABLE
-      value: "${optimize.indexVariables}"
-    # Export to separate Elasticsearch for Optimize, i.e. optimize.separateElasticsearch=true
-    # Enable only when there is separate Elasticsearch for optimize
-    - name: ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL
-      value: http://optimize-elasticsearch.camunda-optimize.svc.cluster.local:9200
-    - name: ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED
-      value: "true"
-    - name: ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED
-      value: "true"
-    - name: ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME
-      value: "${engine.raftFlushDelay}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_FEATURES_ENABLEACTORMETRICS
-      value: "true"
-    - name: CAMUNDA_DATA_PRIMARYSTORAGE_LOGSTREAM_LOGSEGMENTSIZE
-      value: "${engine.logSegmentSize}MB"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_RAFT_PREALLOCATESEGMENTFILES
-      value: "${engine.preAllocateSegmentFiles}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_DISABLEEXPLICITRAFTFLUSH
-      value: "${engine.disableExplicitRaftFlush}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ENABLED
-      value: "${engine.backpressure}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_WINDOWED
-      value: "${engine.bpUseWindowed}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_ALGORITHM
-      value: "${engine.backPressureAlgorithm}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_FIXED_LIMIT
-      value: "${engine.initialLimit}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_ALPHA
-      value: "${engine.vegasAlpha}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_VEGAS_BETA
-      value: "${engine.vegasBeta}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_MINLIMIT
-      value: "${engine.minLimit}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_INITIALLIMIT
-      value: "${engine.initialLimit}"
-    - name: CAMUNDA_PROCESSING_FLOWCONTROL_REQUEST_GRADIENT_RTTTOLERANCE
-      value: "${engine.rttTolerance}"
-    - name: "ZEEBE_BROKER_CLUSTER_MESSAGECOMPRESSION"
-      value: "${engine.networkCompression}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDSPERFOLLOWER
-      value: "${engine.maxAppendsPerFollower}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_MAXAPPENDBATCHSIZE
-      value: "${engine.maxAppendBatchSize}KB"
-    - name: CAMUNDA_DATAPRIMARYSTORAGE_ROCKSDB_WALDISABLED
-      value: "${rocksdb.disableWal}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_ENABLESSTPARTITIONING
-      value: "${rocksdb.enableSstPartitioning}"
-    - name: ZEEBE_BROKER_EXPERIMENTAL_ROCKSDB_MEMORYLIMIT
-      value: "${rocksdb.memoryLimit}MB"
     # Enable JSON logging for Google Cloud Stackdriver
     - name: ZEEBE_LOG_APPENDER
       value: Stackdriver
@@ -141,84 +74,131 @@ orchestration:
       valueFrom:
         fieldRef:
           fieldPath: metadata.namespace
-    # Operate
-    - name: CAMUNDA_OPERATE_ARCHIVER_ROLLOVERBATCHSIZE
-      value: "${operate.archRolloverBatchSize}"
-    - name: CAMUNDA_OPERATE_ARCHIVER_THREADSCOUNT
-      value: "${operate.archThreads}"
-    - name: CAMUNDA_OPERATE_IMPORTER_QUEUESIZE
-      value: "${operate.importerQueueSize}"
-    - name: CAMUNDA_OPERATE_IMPORTER_READERTHREADSCOUNT
-      value: "${operate.importerReaderThreads}"
-    - name: CAMUNDA_OPERATE_IMPORTER_THREADSCOUNT
-      value: "${operate.importerThreads}"
-    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFSHARDS
-      value: "${elasticSearch.shardsPerIndex}"
-    - name: CAMUNDA_OPERATE_ELASTICSEARCH_NUMBEROFREPLICAS
-      value: "1"
-    - name: CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_BATCHSIZE
-      value: "${operate.importPageSize}"
-    # Tasklist
-    - name: CAMUNDA_TASKLIST_ARCHIVER_ROLLOVERBATCHSIZE
-      value: "${operate.archRolloverBatchSize}"
-    - name: CAMUNDA_TASKLIST_ARCHIVER_THREADSCOUNT
-      value: "${operate.archThreads}"
-    - name: CAMUNDA_TASKLIST_IMPORTER_QUEUESIZE
-      value: "${operate.importerQueueSize}"
-    - name: CAMUNDA_TASKLIST_IMPORTER_READERTHREADSCOUNT
-      value: "${operate.importerReaderThreads}"
-    - name: CAMUNDA_TASKLIST_IMPORTER_THREADSCOUNT
-      value: "${operate.importerThreads}"
-    - name: CAMUNDA_TASKLIST_ELASTICSEARCH_NUMBEROFSHARDS
-      value: "${elasticSearch.shardsPerIndex}"
-    - name: CAMUNDA_TASKLIST_ELASTICSEARCH_NUMBEROFREPLICAS
-      value: "1"
-    - name: CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_BATCHSIZE
-      value: "${operate.importPageSize}"
-
-optimize:
-  # enabled: ${optimize.enabled}
-  enabled: false
-  contextPath: /optimize
-  partitionCount: "${engine.partitions}"
-  nodeSelector:
-    node.kubernetes.io/instance-type: ${engine.machineType}
-  resources:
-    requests:
-      cpu: "${optimize.vcpus}"
-      memory: ${optimize.ram}Gi
-    limits:
-      cpu: "${optimize.vcpus}"
-      memory: ${optimize.ram}Gi
-  env:
-    - name: JAVA_OPTS
-      value: -XX:MaxRAMPercentage=50.0 -XX:InitialRAMPercentage=25.0
-    # Separate Elasticsearch for Optimize, i.e. optimize.separateElasticsearch=true
-    - name: OPTIMIZE_ELASTICSEARCH_HOST
-      value: optimize-elasticsearch
-    - name: CAMUNDA_OPTIMIZE_ZEEBE_MAX_IMPORT_PAGE_SIZE
-      value: "${optimize.importPageSize}"
-    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_QUEUE_SIZE
-      value: "${optimize.importerQueueSize}"
-    - name: CAMUNDA_OPTIMIZE_JOB_EXECUTOR_THREAD_COUNT
-      value: "${optimize.importerThreads}"
-    # Skip importing variable records into Optimize's own indices (belt-and-suspenders with the exporter-side variable=false above)
-    - name: CAMUNDA_OPTIMIZE_ZEEBE_VARIABLE_IMPORT_ENABLED
-      value: "${optimize.indexVariables}"
-    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_SHARDS
-      value: "${optimize.shardsPerIndex}"
-    - name: CAMUNDA_OPTIMIZE_ELASTICSEARCH_SETTINGS_INDEX_NUMBER_OF_REPLICAS
-      value: "1"
-    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_CRONTRIGGER
-      value: "0 18 * * *"
-    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_TTL
-      value: "P5D"
-    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_ENABLED
-      value: "true"
-    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_CLEANUPMODE
-      value: "all"
-    - name: CAMUNDA_OPTIMIZE_HISTORYCLEANUP_PROCESSDATACLEANUP_BATCHSIZE
-      value: "10000"
+  # All remaining application configuration is layered on top of the chart's default
+  # application.yaml via extraConfiguration (Camunda 8.9+ ordered-list form). Each entry
+  # is mounted as its own file and imported through Spring's spring.config.import, so the
+  # chart-provided defaults stay intact and we only carry the deltas we care about.
+  # See https://docs.camunda.io/docs/self-managed/deployment/helm/configure/application-configs/
+  #
+  # NOTE (redundant env removed): CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI and
+  # CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED used to be set as env vars, but they are already
+  # configured natively above via orchestration.security.* — so they were dropped.
+  extraConfiguration:
+    - file: benchmark-orchestration.yaml
+      content: |
+        camunda:
+          database:
+            schema-manager:
+              # comment out / set elasticSearch.enabled=false to disable schema creation
+              create-schema: "${elasticSearch.enabled}"
+          data:
+            primary-storage:
+              log-stream:
+                log-segment-size: "${engine.logSegmentSize}MB"
+              rocks-db:
+                # was CAMUNDA_DATAPRIMARYSTORAGE_ROCKSDB_WALDISABLED (missing underscore ->
+                # never bound to data.primary-storage); corrected to the real property path.
+                wal-disabled: "${rocksdb.disableWal}"
+          processing:
+            flow-control:
+              request:
+                enabled: "${engine.backpressure}"
+                windowed: "${engine.bpUseWindowed}"
+                algorithm: "${engine.backPressureAlgorithm}"
+                fixed:
+                  limit: "${engine.initialLimit}"
+                vegas:
+                  initial-limit: "${engine.initialLimit}"
+                  alpha: "${engine.vegasAlpha}"
+                  beta: "${engine.vegasBeta}"
+                gradient:
+                  min-limit: "${engine.minLimit}"
+                  initial-limit: "${engine.initialLimit}"
+                  rtt-tolerance: "${engine.rttTolerance}"
+          # ---------------------------------------------------------------------
+          # Operate / Tasklist tuning - migrated 1:1 from the former
+          # CAMUNDA_OPERATE_* / CAMUNDA_TASKLIST_* env vars.
+          #
+          # WARNING (verified against 8.9 via /actuator/configprops): most of these
+          # keys are INERT in the 8.9 unified orchestration cluster. The per-webapp
+          # Operate/Tasklist importers were replaced by the single "camunda" exporter,
+          # so archiver.*, importer.* and zeebeElasticsearch.* no longer exist on
+          # OperateProperties/TasklistProperties and are silently ignored (they were
+          # equally ignored as env vars - this is a pre-existing no-op, not new).
+          # Kept verbatim for a faithful 1:1 migration. Where they moved in 8.9:
+          #   - elasticsearch.numberOfShards / numberOfReplicas
+          #       -> camunda.data.secondary-storage.elasticsearch.number-of-shards / -number-of-replicas
+          #   - archiver.rolloverBatchSize
+          #       -> camunda.data.secondary-storage.elasticsearch.history.rollover-batch-size
+          #   - importer.* (queueSize/readerThreadsCount/threadsCount),
+          #     archiver.threadsCount and zeebeElasticsearch.batchSize
+          #       -> no direct equivalent (importer architecture removed)
+          # ---------------------------------------------------------------------
+          operate:
+            archiver:
+              rolloverBatchSize: "${operate.archRolloverBatchSize}"
+              threadsCount: "${operate.archThreads}"
+            importer:
+              queueSize: "${operate.importerQueueSize}"
+              readerThreadsCount: "${operate.importerReaderThreads}"
+              threadsCount: "${operate.importerThreads}"
+            elasticsearch:
+              numberOfShards: "${elasticSearch.shardsPerIndex}"
+              numberOfReplicas: "1"
+            zeebeElasticsearch:
+              batchSize: "${operate.importPageSize}"
+          tasklist:
+            archiver:
+              rolloverBatchSize: "${operate.archRolloverBatchSize}"
+              threadsCount: "${operate.archThreads}"
+            importer:
+              queueSize: "${operate.importerQueueSize}"
+              readerThreadsCount: "${operate.importerReaderThreads}"
+              threadsCount: "${operate.importerThreads}"
+            elasticsearch:
+              numberOfShards: "${elasticSearch.shardsPerIndex}"
+              numberOfReplicas: "1"
+            zeebeElasticsearch:
+              batchSize: "${operate.importPageSize}"
+        zeebe:
+          broker:
+            # ZEEBE_BROKER_EXECUTION_METRICS_EXPORTER_ENABLED and the underscore-free
+            # ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED both bound to this one property.
+            executionMetricsExporterEnabled: true
+            cluster:
+              messageCompression: "${engine.networkCompression}"
+              raft:
+                flush:
+                  # INERT in 8.9: this legacy path (was ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME)
+                  # is a read-only mirror now; the working 8.9 property is
+                  # camunda.cluster.raft.flush-delay. Kept 1:1 per the faithful migration.
+                  delayTime: "${engine.raftFlushDelay}"
+            experimental:
+              maxAppendsPerFollower: "${engine.maxAppendsPerFollower}"
+              maxAppendBatchSize: "${engine.maxAppendBatchSize}KB"
+              disableExplicitRaftFlush: "${engine.disableExplicitRaftFlush}"
+              features:
+                enableActorMetrics: true
+              raft:
+                preallocateSegmentFiles: "${engine.preAllocateSegmentFiles}"
+              rocksdb:
+                enableSstPartitioning: "${rocksdb.enableSstPartitioning}"
+                memoryLimit: "${rocksdb.memoryLimit}MB"
+            exporters:
+              # Export to a separate Elasticsearch for Optimize.
+              # NOTE: must be namespace-qualified - orchestration (namespace: camunda, see
+              # Makefile) and optimize (namespace: camunda-optimize, see elasticsearch-optimize.mk)
+              # are different namespaces, so the bare service name does not resolve across them.
+              # comment out this exporter when disabling Elasticsearch, i.e. elasticSearch.enabled=false
+              elasticsearch:
+                className: io.camunda.zeebe.exporter.ElasticsearchExporter
+                args:
+                  url: http://optimize-elasticsearch.camunda-optimize.svc.cluster.local:9200
+                  index:
+                    numberOfShards: "${elasticSearch.shardsPerIndex}"
+                    numberOfReplicas: "1"
+                    optimizeModeEnabled: true
+                    variable: "${optimize.indexVariables}"
 
 connectors:
   enabled: false
@@ -236,11 +216,6 @@ webModeler:
 console:
   enabled: false
   contextPath: /console
-
-identity:
-  # enabled: ${optimize.enabled}
-  enabled: false
-  contextPath: /identity
 
 # DEPRECATED in 8.9 - the bundled Keycloak subchart is deprecated; prefer an external OIDC provider.
 identityKeycloak:
