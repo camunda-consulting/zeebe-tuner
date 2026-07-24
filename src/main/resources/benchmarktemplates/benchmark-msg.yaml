@@ -36,8 +36,8 @@ spec:
               -Dbenchmark.autoDeployProcess=false
         resources:
           limits:
-            cpu: ${engine.vcpus}
-            memory: ${engine.ram}Gi
+            cpu: "${loadGeneratorStarter.vcpus}"
+            memory: ${loadGeneratorStarter.ram}Gi
           requests:
             cpu: "${loadGeneratorStarter.vcpus}"
             memory: ${loadGeneratorStarter.ram}Gi
