@@ -87,6 +87,12 @@ orchestration:
     - file: benchmark-orchestration.yaml
       content: |
         camunda:
+          cluster:
+            raft:
+              # was ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME -> zeebe.broker.cluster.raft.flush.delayTime,
+              # but that legacy path is a read-only mirror in 8.9 (verified via /actuator/configprops:
+              # the effective flushDelay stayed PT0S). This is the live 8.9 property.
+              flush-delay: "${engine.raftFlushDelay}"
           database:
             schema-manager:
               # comment out / set elasticSearch.enabled=false to disable schema creation
@@ -99,6 +105,14 @@ orchestration:
                 # was CAMUNDA_DATAPRIMARYSTORAGE_ROCKSDB_WALDISABLED (missing underscore ->
                 # never bound to data.primary-storage); corrected to the real property path.
                 wal-disabled: "${rocksdb.disableWal}"
+            secondary-storage:
+              elasticsearch:
+                # Live 8.9 home of the former CAMUNDA_OPERATE|TASKLIST_ELASTICSEARCH_NUMBEROFSHARDS
+                # and _NUMBEROFREPLICAS: shards/replicas for the indices written by the unified
+                # "camunda" exporter. The per-webapp camunda.operate|tasklist.elasticsearch.* paths
+                # are ignored in 8.9.
+                number-of-shards: "${elasticSearch.shardsPerIndex}"
+                number-of-replicas: "1"
           processing:
             flow-control:
               request:
@@ -116,23 +130,27 @@ orchestration:
                   initial-limit: "${engine.initialLimit}"
                   rtt-tolerance: "${engine.rttTolerance}"
           # ---------------------------------------------------------------------
-          # Operate / Tasklist tuning - migrated 1:1 from the former
+          # Operate / Tasklist tuning - migrated from the former
           # CAMUNDA_OPERATE_* / CAMUNDA_TASKLIST_* env vars.
           #
-          # WARNING (verified against 8.9 via /actuator/configprops): most of these
-          # keys are INERT in the 8.9 unified orchestration cluster. The per-webapp
+          # WARNING (verified against 8.9 via /actuator/configprops): the keys below
+          # are INERT in the 8.9 unified orchestration cluster. The per-webapp
           # Operate/Tasklist importers were replaced by the single "camunda" exporter,
           # so archiver.*, importer.* and zeebeElasticsearch.* no longer exist on
           # OperateProperties/TasklistProperties and are silently ignored (they were
           # equally ignored as env vars - this is a pre-existing no-op, not new).
-          # Kept verbatim for a faithful 1:1 migration. Where they moved in 8.9:
-          #   - elasticsearch.numberOfShards / numberOfReplicas
-          #       -> camunda.data.secondary-storage.elasticsearch.number-of-shards / -number-of-replicas
-          #   - archiver.rolloverBatchSize
-          #       -> camunda.data.secondary-storage.elasticsearch.history.rollover-batch-size
+          # Kept as documented no-ops:
           #   - importer.* (queueSize/readerThreadsCount/threadsCount),
           #     archiver.threadsCount and zeebeElasticsearch.batchSize
           #       -> no direct equivalent (importer architecture removed)
+          #   - archiver.rolloverBatchSize
+          #       -> live home would be
+          #          camunda.data.secondary-storage.elasticsearch.history.rollover-batch-size
+          #          (deliberately not rewired yet)
+          # Already REWIRED to their live 8.9 home (no longer set here):
+          #   - elasticsearch.numberOfShards / numberOfReplicas
+          #       -> camunda.data.secondary-storage.elasticsearch.number-of-shards /
+          #          -number-of-replicas (see above)
           # ---------------------------------------------------------------------
           operate:
             archiver:
@@ -142,9 +160,6 @@ orchestration:
               queueSize: "${operate.importerQueueSize}"
               readerThreadsCount: "${operate.importerReaderThreads}"
               threadsCount: "${operate.importerThreads}"
-            elasticsearch:
-              numberOfShards: "${elasticSearch.shardsPerIndex}"
-              numberOfReplicas: "1"
             zeebeElasticsearch:
               batchSize: "${operate.importPageSize}"
           tasklist:
@@ -155,9 +170,6 @@ orchestration:
               queueSize: "${operate.importerQueueSize}"
               readerThreadsCount: "${operate.importerReaderThreads}"
               threadsCount: "${operate.importerThreads}"
-            elasticsearch:
-              numberOfShards: "${elasticSearch.shardsPerIndex}"
-              numberOfReplicas: "1"
             zeebeElasticsearch:
               batchSize: "${operate.importPageSize}"
         zeebe:
@@ -166,13 +178,10 @@ orchestration:
             # ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED both bound to this one property.
             executionMetricsExporterEnabled: true
             cluster:
+              # raft flush delay is NOT set here: the legacy path
+              # zeebe.broker.cluster.raft.flush.delayTime is a read-only mirror in 8.9.
+              # It is rewired to the live property camunda.cluster.raft.flush-delay above.
               messageCompression: "${engine.networkCompression}"
-              raft:
-                flush:
-                  # INERT in 8.9: this legacy path (was ZEEBE_BROKER_CLUSTER_RAFT_FLUSH_DELAYTIME)
-                  # is a read-only mirror now; the working 8.9 property is
-                  # camunda.cluster.raft.flush-delay. Kept 1:1 per the faithful migration.
-                  delayTime: "${engine.raftFlushDelay}"
             experimental:
               maxAppendsPerFollower: "${engine.maxAppendsPerFollower}"
               maxAppendBatchSize: "${engine.maxAppendBatchSize}KB"
