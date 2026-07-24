@@ -113,6 +113,17 @@ orchestration:
                 # are ignored in 8.9.
                 number-of-shards: "${elasticSearch.shardsPerIndex}"
                 number-of-replicas: "1"
+                # Unified 8.9 archiver (equivalents of the
+                # CAMUNDA_DATA_SECONDARYSTORAGE_ELASTICSEARCH_HISTORY_* env vars).
+                # rollover-batch-size is the live home of the former
+                # CAMUNDA_OPERATE|TASKLIST_ARCHIVER_ROLLOVERBATCHSIZE and reuses that
+                # spreadsheet parameter; the other two are new parameters.
+                # 8.9 defaults: rollover-batch-size 100, reindex-batch-size 2500,
+                # wait-period-before-archiving 1h.
+                history:
+                  rollover-batch-size: "${operate.archRolloverBatchSize}"
+                  reindex-batch-size: "${operate.archReindexBatchSize}"
+                  wait-period-before-archiving: "${operate.archWaitPeriodBeforeArchiving}"
           processing:
             flow-control:
               request:
@@ -143,14 +154,14 @@ orchestration:
           #   - importer.* (queueSize/readerThreadsCount/threadsCount),
           #     archiver.threadsCount and zeebeElasticsearch.batchSize
           #       -> no direct equivalent (importer architecture removed)
-          #   - archiver.rolloverBatchSize
-          #       -> live home would be
-          #          camunda.data.secondary-storage.elasticsearch.history.rollover-batch-size
-          #          (deliberately not rewired yet)
-          # Already REWIRED to their live 8.9 home (no longer set here):
+          # Already REWIRED to their live 8.9 home:
           #   - elasticsearch.numberOfShards / numberOfReplicas
           #       -> camunda.data.secondary-storage.elasticsearch.number-of-shards /
-          #          -number-of-replicas (see above)
+          #          -number-of-replicas (see above; no longer set here)
+          #   - archiver.rolloverBatchSize
+          #       -> camunda.data.secondary-storage.elasticsearch.history.rollover-batch-size
+          #          (see above; the inert legacy entries below are kept 1:1 and feed
+          #          from the same spreadsheet parameter)
           # ---------------------------------------------------------------------
           operate:
             archiver:
