@@ -47,7 +47,7 @@ cleanElasticsearchOptimize ?=
 endif
 
 .PHONY: all
-all: chart sync-image ${elasticsearchOptimize} install-camunda chart-infos cpu-info.txt pods await-zeebe ${deployModels} rebalance-leaders ${chaosTarget} ${awaitElasticsearch} benchmark await-benchmark
+all: chart sync-image kube-node-pool ${elasticsearchOptimize} install-camunda chart-infos cpu-info.txt pods await-zeebe ${deployModels} rebalance-leaders ${chaosTarget} ${awaitElasticsearch} benchmark await-benchmark
 #all: chart sync-image install-camunda chart-infos cpu-info.txt pods await-zeebe deploy-models rebalance-leaders ${chaosTarget} await-elasticsearch await-webapps benchmark await-benchmark
 
 .PHONY: clean
@@ -69,6 +69,24 @@ endif
 
 include $(root)/include/camunda.mk
 include $(root)/metrics/metrics.mk # for Grafana URL
+
+# Cloud provider detection based on machine type naming conventions:
+#   AWS:   dots in name        (e.g. c8g.4xlarge)
+#   Azure: starts with Standard_ (e.g. Standard_D4s_v5)
+#   GKE:   dashes in name      (e.g. c4-standard-8)
+nodePoolMachineType ?= ${engine.machineType}
+desiredSize ?= ${engine.clusterSize}
+maxSize ?= ${engine.clusterSize}
+nodePoolTaints ?= dedicated=high-performance:PreferNoSchedule
+ifneq (,$(findstring .,$(nodePoolMachineType)))
+include $(root)/aws/config.mk
+include $(root)/aws/include/kubernetes-aws.mk
+else ifneq (,$(findstring Standard_,$(nodePoolMachineType)))
+include $(root)/azure/include/kubernetes-aks.mk
+else
+include $(root)/google/benchmark/config.mk
+include $(root)/google/include/kubernetes-gke.mk
+endif
 
 .PHONY: sync-image
 sync-image:
